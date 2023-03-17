@@ -130,6 +130,7 @@ export class Channel extends Message {
    */
   registerApp (appCode, target) {
     if (microAppMap.has(appCode)) return
+    console.log('registerApp---------------', appCode, microAppMap)
     microAppMap.set(appCode, target)
     microAppElMap.set(target, appCode)
   }
@@ -138,6 +139,7 @@ export class Channel extends Message {
    * @param {string} appCode 子应用Code
    */
   unRegisterApp (appCode) {
+    console.log('unRegisterApp---------------', appCode, microAppMap)
     return microAppMap.delete(appCode)
   }
   /**
@@ -154,6 +156,7 @@ export class Channel extends Message {
       const tar = microAppMap.get(target)
       if (tar) res = [target, tar]
     }
+    console.log('getApp---------------------', target, res, microAppMap)
     if (!res) console.warn('getApp error,target named:', target, microAppMap)
     return res
   }

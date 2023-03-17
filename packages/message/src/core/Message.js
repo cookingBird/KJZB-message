@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { ChainRunner, onMessage } from '../util'
+import { cloneDeep } from 'lodash-es'
 
 /**
  * @class
@@ -12,6 +13,7 @@ export class Message {
    * @param {MessageOpts} options Channel初始化options
    */
   constructor (targetWindow, options = {}) {
+    this.appCode = ''
     this.targetOrigin = options.targetOrigin || '*'
     this.timeout = options.timeout || 3 * 1000
     this.tag = options.namespace || 'gislife'
@@ -30,6 +32,10 @@ export class Message {
   _initResponse () {
     return onMessage(e => {
       if (e.data?.response === false) {
+        console.log(
+          'this.defaultResponseInterceptor.run(e.data)',
+          this.defaultResponseInterceptor.run(e.data)
+        )
         e.source.postMessage(
           { ...this.defaultResponseInterceptor.run(e.data), response: true },
           e.origin
@@ -62,11 +68,15 @@ export class Message {
         resolvor = resolve
         rejector = reject
         /** @type IPostMessageSyntax<*> */
-        const data = JSON.stringify(this.requestInterceptor.run(msg))
+        const res = this.requestInterceptor.run(msg)
+        console.log('before send res-----------------', res)
+        const data = JSON.stringify(res)
+        console.log('before send-----------------', data)
+        debugger
         target.postMessage(
           {
             id,
-            data: data,
+            data,
             belong: this.tag,
             response: false
           },
@@ -108,8 +118,25 @@ export class Message {
    */
   on (cb) {
     return onMessage(event => {
-      if (event?.data?.belong === this.tag && event.data?.response === false) {
-        cb(JSON.parse(event.data.data))
+      if (
+        typeof event.data !== 'string' &&
+        event.data.type !== 'webpackOk' &&
+        !event.data['devtoolsEnabled'] &&
+        typeof event.data !== 'object'
+      ) {
+        console.log('before parse---------------', event.data)
+        event.data.data = event.data.data ? JSON.parse(event.data.data) : {}
+        if (
+          event?.data?.belong === this.tag &&
+          event.data?.response === false
+        ) {
+          console.log(
+            'after response---------------------',
+            event.data,
+            this.appCode
+          )
+          cb(event.data.data)
+        }
       }
     })
   }

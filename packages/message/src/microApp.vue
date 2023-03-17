@@ -1,7 +1,7 @@
 <template>
 	<iframe
 		:title="id"
-		:src="src"
+		:src="buildSrc(src)"
 		:id="id"
 		class="gislife-micro-app"
 		:class="classNmae"
@@ -32,7 +32,7 @@ export default {
 	},
 	data () {
 		return {
-			id: 'gislife-' + this.microAppCode
+			id: 'gislife-' + this.microAppCode,
 		};
 	},
 	watch: {
@@ -51,6 +51,12 @@ export default {
 	beforeDestroy () {
 		this.$connector.unRegisterApp(this.microAppCode)
 	},
+	methods: {
+		buildSrc (src) {
+			const hasParam = src.includes('?');
+			return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
+		}
+	}
 }
 </script>
 

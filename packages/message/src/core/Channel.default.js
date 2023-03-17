@@ -9,7 +9,3 @@ export const SUPPORT_MESSAGE_TYPE = [
 ]
 
 export const DEFAULT_GLOBAL_CONFIG = 'URL_CONFIG'
-
-window[DEFAULT_GLOBAL_CONFIG] = {
-  test: 'test'
-}
