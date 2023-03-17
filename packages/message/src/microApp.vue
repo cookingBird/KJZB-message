@@ -4,6 +4,7 @@
 		:src="src"
 		:id="id"
 		class="gislife-micro-app"
+		:class="classNmae"
 		ref="window"
 	>
 	</iframe>
@@ -11,11 +12,10 @@
 
 <script>
 import { requestDom } from './index'
-import { ConnectChannel } from './ApplicationChannel'
 
 export default {
 	name: "microApp",
-	// inheritAttrs: false,
+	inheritAttrs: false,
 	props: {
 		src: {
 			type: String,
@@ -27,7 +27,8 @@ export default {
 		},
 		state: {
 			type: Object,
-		}
+		},
+		classNmae: String
 	},
 	data () {
 		return {
@@ -46,19 +47,14 @@ export default {
 			}
 		}
 	},
-	created () {
-	},
-	mounted () {
-	},
-	updated () { },
+
 	beforeDestroy () {
 		this.$connector.unRegisterApp(this.microAppCode)
 	},
-	methods: {},
 }
 </script>
 
-<style scoped>
+<style lang="css">
 .gislife-micro-app {
 	width: 100%;
 	height: 100%;

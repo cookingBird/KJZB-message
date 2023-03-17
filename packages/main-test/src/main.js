@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Message from '../../message/'
+import Message from '@gislife/micro-message'
 Vue.use(Message)
 
 Vue.config.productionTip = false
