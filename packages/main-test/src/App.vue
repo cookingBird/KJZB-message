@@ -2,6 +2,7 @@
   <div id="app">
     <HelloWorld msg="This is main " />
     <button @click="show = !show">关闭</button>
+    <button @click="changeState">state</button>
     <div class="container">
       <microApp
         v-if="show"
@@ -35,17 +36,22 @@ export default {
   data () {
     return {
       child1Config: {
-        url: 'http://127.0.0.1:7000/?microAppCode=child1',
+        url: 'http://192.168.3.4:7000/?microAppCode=child1',
         microAppCode: 'child1',
         state: {
           name: 'state'
         }
       },
       child2Config: {
-        url: 'http://127.0.0.1:7001/?microAppCode=child2',
+        url: 'http://192.168.3.4:7001/?microAppCode=child2',
         microAppCode: 'child2'
       },
       show: true
+    }
+  },
+  methods: {
+    changeState () {
+      this.child1Config.state = { value: Math.floor(Math.random() * 1021000) }
     }
   }
 }

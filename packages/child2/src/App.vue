@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       appConfig: {
-        url: 'http://127.0.0.1:7004/?microAppCode=grand2',
+        url: 'http://192.168.3.4:7004/?microAppCode=grand2',
         microAppCode: 'grand2'
       }
     }
