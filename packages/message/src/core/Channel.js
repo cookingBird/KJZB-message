@@ -112,9 +112,12 @@ export class Channel extends Message {
    */
   on (cb) {
     return super.on(msg => {
-      if (!msg.target) throw Error('on message error, missing msg target')
       // todo 如果消息的目标是当前目标或者为'parent'，则直接响应消息
-      if (msg.target === this.appCode || msg.target === 'parent') {
+      if (
+        msg.target === this.appCode ||
+        msg.target === 'parent' ||
+        msg.target === 'global'
+      ) {
         cb(msg)
       }
     })
@@ -135,7 +138,6 @@ export class Channel extends Message {
    * @param {string} appCode 子应用Code
    */
   unRegisterApp (appCode) {
-    console.log('unregister', appCode)
     return microAppMap.delete(appCode)
   }
   /**
@@ -200,11 +202,13 @@ export class Channel extends Message {
   _onPassive () {
     return super.on(msg => {
       // todo 传递消息
-      if (
-        msg.target !== 'parent' &&
-        msg.type !== 'state' &&
-        msg.target !== this.appCode
-      ) {
+      if (msg.target !== 'parent' && msg.target !== this.appCode) {
+        console.log(
+          'on _onPassive---------------',
+          msg,
+          this.appCode === msg.target,
+          this.appCode
+        )
         if (this.appCode === 'main') msg.pop = false
         // todo 如果是main,则向上传递；如果不是，则全局传递
         if (msg.target === 'main') {
@@ -231,6 +235,7 @@ export class Channel extends Message {
   _stateResponse (context) {
     context.defaultResponseInterceptor.use(msg => {
       if (msg.data.type === 'state') {
+        console.log('response state', msg)
         msg.data.data = stateMap.get(msg.data.sourceCode)
       }
       return msg

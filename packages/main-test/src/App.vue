@@ -35,14 +35,14 @@ export default {
   data () {
     return {
       child1Config: {
-        url: 'http://127.0.0.1:7001/?microAppCode=child1',
+        url: 'http://127.0.0.1:7000/?microAppCode=child1',
         microAppCode: 'child1',
         state: {
           name: 'state'
         }
       },
       child2Config: {
-        url: 'http://127.0.0.1:7002/?microAppCode=child2',
+        url: 'http://127.0.0.1:7001/?microAppCode=child2',
         microAppCode: 'child2'
       },
       show: true

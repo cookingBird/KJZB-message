@@ -1,6 +1,6 @@
 <template>
 	<iframe
-		:title="'gislife' + microAppCode"
+		:title="id"
 		:src="src"
 		:id="id"
 		class="gislife-micro-app"
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { requestDom } from './index'
+import { requestDom } from './util'
 
 export default {
 	name: "microApp",

@@ -4,6 +4,7 @@
       alt="Vue logo"
       src="./assets/logo.png"
     >
+    <div>{{msg}}</div>
     <HelloWorld msg="This is grand2" />
   </div>
 </template>
@@ -16,9 +17,18 @@ export default {
   components: {
     HelloWorld
   },
+  data () {
+    return {
+      msg: ''
+    }
+  },
   created () {
     this.$connector.$on(this,'callback',(res) => {
       console.warn('success------callback--------',res)
+    })
+    this.$connector.$on(this,"message",(res) => {
+      console.log('on message',res)
+      this.msg = res;
     })
   }
 }

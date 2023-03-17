@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <button @click="send">发送消息</button>
     <img
       alt="Vue logo"
       src="./assets/logo.png"
@@ -26,6 +27,15 @@ export default {
         }
       })
     },1000);
+  },
+  methods: {
+    send () {
+      this.$connector.$send({
+        target: 'grand2',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
+      })
+    }
   }
 }
 </script>

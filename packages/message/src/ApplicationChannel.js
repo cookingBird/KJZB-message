@@ -57,26 +57,24 @@ export class ApplicationChannel extends Channel {
     if (!(typeof type === 'string' || typeof type === 'function')) {
       throw Error('type parma type error')
     }
+    if (context) {
+      context.$on('hook:beforeDestory', () => {
+        onCancel?.()
+      })
+    }
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
         type(msg)
       })
       return onCancel
     }
-    if (SUPPORT_MESSAGE_TYPE.includes(type)) {
-      onCancel = super.on(msg => {
-        if (msg.type === type) {
-          cb(msg.data)
-        }
-      })
-      return onCancel
-    }
-    if (context) {
-      context.$on('hook:beforeDestory', () => {
-        onCancel?.()
-      })
-    }
-    console.error('type not support,current type is:' + type)
+    onCancel = super.on(msg => {
+      if (msg.type === type) {
+        cb(msg.data)
+      }
+    })
+    console.log('$on ----------------------', type)
+    return onCancel
   }
 
   /**
@@ -133,26 +131,6 @@ export class ApplicationChannel extends Channel {
   }
 
   /**
-   * @description 接收消息 T为消息的具体格式
-   * @template T
-   * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
-   * @param { Vue.Component } context 组件上下文
-   * @returns {cancelCallback} 取消回调的函数
-   */
-  onState (cb, context) {
-    this.$send({
-      target: 'parent',
-      type: 'state'
-    }).then(res => cb(res.data))
-    return this.$on(context, msg => {
-      if (msg.type === 'state') {
-        const data = msg.data
-        cb(data)
-      }
-    })
-  }
-
-  /**
    * @description 获取远程全局配置
    * @returns {Promise<object>}
    */
@@ -179,6 +157,25 @@ export class ApplicationChannel extends Channel {
       type: 'state',
       target: microAppCode,
       data: state
+    })
+  }
+  /**
+   * @description 接收消息 T为消息的具体格式
+   * @template T
+   * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
+   * @param { Vue.Component } context 组件上下文
+   * @returns {cancelCallback} 取消回调的函数
+   */
+  onState (cb, context) {
+    this.$send({
+      target: 'parent',
+      type: 'state'
+    }).then(res => cb(res.data))
+    return this.$on(context, msg => {
+      if (msg.type === 'state') {
+        const data = msg.data
+        cb(data)
+      }
     })
   }
 }

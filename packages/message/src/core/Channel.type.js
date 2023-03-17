@@ -4,9 +4,14 @@
  * @type { 'register'| 'unregister'  }
  * @description 业务事件类型
  * @typedef PostMessageTypeWork
- * @type { 'parent'|'main'|'state' | 'config' |'callback'|'emit'| '*' }
+ * @type { 'state' | 'config' |'callback'|'emit'| '*' }
  *
  * @typedef { PostMessageTypeInner | PostMessageTypeWork } PostMessageType
+ */
+
+/**
+ * @description 消息发送对象
+ * @typedef  { 'main' | 'parent' | 'global' |'*'} IPostTarget
  */
 
 /**

@@ -1,7 +1,8 @@
+/**
+ * @author dengtao
+ * @version 1.0.0
+ */
 import * as Utils from './util'
-export * from './core'
-export * from './util'
-
 import { ApplicationChannel } from './ApplicationChannel'
 import microAppVue from './microApp.vue'
 
@@ -11,8 +12,8 @@ import microAppVue from './microApp.vue'
  * @property {string} appCode
  * @property {string} microAppCode
  */
-
-export const connector = new ApplicationChannel()
+const connector = new ApplicationChannel()
+export { Utils, connector }
 export default {
   install (vue) {
     if (window.parent !== window) {
