@@ -62,11 +62,11 @@ export class Message {
         resolvor = resolve
         rejector = reject
         /** @type IPostMessageSyntax<*> */
-        const data = this.requestInterceptor.run(msg)
+        const data = JSON.stringify(this.requestInterceptor.run(msg))
         target.postMessage(
           {
             id,
-            data,
+            data: data,
             belong: this.tag,
             response: false
           },
@@ -109,7 +109,7 @@ export class Message {
   on (cb) {
     return onMessage(event => {
       if (event?.data?.belong === this.tag && event.data?.response === false) {
-        cb(event.data.data)
+        cb(JSON.parse(event.data.data))
       }
     })
   }

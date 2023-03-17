@@ -151,8 +151,8 @@ export class Channel extends Message {
       if (tarCode) res = [tarCode, tar]
     }
     if (typeof target === 'string') {
-      const tar = microAppElMap.get(target)
-      if (tar) res = [tarCode, tar]
+      const tar = microAppMap.get(target)
+      if (tar) res = [target, tar]
     }
     if (!res) console.warn('getApp error,target named:', target, microAppMap)
     return res
@@ -202,13 +202,11 @@ export class Channel extends Message {
   _onPassive () {
     return super.on(msg => {
       // todo 传递消息
-      if (msg.target !== 'parent' && msg.target !== this.appCode) {
-        console.log(
-          'on _onPassive---------------',
-          msg,
-          this.appCode === msg.target,
-          this.appCode
-        )
+      if (
+        msg.target !== 'parent' &&
+        msg.target !== this.appCode &&
+        msg.type !== 'state'
+      ) {
         if (this.appCode === 'main') msg.pop = false
         // todo 如果是main,则向上传递；如果不是，则全局传递
         if (msg.target === 'main') {
@@ -229,13 +227,12 @@ export class Channel extends Message {
   }
 
   /**
-   * @description
+   * @description 响应onStaet第一次请求数据
    * @param {Channel} context
    */
   _stateResponse (context) {
-    context.defaultResponseInterceptor.use(msg => {
+    return context.defaultResponseInterceptor.use(msg => {
       if (msg.data.type === 'state') {
-        console.log('response state', msg)
         msg.data.data = stateMap.get(msg.data.sourceCode)
       }
       return msg

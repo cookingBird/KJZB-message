@@ -53,8 +53,10 @@ export class ChainRunner extends ArrayVolume {
    * @returns {T}
    */
   run (result) {
-    return this.queue.reduce((acc, cur, index) => {
-      return cur(acc)
-    }, result)
+    let res = result
+    for (const fn of this.queue) {
+      res = fn(res)
+    }
+    return res
   }
 }

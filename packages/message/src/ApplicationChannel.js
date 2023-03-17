@@ -44,7 +44,7 @@ export class ApplicationChannel extends Channel {
       const tar = targetLike[1]
       target = tar.contentWindow
     }
-    if (!target) console.warn('current layer target not exist')
+    if (!target) console.warn('current layer target not exist', msg)
     return super.send(target, msg)
   }
   /**
