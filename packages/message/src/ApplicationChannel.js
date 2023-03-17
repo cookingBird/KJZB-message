@@ -73,7 +73,6 @@ export class ApplicationChannel extends Channel {
         cb(msg.data)
       }
     })
-    console.log('$on ----------------------', type)
     return onCancel
   }
 

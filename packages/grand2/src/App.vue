@@ -27,7 +27,7 @@ export default {
       console.warn('success------callback--------',res)
     })
     this.$connector.$on(this,"message",(res) => {
-      console.log('on message',res)
+      console.log('on message grand2---------------',res)
       this.msg = res;
     })
   }

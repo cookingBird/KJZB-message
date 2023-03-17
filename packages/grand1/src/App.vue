@@ -31,7 +31,7 @@ export default {
   methods: {
     send () {
       this.$connector.$send({
-        target: 'grand2',
+        target: 'global',
         type: 'message',
         data: Math.floor(Math.random() * 100000)
       })

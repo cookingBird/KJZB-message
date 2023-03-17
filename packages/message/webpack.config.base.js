@@ -2,11 +2,11 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-
+const pkgName = 'micro-message'
 const config = {
   devtool: 'source-map',
   entry: {
-    'micro-message': path.resolve(__dirname, './src/index.js')
+    [pkgName]: path.resolve(__dirname, './src/index.js')
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

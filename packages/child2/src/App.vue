@@ -30,6 +30,12 @@ export default {
         microAppCode: 'grand2'
       }
     }
+  },
+  created () {
+    this.$connector.$on(this,"message",(res) => {
+      console.log('on message child2---------------',res)
+      this.msg = res;
+    })
   }
 }
 </script>

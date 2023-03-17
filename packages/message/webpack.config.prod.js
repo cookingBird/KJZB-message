@@ -1,11 +1,23 @@
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { merge } = require('webpack-merge')
 const base = require('./webpack.config.base')
+const pkgName = 'micro-message'
 const config = {
   mode: 'production',
   optimization: {
+    minimizer: [`...`, new CssMinimizerPlugin()],
+    concatenateModules: true,
     minimize: true,
-    minimizer: [`...`, new CssMinimizerPlugin()]
+    splitChunks: {
+      cacheGroups: {
+        vendors: {
+          test: /.*/,
+          name: pkgName,
+          chunks: 'all'
+        }
+      }
+    },
+    removeEmptyChunks: true
   }
 }
 
