@@ -2,7 +2,6 @@
  * @description 消息格式
  * @template T
  * @typedef {object} IMessage
- * @property { boolean } response 是否发送成功
  * @property { string } id uuidv4生成
  * @property { string } belong namespace
  * @property { T } data 发送的消息
@@ -31,5 +30,13 @@
 /**
  * @description 'message'事件的响应消息格式
  * @template T
- * @typedef {MessageEvent<IMessage<PostMessageType<T>>>} IMessageEventResponse
+ * @typedef {object} IMessageEvent
+ * @property {MessageEventSource} source
+ * @property {string} origin
+ * @property {T} data
+ */
+/**
+ * @description 'message'事件的响应消息格式
+ * @template T
+ * @typedef {IMessageEvent<IMessage<PostMessageType<T>>>} IMessageEventResponse
  */

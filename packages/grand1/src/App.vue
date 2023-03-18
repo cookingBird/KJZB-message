@@ -1,6 +1,10 @@
 <template>
   <div id="app">
     <button @click="send">发送消息</button>
+    <button @click="sendState">发送state</button>
+    <button @click="sendReactive">发送sendReactive</button>
+    <button @click="sendLoop">发送嵌套对象</button>
+    <button @click="sendLoopReact">发送嵌套响应式对象</button>
     <img
       alt="Vue logo"
       src="./assets/logo.png"
@@ -16,6 +20,13 @@ export default {
   name: 'App',
   components: {
     HelloWorld
+  },
+  data () {
+    return {
+      reactiveData: {
+        number: 100000
+      }
+    }
   },
   mounted () {
     setTimeout(() => {
@@ -35,6 +46,47 @@ export default {
         type: 'message',
         data: Math.floor(Math.random() * 100000)
       })
+    },
+    sendState () {
+      const msg = {
+        data: Math.random() * 1000
+      }
+      window.parent.postMessage(msg,'*')
+    },
+    sendReactive () {
+      this.reactiveData = {
+        ...this.reactiveData,
+        number: Math.random() * 10000
+      }
+      window.parent.postMessage(this.reactiveData,'*')
+    },
+    sendLoop () {
+      const data = {
+        data: {
+          data: {
+            data: {
+              number: Math.random() * 10000
+            }
+          }
+        }
+      }
+      window.parent.postMessage(data,'*')
+    },
+    sendLoopReact () {
+      this.reactiveData = {
+        ...this.reactiveData,
+        number: Math.random() * 10000
+      }
+      const data = {
+        data: {
+          data: {
+            data: {
+              number: this.reactiveData
+            }
+          }
+        }
+      }
+      window.parent.postMessage(data,'*')
     }
   }
 }

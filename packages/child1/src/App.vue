@@ -24,16 +24,21 @@ export default {
     HelloWorld
   },
   data () {
+    const IP = 'http://192.168.0.109';
     return {
       appConfig: {
-        url: 'http://192.168.3.4:7003/?microAppCode=grand1',
+        url: IP + ':7003/?microAppCode=grand1',
         microAppCode: 'grand1'
       }
     }
   },
   mounted () {
-    this.$connector.onState(res => {
-      console.error('on state response------------------',res)
+    this.$connector.onState(this,
+      res => {
+        console.error('on state response------------------',res)
+      })
+    window.addEventListener('message',res => {
+      console.log('child1----------------',res.data);
     })
   }
 }

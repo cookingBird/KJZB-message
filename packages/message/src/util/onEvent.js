@@ -22,8 +22,8 @@ export function onLoad (cb) {
 
 /**
  * @description 监听message事件
- * @param {IGenericFunction<IMessageEventResponse,*>} cb 回调函数
- * @returns {Function} 取消回调的函数
+ * @param {IGenericFunction<IMessageEventResponse<*>,*>} cb 回调函数
+ * @returns {onCallback} 取消回调的函数
  */
 export function onMessage (cb) {
   window.addEventListener('message', cb)

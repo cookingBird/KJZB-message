@@ -4,6 +4,7 @@
       alt="Vue logo"
       src="./assets/logo.png"
     >
+    <button @click="getConfig">获取全局配置</button>
     <div>{{msg}}</div>
     <HelloWorld msg="This is grand2" />
   </div>
@@ -26,10 +27,17 @@ export default {
     this.$connector.$on(this,'callback',(res) => {
       console.warn('success------callback--------',res)
     })
-    this.$connector.$on(this,"message",(res) => {
-      console.log('on message grand2---------------',res)
-      this.msg = res;
+    this.$connector.$on(this,"message",({ data }) => {
+      console.log('on message grand2---------------',data)
+      this.msg = data;
     })
+  },
+  methods: {
+    getConfig () {
+      this.$connector.getConfig().then(res => {
+        console.log('get config success--------------',res)
+      })
+    }
   }
 }
 </script>

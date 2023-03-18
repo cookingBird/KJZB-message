@@ -16,16 +16,7 @@ const connector = new ApplicationChannel()
 export { Utils, connector }
 export default {
   install (vue) {
-    if (window.parent !== window) {
-      // TODO 获取子应用AppCode
-      /**@type ParamsType */
-      const params = Utils.getParams(window.location)
-      // ! 子应用
-      connector.setAppCode(params.microAppCode)
-    } else {
-      // ! 主应用
-      connector.setAppCode('main')
-    }
+    connector.register(connector)
     Object.defineProperty(vue.prototype, '$connector', {
       get () {
         return connector

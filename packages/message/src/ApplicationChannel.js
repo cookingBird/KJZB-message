@@ -1,5 +1,7 @@
 import { Channel } from './core/Channel'
 import { SUPPORT_MESSAGE_TYPE } from './core/Channel.default'
+import { v4 as uuidv4 } from 'uuid'
+import { isObject } from './util'
 
 /**
  * @class ApplicationChannel
@@ -16,11 +18,13 @@ export class ApplicationChannel extends Channel {
   }
   /**
    * @description 处理多条件参数
-   * @param {IPostMessageSyntax<T> & {target:HTMLIFrameElement}} msg
+   * @param {IPostMessageSyntax<T> & {target:HTMLIFrameElement} | IMessage<IPostMessageSyntax<T>>} msg
+   * @param {boolean} isPost
    * @returns {Promise<IPostMessageSyntax<T>>}
    */
-  $send (msg) {
+  $send (data, isPost) {
     let target
+    const msg = isPost ? data.data : data
     if (!msg.target || !msg.type) throw Error('message syntax error')
     const msgTarget = msg.target
     //todo main parent发送
@@ -29,7 +33,7 @@ export class ApplicationChannel extends Channel {
       window.parent !== window
     ) {
       target = window.parent
-      return super.send(target, msg)
+      return isPost ? super.post(target, data) : super.send(target, data)
     }
     // todo如果target是HTMLIFrameElement
     // todo直接发送消息，且将target自动替换为对应的appCode
@@ -44,12 +48,12 @@ export class ApplicationChannel extends Channel {
       const tar = targetLike[1]
       target = tar.contentWindow
     }
-    if (!target) console.warn('current layer target not exist', msg)
-    return super.send(target, msg)
+    if (!target) console.warn('current layer target not exist', data)
+    return isPost ? super.post(target, data) : super.send(target, data)
   }
   /**
    * @param {Vue.Component} context
-   * @param {PostMessageType | IGenericFunction<IPostMessageSyntax<IUserData>,any>} type
+   * @param {PostMessageType | IGenericFunction<{data:IMessage<IPostMessageSyntax<IUserData>>,responser:function},any>} type
    * @param {IGenericFunction<IPostMessageSyntax<IUserData>,any> | IGenericFunction<IUserData,any>} cb
    */
   $on (context, type, cb) {
@@ -64,15 +68,18 @@ export class ApplicationChannel extends Channel {
     }
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
-        type(msg)
+        const responser = this.getResponse(msg)
+        type({ data: msg.data.data, responser })
       })
       return onCancel
+    } else {
+      onCancel = super.on(msg => {
+        if (msg.data.type === type) {
+          const responser = this.getResponse(msg)
+          cb({ data: msg.data.data, responser })
+        }
+      })
     }
-    onCancel = super.on(msg => {
-      if (msg.type === type) {
-        cb(msg.data)
-      }
-    })
     return onCancel
   }
 
@@ -106,7 +113,8 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onCallback (context, cb) {
-    return this.$on(context, msg => {
+    const onCancel = this.on(data => {
+      const msg = data.data
       if (msg.type === 'callback') {
         const data = msg.data
         if (data.params !== null) {
@@ -116,34 +124,58 @@ export class ApplicationChannel extends Channel {
             ...paramsName,
             `(${data.callback})(${paramsName.join(',')})`
           )
-          cb(function (ctx) {
-            func.apply(ctx, paramsValue)
+          cb({
+            exec: function (ctx) {
+              func.apply(ctx, paramsValue)
+            },
+            responser
           })
         } else {
           const func = Function(`(${data.callback})()`)
-          cb(function (ctx) {
-            func.apply(ctx)
+          cb({
+            exec: function (ctx) {
+              func.apply(ctx)
+            },
+            responser
           })
         }
       }
     })
+    if (context) {
+      context.$on('hook:beforeDestory', onCancel)
+    }
+    return onCancel
   }
 
   /**
-   * @description 获取远程全局配置
+   * @description 获取主应用全局配置
    * @returns {Promise<object>}
    */
-  getConfig () {
-    const cfg = localStorage.getItem(this.localStorageName)
-    if (cfg) {
-      const config = JSON.parse(cfg)
-      return Promise.resolve(config)
-    } else {
-      return this.$send({
+  getConfig (config) {
+    const { timeout = 3000 } = config
+    let sendOk = false
+    return new Promise((resolve, reject) => {
+      const id = uuidv4()
+      this.$send({
+        target: 'main',
         type: 'config',
-        target: 'main'
+        id: id
       })
-    }
+      const cancel = this.$on(undefined, ({ data }) => {
+        const msg = data.data
+        if (isObject(msg) && msg.id === id) {
+          cancel()
+          sendOk = true
+          resolve(msg.data)
+        }
+      })
+      setTimeout(() => {
+        if (!sendOk) {
+          reject('getConfig error')
+          cancel()
+        }
+      }, timeout)
+    })
   }
   /**
    * @description 发送配置，只能以code方式发送，为了避免子应用未注册造成的消息丢失
@@ -153,8 +185,8 @@ export class ApplicationChannel extends Channel {
   sendState (microAppCode, state) {
     this.setState(microAppCode, state)
     return this.$send({
-      type: 'state',
       target: microAppCode,
+      type: 'state',
       data: state
     })
   }
@@ -165,16 +197,28 @@ export class ApplicationChannel extends Channel {
    * @param { Vue.Component } context 组件上下文
    * @returns {cancelCallback} 取消回调的函数
    */
-  onState (cb, context) {
+  onState (context, cb) {
     this.$send({
       target: 'parent',
       type: 'state'
     }).then(res => cb(res.data))
-    return this.$on(context, msg => {
+    return this.$on(context, ({ data }) => {
+      const msg = data.data
       if (msg.type === 'state') {
-        const data = msg.data
-        cb(data)
+        cb(msg.data)
       }
     })
+  }
+  /**
+   *
+   * @param {IMessage<IPostMessageSyntax<*>>} msg
+   * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
+   */
+  getResponse (msg) {
+    return data => {
+      data.data.target = data.data.sourceCode
+      data.data.sourceCode = this.appCode
+      return this.$send(Object.assign({ data: data }, msg), true)
+    }
   }
 }

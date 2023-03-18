@@ -8,3 +8,7 @@ Vue.config.productionTip = false
 new Vue({
   render: h => h(App)
 }).$mount('#app')
+
+window['URL_CONFIG'] = {
+  msg: 'this is main'
+}

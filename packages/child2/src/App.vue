@@ -24,9 +24,10 @@ export default {
     HelloWorld
   },
   data () {
+    const IP = 'http://192.168.0.109';
     return {
       appConfig: {
-        url: 'http://192.168.3.4:7004/?microAppCode=grand2',
+        url: IP + ':7004/?microAppCode=grand2',
         microAppCode: 'grand2'
       }
     }
