@@ -48,7 +48,7 @@ export default {
 		}
 	},
 	created () {
-		this.$connector.register(this.$connector)
+		// this.$connector.register(this.$connector)
 	},
 	destroyed () {
 		this.$connector.unRegisterApp(this.microAppCode)

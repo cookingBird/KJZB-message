@@ -29,15 +29,15 @@ export default {
     }
   },
   mounted () {
-    setTimeout(() => {
-      this.$connector.$send({
-        target: 'grand2',
-        type: 'callback',
-        data: {
-          msg: 'i am callback'
-        }
-      })
-    },1000);
+    // setTimeout(() => {
+    //   this.$connector.$send({
+    //     target: 'grand2',
+    //     type: 'callback',
+    //     data: {
+    //       msg: 'i am callback'
+    //     }
+    //   })
+    // },1000);
   },
   methods: {
     send () {

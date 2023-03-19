@@ -1,7 +1,7 @@
-import { Channel } from './core/Channel'
+import { Channel, stateMap } from './core/Channel'
 import { SUPPORT_MESSAGE_TYPE } from './core/Channel.default'
 import { v4 as uuidv4 } from 'uuid'
-import { isObject } from './util'
+import { isObject, getParams } from './util'
 
 /**
  * @class ApplicationChannel
@@ -15,41 +15,37 @@ export class ApplicationChannel extends Channel {
    */
   constructor (target, options) {
     super(target, options)
+    //*默认事件一
+    this._stateResponse()
+    if (window === window.parent) {
+      this._configResponse()
+    }
   }
   /**
    * @description 处理多条件参数
-   * @param {IPostMessageSyntax<T> & {target:HTMLIFrameElement} | IMessage<IPostMessageSyntax<T>>} msg
-   * @param {boolean} isPost
-   * @returns {Promise<IPostMessageSyntax<T>>}
+   * @param {IPostMessageSyntax<*> | (IPostMessageSyntax<*> & IMessage<*>)} msg
+   * @returns {Promise<IPostMessageSyntax<*> & IMessage<*>>}
    */
-  $send (data, isPost) {
+  $send (msg) {
     let target
-    const msg = isPost ? data.data : data
     if (!msg.target || !msg.type) throw Error('message syntax error')
-    const msgTarget = msg.target
     //todo main parent发送
-    if (
-      (msgTarget === 'main' || msgTarget === 'parent') &&
-      window.parent !== window
-    ) {
-      target = window.parent
-      return isPost ? super.post(target, data) : super.send(target, data)
+    if (msg.target === 'main' || msg.target === 'parent') {
+      if (window.parent === window && msg.target === 'main') {
+        throw Error('can not send message to myself')
+      }
+      return super.send(window.parent, msg)
+    } else {
+      const targetEl = this.getApp(msg.target)
+      if (!targetEl) {
+        console.warn(
+          `current layer target not exist target named ${msg.target}`
+        )
+      } else {
+        target = targetEl.contentWindow
+      }
+      return super.send(target, msg)
     }
-    // todo如果target是HTMLIFrameElement
-    // todo直接发送消息，且将target自动替换为对应的appCode
-    const targetLike = this.getApp(msgTarget)
-    if (msgTarget instanceof HTMLIFrameElement && targetLike) {
-      msg.target = targetLike[0]
-      target = msgTarget.contentWindow
-    }
-    //todo 如果target是appCode则在map中找到对的HTMLIFrameElement
-    if (typeof msgTarget === 'string' && targetLike) {
-      /**@type HTMLIFrameElement */
-      const tar = targetLike[1]
-      target = tar.contentWindow
-    }
-    if (!target) console.warn('current layer target not exist', data)
-    return isPost ? super.post(target, data) : super.send(target, data)
   }
   /**
    * @param {Vue.Component} context
@@ -58,7 +54,8 @@ export class ApplicationChannel extends Channel {
    */
   $on (context, type, cb) {
     let onCancel
-    if (!(typeof type === 'string' || typeof type === 'function')) {
+
+    if (typeof type !== 'string' && typeof type !== 'function') {
       throw Error('type parma type error')
     }
     if (context) {
@@ -69,14 +66,14 @@ export class ApplicationChannel extends Channel {
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
         const responser = this.getResponse(msg)
-        type({ data: msg.data.data, responser })
+        type({ data: msg, responser })
       })
       return onCancel
     } else {
       onCancel = super.on(msg => {
-        if (msg.data.type === type) {
+        if (msg.type === type) {
           const responser = this.getResponse(msg)
-          cb({ data: msg.data.data, responser })
+          cb({ data: msg.data, responser })
         }
       })
     }
@@ -113,8 +110,7 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onCallback (context, cb) {
-    const onCancel = this.on(data => {
-      const msg = data.data
+    const onCancel = this.on(msg => {
       if (msg.type === 'callback') {
         const data = msg.data
         if (data.params !== null) {
@@ -200,25 +196,73 @@ export class ApplicationChannel extends Channel {
   onState (context, cb) {
     this.$send({
       target: 'parent',
-      type: 'state'
-    }).then(res => cb(res.data))
-    return this.$on(context, ({ data }) => {
-      const msg = data.data
-      if (msg.type === 'state') {
-        cb(msg.data)
+      type: 'getState'
+    }).then(res => {
+      cb(res.data)
+    })
+    return this.$on(context, res => {
+      console.log('onState on0----------------------', res)
+      if (res.data.type === 'state') {
+        cb(res.data.data)
       }
     })
   }
   /**
-   *
-   * @param {IMessage<IPostMessageSyntax<*>>} msg
+   * @param {IMessage<*>&IPostMessageSyntax<*>} msg
    * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
    */
   getResponse (msg) {
     return data => {
-      data.data.target = data.data.sourceCode
-      data.data.sourceCode = this.appCode
-      return this.$send(Object.assign({ data: data }, msg), true)
+      msg.target = msg.sourceCode
+      msg.sourceCode = this.appCode
+      return this.$send(Object.assign(msg, { data: data }))
+    }
+  }
+  /**
+   * @description 全局配置响应,
+   * @param {Channel} context
+   */
+  _configResponse () {
+    return this.on(msg => {
+      if (msg.type === 'config') {
+        msg.data = window[DEFAULT_GLOBAL_CONFIG]
+        msg.target = msg.sourceCode
+        msg.sourceCode = this.appCode
+        msg.pop = false //从主应用向下发消息，禁止冒泡
+        this.$send(msg)
+      }
+    })
+  }
+  /**
+   * @description 响应'getState'事件
+   * @param {Channel} context
+   */
+  _stateResponse () {
+    return super.on(msg => {
+      if (msg.target === 'parent' && msg.type === 'getState') {
+        msg.target = msg.sourceCode
+        msg.sourceCode = this.appCode
+        msg.data = stateMap.get(msg.sourceCode)
+        msg.type = 'state'
+        console.log('getState-------------------', msg)
+        this.$send(msg)
+      }
+    })
+  }
+  /**
+   * @description main
+   * @param {Channel} instance
+   */
+  applicationBootstrap () {
+    if (window.parent !== window) {
+      // TODO 获取子应用AppCode
+      /**@type ParamsType */
+      const params = getParams(window.location)
+      // ! 子应用
+      this.setAppCode(params.microAppCode)
+    } else {
+      // ! 主应用
+      this.setAppCode('main')
     }
   }
 }

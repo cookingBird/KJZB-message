@@ -2,9 +2,8 @@
  * @description 消息格式
  * @template T
  * @typedef {object} IMessage
- * @property { string } id uuidv4生成
- * @property { string } belong namespace
- * @property { T } data 发送的消息
+ * @property { string } [id] uuidv4生成
+ * @property { string } [belong] namespace
  */
 
 /**

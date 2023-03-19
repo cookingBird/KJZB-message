@@ -2,7 +2,7 @@
   <div id="app">
     <HelloWorld msg="This is main " />
     <button @click="show = !show">关闭</button>
-    <button @click="changeState">state</button>
+    <button @click="changeState">改变state</button>
     <div class="container">
       <microApp
         v-if="show"

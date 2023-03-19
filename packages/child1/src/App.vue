@@ -5,6 +5,7 @@
       src="./assets/logo.png"
     >
     <HelloWorld msg="This is child1" />
+    <button @click="sendGlobal">全局发送</button>
     <microApp
       :src="appConfig.url"
       frameborder="0"
@@ -35,11 +36,19 @@ export default {
   mounted () {
     this.$connector.onState(this,
       res => {
-        console.error('on state response------------------',res)
+        console.warn('on state response------------------',res)
       })
-    window.addEventListener('message',res => {
-      console.log('child1----------------',res.data);
-    })
+    // window.addEventListener('message',res => {
+    //   console.log('child1----------------',res.data);
+    // })
+  },
+  methods: {
+    sendGlobal () {
+      this.$connector.$send({
+        target: 'global',
+        type: 'test global'
+      })
+    }
   }
 }
 </script>

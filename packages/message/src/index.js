@@ -13,10 +13,10 @@ import microAppVue from './microApp.vue'
  * @property {string} microAppCode
  */
 const connector = new ApplicationChannel()
+connector.applicationBootstrap()
 export { Utils, connector }
 export default {
   install (vue) {
-    connector.register(connector)
     Object.defineProperty(vue.prototype, '$connector', {
       get () {
         return connector

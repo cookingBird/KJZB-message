@@ -19,9 +19,9 @@
  * @template T
  * @typedef IPostMessageSyntax
  * @type {object}
- * @property {boolean} [pop=true] 是否冒泡
- * @property { string | 'main' } [target='main'] 发送消息的目标
- * @property { string } sourceCode 冒泡消息来源
+ * @property {boolean} [pop] 是否冒泡
+ * @property { string | 'main' } target 发送消息的目标
+ * @property { string } [sourceCode] 冒泡消息来源
  * @property { PostMessageType } type 消息类型
  * @property { T } data 发送的消息
  */

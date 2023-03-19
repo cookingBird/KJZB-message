@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { ChainRunner, onMessage, isObject, toObj } from '../util'
 
 /**
+ * @description Message类只提供发送消息和接受消息的方法，只确保发送的消息属于当前命名空间
  * @class
  */
 export class Message {
@@ -15,7 +16,7 @@ export class Message {
     this.appCode = ''
     this.targetOrigin = options.targetOrigin || '*'
     this.timeout = options.timeout || 3 * 1000
-    this.tag = options.namespace || 'gislife'
+    this.belong = options.namespace || 'gislife'
     /**@description 请求拦截器 */
     /**@type ChainRunner<IPostMessageSyntax<*>> */
     this.requestInterceptor = new ChainRunner()
@@ -23,42 +24,51 @@ export class Message {
   /**
    * todo 包裹原生消息发生函数，保证消息唯一性,局部性;
    * @description 发送消息
-   * @param {IPostMessageSyntax<T>} msg
+   * @param {(IMessage<*>&IPostMessageSyntax<*>) | IPostMessageSyntax<*>} msg
    * @param {HTMLIFrameElement.contentWindow} target
-   * @returns { Promise<IMessage<IPostMessageSyntax<T>>> }
+   * @returns { Promise<IMessage<*> & IPostMessageSyntax<*>> }
    */
   _postMessage (msg, target) {
     const timeout = msg.timeout || this.timeout
-    const response = msg.response || true
     let isSendOK = false
+    const id = uuidv4()
     if (target) {
-      const id = uuidv4()
-      return new Promise((resolve, reject) => {
+      let sendRes
+      if (msg && msg.id && msg.belong) {
+        sendRes = msg
+      } else {
         /** @type IPostMessageSyntax<*> */
         const res = this.requestInterceptor.run(msg)
-        const sendRes = {
-          id,
-          data: res,
-          belong: this.tag
-        }
-        console.log('before send', this.appCode, '--------------', sendRes)
+        sendRes = Object.assign({ id, belong: this.belong }, res)
+      }
+      return new Promise((resolve, reject) => {
+        console.log(
+          `_postmessage from ${this.appCode} to ${sendRes.target}`,
+          sendRes
+        )
         target.postMessage(sendRes, '*')
-        const cancel = this.on(data => {
-          if (isObject(data) && data.id === id && data.belong === this.tag) {
+        const cancel = this.__on(data => {
+          if (isObject(data) && data.id === id && data.belong === this.belong) {
             isSendOK = true
             cancel()
-            resolve(data.data)
+            console.log('______________postMessage callback', data)
+            resolve(data)
           }
         })
         setTimeout(() => {
-          if (!isSendOK && response) {
+          if (!isSendOK) {
             cancel()
-            reject('message missing response or response timeout !!!!!!!')
+            console.warn('message missing response or response timeout !!!!!!!')
+            reject(msg)
           }
         }, timeout)
       })
     } else {
-      return Promise.reject('missing target')
+      throw Error(
+        `_postmessage target not exist named ${
+          msg.target || msg.data.target
+        }, message type is ${msg.type}, source is ${this.appCode}`
+      )
     }
   }
 
@@ -66,12 +76,13 @@ export class Message {
    * todo 发送消息
    * @description 发送消息
    * @param {Window} target
-   * @param {IPostMessageSyntax<T>} msg 消息体
-   * @returns { Promise<T> } 确认消息发送成功的回调
+   * @param {(IMessage<*>&IPostMessageSyntax<*>) | IPostMessageSyntax<*>} msg 消息体
+   * @returns { Promise<IMessage<*> & IPostMessageSyntax<*>> } 回复的消息
    */
-  send (target, msg) {
+  __send (target, msg) {
     return this._postMessage(msg, target).then(
       res => {
+        console.log('______________send callback', res)
         return res
       },
       err => {
@@ -80,55 +91,15 @@ export class Message {
     )
   }
   /**
-   * todo 包裹原生消息发生函数，保证消息唯一性,局部性;
-   * @description 发送消息
-   * @param {IMessage<IPostMessageSyntax<T>>} msg
-   * @param {HTMLIFrameElement.contentWindow} target
-   * @returns { Promise<IMessage<IPostMessageSyntax<T>>> }
-   */
-  post (target, msg) {
-    const timeout = msg.data.timeout || this.timeout
-    const response = msg.data.response || true
-    let isSendOK = false
-    if (target) {
-      return new Promise((resolve, reject) => {
-        console.log(
-          'before post-------',
-          this.appCode,
-          '--------------',
-          sendRes
-        )
-        target.postMessage(msg, '*')
-        const cancel = this.on(data => {
-          if (isObject(data) && data.id === id && data.belong === this.tag) {
-            isSendOK = true
-            cancel()
-            resolve(data.data)
-          }
-        })
-        setTimeout(() => {
-          if (!isSendOK && response) {
-            cancel()
-            reject('message missing response or response timeout !!!!!!!')
-          }
-        }, timeout)
-      })
-    } else {
-      return Promise.reject('missing target')
-    }
-  }
-  /**
    * @description 监听消息 只监听当前命名空间的消息,且非回复消息
-   * @param {IGenericFunction<IMessage<IPostMessageSyntax<*>>,void>} cb 接收到消息的回调函数
+   * @param {IGenericFunction<IMessage<*>&IPostMessageSyntax<*>,void>} cb 接收到消息的回调函数
    * @returns {cancelCallback} 取消监听事件的函数
    */
-  on (cb) {
+  __on (cb) {
     return onMessage(event => {
-      if (isObject(event.data) && event.data.belong === this.tag) {
-        console.log(
-          'before on---',
-          this.appCode,
-          '-----------------',
+      if (isObject(event.data) && event.data.belong === this.belong) {
+        console.warn(
+          `before on from ${event.data.sourceCode} to ${event.data.target},current is ${this.appCode}`,
           event.data
         )
         cb(event.data)

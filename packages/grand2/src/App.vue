@@ -23,6 +23,7 @@ export default {
       msg: ''
     }
   },
+  //grand2
   created () {
     this.$connector.$on(this,'callback',(res) => {
       console.warn('success------callback--------',res)
