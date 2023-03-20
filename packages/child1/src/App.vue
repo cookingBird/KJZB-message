@@ -6,6 +6,7 @@
     >
     <HelloWorld msg="This is child1" />
     <button @click="sendGlobal">全局发送</button>
+    <div>state:{{state}}</div>
     <microApp
       :src="appConfig.url"
       frameborder="0"
@@ -30,23 +31,30 @@ export default {
       appConfig: {
         url: IP + ':7003/?microAppCode=grand1',
         microAppCode: 'grand1'
-      }
+      },
+      state: {}
     }
   },
   mounted () {
     this.$connector.onState(this,
       res => {
-        console.warn('on state response------------------',res)
+        this.state = {
+          ...this.state,
+          ...res
+        }
       })
-    // window.addEventListener('message',res => {
-    //   console.log('child1----------------',res.data);
-    // })
+    this.$connector.$on(this,({ data }) => {
+      if (data.type === 'message') {
+        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+      }
+    })
   },
   methods: {
     sendGlobal () {
       this.$connector.$send({
         target: 'global',
-        type: 'test global'
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
       })
     }
   }

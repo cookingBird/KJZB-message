@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { ChainRunner, onMessage, isObject, toObj } from '../util'
+import { onMessage, isObject, toObj } from '../util'
 
 /**
  * @description Message类只提供发送消息和接受消息的方法，只确保发送的消息属于当前命名空间
@@ -17,9 +17,6 @@ export class Message {
     this.targetOrigin = options.targetOrigin || '*'
     this.timeout = options.timeout || 3 * 1000
     this.belong = options.namespace || 'gislife'
-    /**@description 请求拦截器 */
-    /**@type ChainRunner<IPostMessageSyntax<*>> */
-    this.requestInterceptor = new ChainRunner()
   }
   /**
    * todo 包裹原生消息发生函数，保证消息唯一性,局部性;
@@ -37,29 +34,26 @@ export class Message {
       if (msg && msg.id) {
         sendRes = Object.assign(msg, { belong: this.belong })
       } else {
-        /** @type IPostMessageSyntax<*> */
-        const res = this.requestInterceptor.run(msg)
-        sendRes = Object.assign({ id, belong: this.belong }, res)
+        sendRes = Object.assign({ id, belong: this.belong }, msg)
       }
       return new Promise((resolve, reject) => {
-        console.log(
-          `_postmessage from ${this.appCode} to ${sendRes.target}`,
-          sendRes
-        )
+        // console.log(
+        //   `_postmessage from ${this.appCode} to ${sendRes.target}`,
+        //   sendRes
+        // )
         target.postMessage(sendRes, '*')
         const cancel = this.__on(data => {
           if (isObject(data) && data.id === id && data.belong === this.belong) {
             isSendOK = true
             cancel()
-            console.log('______________postMessage callback', data)
             resolve(data)
           }
         })
         setTimeout(() => {
           if (!isSendOK) {
-            cancel()
             console.warn('message missing response or response timeout !!!!!!!')
-            reject(msg)
+            cancel()
+            reject()
           }
         }, timeout)
       })
@@ -80,15 +74,7 @@ export class Message {
    * @returns { Promise<IMessage<*> & IPostMessageSyntax<*>> } 回复的消息
    */
   __send (target, msg) {
-    return this._postMessage(msg, target).then(
-      res => {
-        console.log('______________send callback', res)
-        return res
-      },
-      err => {
-        return Promise.reject(err)
-      }
-    )
+    return this._postMessage(msg, target)
   }
   /**
    * @description 监听消息 只监听当前命名空间的消息,且非回复消息
@@ -97,11 +83,17 @@ export class Message {
    */
   __on (cb) {
     return onMessage(event => {
-      if (isObject(event.data) && event.data.belong === this.belong) {
-        console.warn(
-          `before on from ${event.data.sourceCode} to ${event.data.target},current is ${this.appCode}`,
-          event.data
-        )
+      if (
+        isObject(event.data) &&
+        event.data.belong === this.belong &&
+        (event.data.target === this.appCode ||
+          event.data.target === 'global' ||
+          event.data.target === 'parent')
+      ) {
+        // console.log(
+        //   `>>>>>>>>>>>>>>>>>>>>>>>>>>on message from ${event.data.sourceCode}\n current is ${this.appCode}`,
+        //   event.data
+        // )
         cb(event.data)
       }
     })

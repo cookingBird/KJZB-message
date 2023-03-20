@@ -5,7 +5,6 @@ import '../core/Channel.type'
  * @returns {Function} 取消回调的函数
  */
 export function onPageHide (cb) {
-  console.log('page hide-------------------------------')
   window.addEventListener('pagehide', cb)
   return () => window.removeEventListener('pagehide', cb)
 }

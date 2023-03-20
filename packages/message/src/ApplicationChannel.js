@@ -15,6 +15,7 @@ export class ApplicationChannel extends Channel {
   constructor (target, options = {}) {
     super(target, options)
     this.DEFAULT_GLOBAL_CONFIG = options.configField || 'URL_CONFIG'
+    this._statePersistence()
   }
   /**
    * @description 处理多条件参数
@@ -31,6 +32,9 @@ export class ApplicationChannel extends Channel {
       }
       return super.send(window.parent, msg)
     } else {
+      if (msg.type === 'setState') {
+        stateMap.set(msg.target, msg.data)
+      }
       const targetEl = this.getApp(msg.target)
       if (!targetEl) {
         console.warn(
@@ -63,14 +67,14 @@ export class ApplicationChannel extends Channel {
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
         const responser = this._getResponse(msg)
-        type({ data: msg, responser })
+        type({ data: msg, responser, rawData: msg })
       })
       return onCancel
     } else {
       onCancel = super.on(msg => {
         if (msg.type === type) {
           const responser = this._getResponse(msg)
-          cb({ data: msg.data, responser })
+          cb({ data: msg.data, responser, rawData: msg })
         }
       })
     }
@@ -174,19 +178,7 @@ export class ApplicationChannel extends Channel {
       }, timeout)
     })
   }
-  /**
-   * @description 发送配置，只能以code方式发送，为了避免子应用未注册造成的消息丢失
-   * @param {string} microAppCode
-   * @param {object} state
-   */
-  sendState (microAppCode, state) {
-    this.setState(microAppCode, state)
-    return this.$send({
-      target: microAppCode,
-      type: 'state',
-      data: state
-    })
-  }
+
   /**
    * @description 接收消息 T为消息的具体格式
    * @template T
@@ -195,18 +187,17 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onState (context, cb) {
-    debugger
     if (typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
     this.$send({
       target: 'parent',
-      type: 'state'
+      type: 'getState'
     }).then(res => {
       cb(res.data)
     })
     return this.$on(context, ({ data }) => {
-      if (data.type === 'state') {
+      if (data.type === 'setState') {
         cb(data.data)
       }
     })
@@ -221,21 +212,6 @@ export class ApplicationChannel extends Channel {
       msg.sourceCode = this.appCode
       return this.$send(Object.assign(msg, { data: data }))
     }
-  }
-  /**
-   * @description 响应'getState'事件
-   * @param {Channel} context
-   */
-  _stateResponse () {
-    return super.on(msg => {
-      if (msg.target === 'parent' && msg.type === 'getState') {
-        msg.target = msg.sourceCode
-        msg.sourceCode = this.appCode
-        msg.data = stateMap.get(msg.sourceCode)
-        msg.type = 'state'
-        this.$send(msg)
-      }
-    })
   }
   /**
    * @description main
@@ -266,5 +242,11 @@ export class ApplicationChannel extends Channel {
    */
   setGlobalConfigField (key) {
     if (key) this.DEFAULT_GLOBAL_CONFIG = key
+  }
+  _statePersistence () {
+    this.$on(null, 'getState', ({ responser, rawData }) => {
+      const state = stateMap.get(rawData.sourceCode)
+      if (state) responser(state)
+    })
   }
 }

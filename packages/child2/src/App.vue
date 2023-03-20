@@ -5,6 +5,7 @@
       src="./assets/logo.png"
     >
     <HelloWorld msg="This is child2" />
+    <button @click="globalSend">全局发送</button>
     <microApp
       :src="appConfig.url"
       frameborder="0"
@@ -33,10 +34,20 @@ export default {
     }
   },
   created () {
-    this.$connector.$on(this,"message",(res) => {
-      console.log('on message child2---------------',res)
-      this.msg = res;
+    this.$connector.$on(this,({ data }) => {
+      if (data.type === 'message') {
+        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+      }
     })
+  },
+  methods: {
+    globalSend () {
+      this.$connector.$send({
+        target: 'global',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
+      })
+    }
   }
 }
 </script>

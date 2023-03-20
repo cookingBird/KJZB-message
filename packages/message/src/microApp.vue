@@ -37,23 +37,17 @@ export default {
 	},
 	watch: {
 		state: {
-			deep: true,
 			async handler (val,oldVal) {
 				await requestDom(this.id,(el) => el && el.contentWindow)
 				if (val != oldVal) {
 					this.$connector.$send({
 						target: this.microAppCode,
-						type: 'state',
+						type: 'setState',
 						data: val
 					})
 				}
 			}
 		}
-	},
-	created () {
-		this.$connector.$on(this,'state',({ data,responser }) => {
-			responser(this.state)
-		})
 	},
 	destroyed () {
 		this.$connector.unRegisterApp(this.microAppCode)

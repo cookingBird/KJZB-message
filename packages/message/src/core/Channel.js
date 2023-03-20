@@ -41,8 +41,9 @@ export class Channel extends Message {
   send (target, msg) {
     msg.sourceCode =
       msg.sourceCode === undefined ? this.appCode : msg.sourceCode
-    msg.pop = msg.pop === undefined ? true : msg.pop
-
+    msg.popSource = msg.popSource === undefined ? this.appCode : msg.popSource
+    msg.pop =
+      msg.pop === undefined ? (this.appCode === 'main' ? false : true) : msg.pop
     if (target) {
       return super.__send(target, msg)
     } else {
@@ -52,9 +53,7 @@ export class Channel extends Message {
         super.__send(window.parent, msg)
       }
       microAppMap.forEach((value, key) => {
-        const data = msg
-        data.pop = false
-        super.__send(value.contentWindow, data)
+        super.__send(value.contentWindow, Object.assign(msg, { pop: false }))
       })
       return Promise.resolve(undefined)
     }
@@ -67,16 +66,7 @@ export class Channel extends Message {
    * @returns {cancelCallback} 取消监听的回调函数
    */
   on (cb) {
-    return super.__on(res => {
-      // todo 如果消息的目标是当前目标或者为'parent'，则直接响应消息
-      if (
-        res.target === this.appCode ||
-        res.target === 'global' ||
-        res.target === 'parent'
-      ) {
-        cb(res)
-      }
-    })
+    return super.__on(cb)
   }
 
   /**
@@ -144,36 +134,34 @@ export class Channel extends Message {
    * @returns
    */
   _passive () {
-    return super.__on(msg => {
+    return this.on(msg => {
       // todo 不属于当前appCode的消息传递
-      if (
-        msg.target !== this.appCode &&
-        msg.target !== 'parent' &&
-        msg.sourceCode !== 'parent' &&
-        msg.type !== 'state'
-      ) {
-        // todo 从main发送过来的消息不进行转发
-        if (
-          msg.target === 'main' &&
-          window.parent !== window &&
-          msg.sourceCode !== 'parent' &&
-          msg.sourceCode !== 'main'
-        ) {
+      if (msg.target !== this.appCode && msg.target !== 'parent') {
+        // todo 向main發送的消息只向上传递
+        if (msg.target === 'main' && window.parent !== window) {
           this.send(window.parent, msg)
           return
         }
+
+        // todo 向全局发送的消息，或者向非当前子应用的消息全局传递
         if (msg.target === 'global' || msg.target !== this.appCode) {
           //! 如果传递到根节点还未找到
           if (this.appCode === 'main') msg.pop = false
           // todo sibling
           microAppMap.forEach((tar, tarCode) => {
-            if (tarCode !== msg.sourceCode) {
-              this.send(tar.contentWindow, Object.assign(msg, { pop: false }))
+            if (tarCode !== msg.popSource) {
+              this.send(
+                tar.contentWindow,
+                Object.assign(msg, { popSource: this.appCode, pop: false })
+              )
             }
           })
           //todo parent
-          if (window.parent !== window && msg.pop === true) {
-            this.send(window.parent, Object.assign(msg, { pop: true }))
+          if (msg.pop === true && window.parent !== window) {
+            this.send(
+              window.parent,
+              Object.assign(msg, { popSource: this.appCode, pop: true })
+            )
           }
         }
       }

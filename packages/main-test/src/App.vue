@@ -3,6 +3,7 @@
     <HelloWorld msg="This is main " />
     <button @click="show = !show">关闭</button>
     <button @click="changeState">改变state</button>
+    <button @click="globalSend">全局发送</button>
     <div class="container">
       <microApp
         v-if="show"
@@ -64,10 +65,22 @@ export default {
         msg: 'congratulation configTest success !!!!!!!'
       })
     })
+    this.$connector.$on(this,({ data }) => {
+      if (data.type === 'message') {
+        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+      }
+    })
   },
   methods: {
     changeState () {
-      this.child1Config.state = { value: Math.floor(Math.random() * 1021000) }
+      this.child1Config.state = { ...this.child1Config.state,value: Math.floor(Math.random() * 1021000) }
+    },
+    globalSend () {
+      this.$connector.$send({
+        target: 'global',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
+      })
     }
   }
 }

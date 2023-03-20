@@ -7,6 +7,7 @@
     <button @click="getConfig">获取全局配置</button>
     <button @click="responserTest">Responser Test</button>
     <button @click="configTest">Config Test</button>
+    <button @click="globalSend">全局发送</button>
     <div>{{msg}}</div>
     <HelloWorld msg="This is grand2" />
   </div>
@@ -34,6 +35,11 @@ export default {
       console.log('on message grand2---------------',data)
       this.msg = data;
     })
+    this.$connector.$on(this,({ data }) => {
+      if (data.type === 'message') {
+        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+      }
+    })
   },
   methods: {
     getConfig () {
@@ -57,6 +63,13 @@ export default {
         timeout: 3000
       }).then(res => {
         console.error('test configTest success--------------',res)
+      })
+    },
+    globalSend () {
+      this.$connector.$send({
+        target: 'global',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
       })
     }
   }
