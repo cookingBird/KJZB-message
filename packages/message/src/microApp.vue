@@ -38,17 +38,22 @@ export default {
 	watch: {
 		state: {
 			deep: true,
-			immediate: true,
-			async handler (val) {
+			async handler (val,oldVal) {
 				await requestDom(this.id,(el) => el && el.contentWindow)
-				/**@type ConnectChannel */
-				const connector = this.$connector;
-				connector.sendState(this.microAppCode,val)
+				if (val != oldVal) {
+					this.$connector.$send({
+						target: this.microAppCode,
+						type: 'state',
+						data: val
+					})
+				}
 			}
 		}
 	},
 	created () {
-		// this.$connector.register(this.$connector)
+		this.$connector.$on(this,'state',({ data,responser }) => {
+			responser(this.state)
+		})
 	},
 	destroyed () {
 		this.$connector.unRegisterApp(this.microAppCode)

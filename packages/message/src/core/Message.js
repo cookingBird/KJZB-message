@@ -34,8 +34,8 @@ export class Message {
     const id = uuidv4()
     if (target) {
       let sendRes
-      if (msg && msg.id && msg.belong) {
-        sendRes = msg
+      if (msg && msg.id) {
+        sendRes = Object.assign(msg, { belong: this.belong })
       } else {
         /** @type IPostMessageSyntax<*> */
         const res = this.requestInterceptor.run(msg)

@@ -34,7 +34,8 @@ export default {
     HelloWorld
   },
   data () {
-    const IP = 'http://192.168.0.109';
+    const IP = 'http://localhost';
+
     return {
       child1Config: {
         url: IP + ':7000/?microAppCode=child1',
@@ -49,6 +50,20 @@ export default {
       },
       show: true
     }
+  },
+  mounted () {
+    this.$connector.$on(this,'responser',({ data,responser }) => {
+      console.log('on responser-----------------',data,responser);
+      responser({
+        msg: 'congratulation responser test !!!!!!!'
+      })
+    })
+    this.$connector.$on(this,'configTest',({ data,responser }) => {
+      console.log('on configTest-----------------',data,responser);
+      responser({
+        msg: 'congratulation configTest success !!!!!!!'
+      })
+    })
   },
   methods: {
     changeState () {

@@ -5,6 +5,8 @@
       src="./assets/logo.png"
     >
     <button @click="getConfig">获取全局配置</button>
+    <button @click="responserTest">Responser Test</button>
+    <button @click="configTest">Config Test</button>
     <div>{{msg}}</div>
     <HelloWorld msg="This is grand2" />
   </div>
@@ -37,6 +39,24 @@ export default {
     getConfig () {
       this.$connector.getConfig().then(res => {
         console.log('get config success--------------',res)
+      })
+    },
+    responserTest () {
+      this.$connector.$send({
+        target: 'main',
+        type: 'responser',
+        timeout: 3000
+      }).then(res => {
+        console.error('test responser success--------------',res)
+      })
+    },
+    configTest () {
+      this.$connector.$send({
+        target: 'main',
+        type: 'configTest',
+        timeout: 3000
+      }).then(res => {
+        console.error('test configTest success--------------',res)
       })
     }
   }

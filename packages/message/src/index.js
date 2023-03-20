@@ -1,6 +1,5 @@
 /**
  * @author dengtao
- * @version 1.0.0
  */
 import * as Utils from './util'
 import { ApplicationChannel } from './ApplicationChannel'
@@ -13,10 +12,15 @@ import microAppVue from './microApp.vue'
  * @property {string} microAppCode
  */
 const connector = new ApplicationChannel()
-connector.applicationBootstrap()
+
 export { Utils, connector }
+
 export default {
-  install (vue) {
+  install (vue, options = {}) {
+    if (options.configKey) {
+      connector.setGlobalConfigField(configKey)
+    }
+    connector.applicationBootstrap()
     Object.defineProperty(vue.prototype, '$connector', {
       get () {
         return connector

@@ -1,5 +1,4 @@
 import { Channel, stateMap } from './core/Channel'
-import { SUPPORT_MESSAGE_TYPE } from './core/Channel.default'
 import { v4 as uuidv4 } from 'uuid'
 import { isObject, getParams } from './util'
 
@@ -13,13 +12,9 @@ export class ApplicationChannel extends Channel {
    * @param { window | windowContent} target 目标上下文
    * @param {ChannelOpts} options 其它参数
    */
-  constructor (target, options) {
+  constructor (target, options = {}) {
     super(target, options)
-    //*默认事件一
-    this._stateResponse()
-    if (window === window.parent) {
-      this._configResponse()
-    }
+    this.DEFAULT_GLOBAL_CONFIG = options.configField || 'URL_CONFIG'
   }
   /**
    * @description 处理多条件参数
@@ -67,14 +62,14 @@ export class ApplicationChannel extends Channel {
     }
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
-        const responser = this.getResponse(msg)
+        const responser = this._getResponse(msg)
         type({ data: msg, responser })
       })
       return onCancel
     } else {
       onCancel = super.on(msg => {
         if (msg.type === type) {
-          const responser = this.getResponse(msg)
+          const responser = this._getResponse(msg)
           cb({ data: msg.data, responser })
         }
       })
@@ -154,7 +149,7 @@ export class ApplicationChannel extends Channel {
    * @description 获取主应用全局配置
    * @returns {Promise<object>}
    */
-  getConfig (options) {
+  getConfig (options = {}) {
     const { timeout = 3 * 1000 } = options
     let sendOk = false
     return new Promise((resolve, reject) => {
@@ -165,10 +160,10 @@ export class ApplicationChannel extends Channel {
         id: id
       })
       const cancel = this.$on(undefined, ({ data }) => {
-        if (isObject(msg) && msg.id === id) {
+        if (isObject(data) && data.id === id) {
           cancel()
           sendOk = true
-          resolve(msg.data)
+          resolve(data.data)
         }
       })
       setTimeout(() => {
@@ -200,19 +195,19 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onState (context, cb) {
+    debugger
     if (typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
     this.$send({
       target: 'parent',
-      type: 'getState'
+      type: 'state'
     }).then(res => {
       cb(res.data)
     })
-    return this.$on(context, res => {
-      console.log('onState on0----------------------', res)
-      if (res.data.type === 'state') {
-        cb(res.data.data)
+    return this.$on(context, ({ data }) => {
+      if (data.type === 'state') {
+        cb(data.data)
       }
     })
   }
@@ -220,27 +215,12 @@ export class ApplicationChannel extends Channel {
    * @param {IMessage<*>&IPostMessageSyntax<*>} msg
    * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
    */
-  getResponse (msg) {
+  _getResponse (msg) {
     return data => {
       msg.target = msg.sourceCode
       msg.sourceCode = this.appCode
       return this.$send(Object.assign(msg, { data: data }))
     }
-  }
-  /**
-   * @description 全局配置响应,
-   * @param {Channel} context
-   */
-  _configResponse () {
-    return this.on(msg => {
-      if (msg.type === 'config') {
-        msg.data = window[DEFAULT_GLOBAL_CONFIG]
-        msg.target = msg.sourceCode
-        msg.sourceCode = this.appCode
-        msg.pop = false //从主应用向下发消息，禁止冒泡
-        this.$send(msg)
-      }
-    })
   }
   /**
    * @description 响应'getState'事件
@@ -253,7 +233,6 @@ export class ApplicationChannel extends Channel {
         msg.sourceCode = this.appCode
         msg.data = stateMap.get(msg.sourceCode)
         msg.type = 'state'
-        console.log('getState-------------------', msg)
         this.$send(msg)
       }
     })
@@ -280,5 +259,12 @@ export class ApplicationChannel extends Channel {
    */
   getMicroAppCode () {
     return this.appCode
+  }
+  /**
+   *
+   * @param {string} key
+   */
+  setGlobalConfigField (key) {
+    if (key) this.DEFAULT_GLOBAL_CONFIG = key
   }
 }

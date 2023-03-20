@@ -1,6 +1,5 @@
 import { Message } from './Message'
 import { isObject, getParams } from '../util'
-import { DEFAULT_GLOBAL_CONFIG } from './Channel.default'
 
 /**@type {Map<microAppCode,microAppContext>} */
 const microAppMap = new Map()
@@ -146,14 +145,20 @@ export class Channel extends Message {
    */
   _passive () {
     return super.__on(msg => {
-      // todo 传递消息
+      // todo 不属于当前appCode的消息传递
       if (
         msg.target !== this.appCode &&
         msg.target !== 'parent' &&
+        msg.sourceCode !== 'parent' &&
         msg.type !== 'state'
       ) {
-        // todo main
-        if (msg.target === 'main' && window.parent !== window) {
+        // todo 从main发送过来的消息不进行转发
+        if (
+          msg.target === 'main' &&
+          window.parent !== window &&
+          msg.sourceCode !== 'parent' &&
+          msg.sourceCode !== 'main'
+        ) {
           this.send(window.parent, msg)
           return
         }
