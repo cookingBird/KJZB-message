@@ -54,7 +54,9 @@ export class ApplicationChannel extends Channel {
    */
   $on (context, type, cb) {
     let onCancel
-
+    if (cb && typeof cb !== 'function') {
+      throw Error(`$on callback param error,current type is ${typeof cb}`)
+    }
     if (typeof type !== 'string' && typeof type !== 'function') {
       throw Error('type parma type error')
     }
@@ -110,6 +112,11 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onCallback (context, cb) {
+    if (typeof cb !== 'function') {
+      throw Error(
+        `onCallback callback param error,current type is ${typeof cb}`
+      )
+    }
     const onCancel = this.on(msg => {
       if (msg.type === 'callback') {
         const data = msg.data
@@ -147,8 +154,8 @@ export class ApplicationChannel extends Channel {
    * @description 获取主应用全局配置
    * @returns {Promise<object>}
    */
-  getConfig (config) {
-    const { timeout = 3000 } = config
+  getConfig (options) {
+    const { timeout = 3 * 1000 } = options
     let sendOk = false
     return new Promise((resolve, reject) => {
       const id = uuidv4()
@@ -158,7 +165,6 @@ export class ApplicationChannel extends Channel {
         id: id
       })
       const cancel = this.$on(undefined, ({ data }) => {
-        const msg = data.data
         if (isObject(msg) && msg.id === id) {
           cancel()
           sendOk = true
@@ -194,6 +200,9 @@ export class ApplicationChannel extends Channel {
    * @returns {cancelCallback} 取消回调的函数
    */
   onState (context, cb) {
+    if (typeof cb !== 'function') {
+      throw Error(`onState callback param error,current type is ${typeof cb}`)
+    }
     this.$send({
       target: 'parent',
       type: 'getState'
@@ -264,5 +273,12 @@ export class ApplicationChannel extends Channel {
       // ! 主应用
       this.setAppCode('main')
     }
+  }
+  /**
+   * @description AppCode
+   * @returns {string} microAppCode
+   */
+  getMicroAppCode () {
+    return this.appCode
   }
 }

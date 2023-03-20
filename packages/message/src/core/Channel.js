@@ -194,4 +194,11 @@ export class Channel extends Message {
       }
     })
   }
+  /**
+   * @description 是否是主应用
+   * @returns {boolean}
+   */
+  isMain () {
+    return this.appCode === 'main'
+  }
 }
