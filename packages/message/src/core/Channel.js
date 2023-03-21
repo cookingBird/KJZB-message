@@ -67,7 +67,11 @@ export class Channel extends Message {
    */
   on (cb) {
     return super.__on(res => {
-      if (res.target === this.appCode || res.target === 'parent') {
+      if (
+        res.target === this.appCode ||
+        res.target === 'parent' ||
+        res.target === 'global'
+      ) {
         cb(res)
       }
     })
@@ -191,6 +195,7 @@ export class Channel extends Message {
       }
     })
   }
+
   /**
    * @description 是否是主应用
    * @returns {boolean}

@@ -230,6 +230,7 @@ export class ApplicationChannel extends Channel {
       // ! 主应用
       this.setAppCode('main')
     }
+    this._onConfig()
   }
   /**
    * @description AppCode
@@ -250,5 +251,12 @@ export class ApplicationChannel extends Channel {
       const state = stateMap.get(rawData.sourceCode)
       if (state) responser(state)
     })
+  }
+  _onConfig () {
+    if (this.appCode === 'main') {
+      this.$on(null, 'config', ({ responser }) => {
+        responser(window[this.DEFAULT_GLOBAL_CONFIG])
+      })
+    }
   }
 }

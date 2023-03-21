@@ -81,7 +81,7 @@ const config = {
 }
 
 function rewritePkgFile (devOps, prodOps) {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.IS_BUILD === 'true') {
     const fs = require('fs-extra')
     const pkgJsonFile = JSON.parse(fs.readFileSync('./package.json'))
     for (const key in prodOps) {
@@ -89,7 +89,7 @@ function rewritePkgFile (devOps, prodOps) {
     }
     fs.writeFileSync('./package.json', JSON.stringify(pkgJsonFile))
   }
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.IS_BUILD === 'false') {
     const fs = require('fs-extra')
     const pkgJsonFile = JSON.parse(fs.readFileSync('./package.json'))
     for (const key in devOps) {
