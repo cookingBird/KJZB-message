@@ -1391,10 +1391,10 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
       } else {
         onCancel = ApplicationChannel_get(ApplicationChannel_getPrototypeOf(ApplicationChannel.prototype), "on", this).call(this, function (msg) {
           if (msg.type === type) {
-            var _responser = _this2._getResponse(msg);
+            var responser = _this2._getResponse(msg);
             cb({
               data: msg.data,
-              responser: _responser,
+              responser: responser,
               rawData: msg
             });
           }
@@ -1440,13 +1440,16 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
       if (typeof cb !== 'function') {
         throw Error("onCallback callback param error,current type is ".concat(ApplicationChannel_typeof(cb)));
       }
-      var onCancel = this.on(function (msg) {
+      var onCancel = this.$on(null, function (_ref) {
+        var data = _ref.data,
+          responser = _ref.responser;
+        var msg = data;
         if (msg.type === 'callback') {
-          var data = msg.data;
-          if (data.params !== null) {
-            var paramsName = Object.keys(data.params);
-            var paramsValue = Object.values(data.params);
-            var func = Function.apply(void 0, paramsName.concat(["(".concat(data.callback, ")(").concat(paramsName.join(','), ")")]));
+          var _data = msg.data;
+          if (_data.params !== null) {
+            var paramsName = Object.keys(_data.params);
+            var paramsValue = Object.values(_data.params);
+            var func = Function.apply(void 0, paramsName.concat(["(".concat(_data.callback, ")(").concat(paramsName.join(','), ")")]));
             cb({
               exec: function exec(ctx) {
                 func.apply(ctx, paramsValue);
@@ -1454,7 +1457,7 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
               responser: responser
             });
           } else {
-            var _func = Function("(".concat(data.callback, ")()"));
+            var _func = Function("(".concat(_data.callback, ")()"));
             cb({
               exec: function exec(ctx) {
                 _func.apply(ctx);
@@ -1489,8 +1492,8 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
           type: 'config',
           id: id
         });
-        var cancel = _this3.$on(undefined, function (_ref) {
-          var data = _ref.data;
+        var cancel = _this3.$on(undefined, function (_ref2) {
+          var data = _ref2.data;
           if (isObject(data) && data.id === id) {
             cancel();
             sendOk = true;
@@ -1525,8 +1528,8 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
       }).then(function (res) {
         cb(res.data);
       });
-      return this.$on(context, function (_ref2) {
-        var data = _ref2.data;
+      return this.$on(context, function (_ref3) {
+        var data = _ref3.data;
         if (data.type === 'setState') {
           cb(data.data);
         }
@@ -1588,9 +1591,9 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
   }, {
     key: "_statePersistence",
     value: function _statePersistence() {
-      this.$on(null, 'getState', function (_ref3) {
-        var responser = _ref3.responser,
-          rawData = _ref3.rawData;
+      this.$on(null, 'getState', function (_ref4) {
+        var responser = _ref4.responser,
+          rawData = _ref4.rawData;
         var state = stateMap.get(rawData.sourceCode);
         if (state) responser(state);
       });
