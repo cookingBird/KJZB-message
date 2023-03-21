@@ -37,10 +37,10 @@ export class Message {
         sendRes = Object.assign({ id, belong: this.belong }, msg)
       }
       return new Promise((resolve, reject) => {
-        // console.log(
-        //   `_postmessage from ${this.appCode} to ${sendRes.target}`,
-        //   sendRes
-        // )
+        console.log(
+          `_postmessage from ${this.appCode} to ${sendRes.target}`,
+          sendRes
+        )
         target.postMessage(sendRes, '*')
         const cancel = this.__on(data => {
           if (isObject(data) && data.id === id && data.belong === this.belong) {
@@ -83,17 +83,11 @@ export class Message {
    */
   __on (cb) {
     return onMessage(event => {
-      if (
-        isObject(event.data) &&
-        event.data.belong === this.belong &&
-        (event.data.target === this.appCode ||
-          event.data.target === 'global' ||
-          event.data.target === 'parent')
-      ) {
-        // console.log(
-        //   `>>>>>>>>>>>>>>>>>>>>>>>>>>on message from ${event.data.sourceCode}\n current is ${this.appCode}`,
-        //   event.data
-        // )
+      if (isObject(event.data) && event.data.belong === this.belong) {
+        console.log(
+          `>>>>>>>>>>>>>>>>>>>>>>>>>>\non message from ${event.data.sourceCode},pop by ${event.data.popSource} current is ${this.appCode}\n`,
+          event.data
+        )
         cb(event.data)
       }
     })

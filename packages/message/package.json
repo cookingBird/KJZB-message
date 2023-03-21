@@ -1,6 +1,6 @@
 {
   "name": "@gislife/micro-message",
-  "version": "3.1.5",
+  "version": "3.3.0",
   "description": "microapp",
   "main": "src/index.js",
   "style": "dist/micro-message.css",
@@ -10,7 +10,10 @@
     "dev": "cross-env NODE_ENV=development npx webpack --config webpack.config.dev.js",
     "publish:major": "npm run build && nrm use company && npm version major && npm publish && nrm use local",
     "publish:minor": "npm run build && nrm use company && npm version minor && npm publish && nrm use local",
-    "publish:patch": "npm run build && nrm use company && npm version patch && npm publish && nrm use local"
+    "publish:patch": "npm run build && nrm use company && npm version patch && npm publish && nrm use local",
+    "publish:major:dev": "npm run dev && nrm use company && npm version major && npm publish && nrm use local",
+    "publish:minor:dev": "npm run dev && nrm use company && npm version minor && npm publish && nrm use local",
+    "publish:patch:dev": "npm run dev && nrm use company && npm version patch && npm publish && nrm use local"
   },
   "author": "dengtao",
   "license": "ISC",

@@ -43,12 +43,12 @@ export class Channel extends Message {
       msg.sourceCode === undefined ? this.appCode : msg.sourceCode
     msg.popSource = msg.popSource === undefined ? this.appCode : msg.popSource
     msg.pop =
-      msg.pop === undefined ? (this.appCode === 'main' ? false : true) : msg.pop
+      this.appCode === 'main' ? false : msg.pop === undefined ? true : false
     if (target) {
       return super.__send(target, msg)
     } else {
+      console.log('passive sibling-------------------', msg, microAppMap)
       //todo 如果target不存在，则向全局发送消息
-      const sendTargets = []
       if (window.parent !== window && msg.pop === true) {
         super.__send(window.parent, msg)
       }
@@ -66,7 +66,11 @@ export class Channel extends Message {
    * @returns {cancelCallback} 取消监听的回调函数
    */
   on (cb) {
-    return super.__on(cb)
+    return super.__on(res => {
+      if (res.target === this.appCode || res.target === 'parent') {
+        cb(res)
+      }
+    })
   }
 
   /**
@@ -101,6 +105,7 @@ export class Channel extends Message {
    * @param {targetLike | undefined} target
    */
   getApp (target) {
+    console.warn('------------------register---------------\n')
     return microAppMap.get(target)
   }
   /**
@@ -134,12 +139,14 @@ export class Channel extends Message {
    * @returns
    */
   _passive () {
-    return this.on(msg => {
+    return super.__on(msg => {
       // todo 不属于当前appCode的消息传递
       if (msg.target !== this.appCode && msg.target !== 'parent') {
+        console.log('>>>>>>>>>>>>>>>>>>>passive----------------------', msg)
+        msg.popSource = this.appCode
         // todo 向main發送的消息只向上传递
         if (msg.target === 'main' && window.parent !== window) {
-          this.send(window.parent, msg)
+          this.send(window.parent, Object.assign(msg, { pop: true }))
           return
         }
 
@@ -158,10 +165,7 @@ export class Channel extends Message {
           })
           //todo parent
           if (msg.pop === true && window.parent !== window) {
-            this.send(
-              window.parent,
-              Object.assign(msg, { popSource: this.appCode, pop: true })
-            )
+            this.send(window.parent, Object.assign(msg, { pop: true }))
           }
         }
       }

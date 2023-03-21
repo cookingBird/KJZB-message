@@ -59,10 +59,10 @@ export default {
         msg: 'congratulation responser test !!!!!!!'
       })
     })
-    this.$connector.$on(this,'configTest',({ data,responser }) => {
-      console.log('on configTest-----------------',data,responser);
+    this.$connector.$on(this,'config',({ data,responser }) => {
+      console.log('on config-----------------',data,responser);
       responser({
-        msg: 'congratulation configTest success !!!!!!!'
+        msg: 'congratulation config success !!!!!!!'
       })
     })
     this.$connector.$on(this,({ data }) => {

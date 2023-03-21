@@ -116,7 +116,8 @@ export class ApplicationChannel extends Channel {
         `onCallback callback param error,current type is ${typeof cb}`
       )
     }
-    const onCancel = this.on(msg => {
+    const onCancel = this.$on(null, ({ data, responser }) => {
+      const msg = data
       if (msg.type === 'callback') {
         const data = msg.data
         if (data.params !== null) {
@@ -210,6 +211,7 @@ export class ApplicationChannel extends Channel {
     return data => {
       msg.target = msg.sourceCode
       msg.sourceCode = this.appCode
+      msg.popSource = this.appCode
       return this.$send(Object.assign(msg, { data: data }))
     }
   }
