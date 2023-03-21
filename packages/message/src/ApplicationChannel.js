@@ -131,7 +131,7 @@ export class ApplicationChannel extends Channel {
             exec: function (ctx) {
               func.apply(ctx, paramsValue)
             },
-            responser
+            responser: responser
           })
         } else {
           const func = Function(`(${data.callback})()`)
@@ -139,7 +139,7 @@ export class ApplicationChannel extends Channel {
             exec: function (ctx) {
               func.apply(ctx)
             },
-            responser
+            responser: responser
           })
         }
       }

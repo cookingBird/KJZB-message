@@ -2,7 +2,6 @@
  * @author dengtao
  */
 import * as Utils from './util'
-import * as Tools from './tool'
 import { ApplicationChannel } from './ApplicationChannel'
 import microAppVue from './microApp.vue'
 
@@ -14,7 +13,7 @@ import microAppVue from './microApp.vue'
  */
 const connector = new ApplicationChannel()
 
-export { Utils, connector, Tools }
+export { Utils, connector }
 
 export default {
   install (vue, options = {}) {
