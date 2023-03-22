@@ -3,7 +3,7 @@ module.exports = function (api) {
   const presets = ['@babel/preset-env']
   const plugins = []
   if (process.env.NODE_ENV === 'production') {
-    plugins.push(['transform-remove-console', { exclude: ['error'] }])
+    plugins.push(['transform-remove-console', { exclude: ['error', 'warn'] }])
   } else {
     plugins.push(['transform-remove-console', { exclude: ['error', 'warn'] }])
   }

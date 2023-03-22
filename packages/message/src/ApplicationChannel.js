@@ -212,7 +212,18 @@ export class ApplicationChannel extends Channel {
       msg.target = msg.sourceCode
       msg.sourceCode = this.appCode
       msg.popSource = this.appCode
-      return this.$send(Object.assign(msg, { data: data }))
+      let type
+      if (data._type) {
+        type = data._type
+        delete data._type
+      } else {
+        type = msg.type
+        console.warn(
+          `responser miss _type filed, maybe cause infinite loop,current type is ${type}`
+        )
+      }
+
+      return this.$send(Object.assign(msg, { data: data, type: type }))
     }
   }
   /**

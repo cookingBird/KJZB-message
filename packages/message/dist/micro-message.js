@@ -6576,8 +6576,17 @@ var ApplicationChannel = /*#__PURE__*/function (_Channel) {
         msg.target = msg.sourceCode;
         msg.sourceCode = _this4.appCode;
         msg.popSource = _this4.appCode;
+        var type;
+        if (data._type) {
+          type = data._type;
+          delete data._type;
+        } else {
+          type = msg.type;
+          ApplicationChannel_console.warn("responser miss _type filed, maybe cause infinite loop,current type is ".concat(type));
+        }
         return _this4.$send(Object.assign(msg, {
-          data: data
+          data: data,
+          type: type
         }));
       };
     }
