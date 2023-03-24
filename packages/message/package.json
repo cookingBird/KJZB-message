@@ -1,6 +1,6 @@
 {
   "name": "@gislife/micro-message",
-  "version": "3.4.0",
+  "version": "3.6.1",
   "description": "microapp",
   "main": "dist/micro-message.js",
   "style": "dist/micro-message.css",

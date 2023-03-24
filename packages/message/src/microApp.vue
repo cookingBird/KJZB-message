@@ -30,10 +30,10 @@ export default {
 		},
 		classNmae: String
 	},
-	data () {
-		return {
-			id: 'gislife-' + this.microAppCode,
-		};
+	computed: {
+		id () {
+			return 'gislife-' + this.microAppCode
+		}
 	},
 	watch: {
 		state: {

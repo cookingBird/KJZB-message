@@ -46,7 +46,7 @@ export class Message {
           if (isObject(data) && data.id === id && data.belong === this.belong) {
             isSendOK = true
             cancel()
-            resolve(data)
+            resolve(data.data)
           }
         })
         setTimeout(() => {

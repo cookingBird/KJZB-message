@@ -213,7 +213,7 @@ export class ApplicationChannel extends Channel {
       msg.sourceCode = this.appCode
       msg.popSource = this.appCode
       let type
-      if (data._type) {
+      if (isObject(data) && data._type) {
         type = data._type
         delete data._type
       } else {

@@ -48,14 +48,17 @@ export class Channel extends Message {
       return super.__send(target, msg)
     } else {
       console.log('passive sibling-------------------', msg, microAppMap)
+      const promises = []
       //todo 如果target不存在，则向全局发送消息
       if (window.parent !== window && msg.pop === true) {
-        super.__send(window.parent, msg)
+        promises.push(() => super.__send(window.parent, msg))
       }
       microAppMap.forEach((value, key) => {
-        super.__send(value.contentWindow, Object.assign(msg, { pop: false }))
+        promises.push(() =>
+          super.__send(value.contentWindow, Object.assign(msg, { pop: false }))
+        )
       })
-      return Promise.resolve(undefined)
+      return Promise.any(promises)
     }
   }
   /**

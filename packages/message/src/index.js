@@ -12,6 +12,7 @@ import microAppVue from './microApp.vue'
  * @property {string} microAppCode
  */
 const connector = new ApplicationChannel()
+connector.applicationBootstrap()
 
 export { Utils, connector }
 
@@ -20,7 +21,7 @@ export default {
     if (options.configKey) {
       connector.setGlobalConfigField(configKey)
     }
-    connector.applicationBootstrap()
+
     Object.defineProperty(vue.prototype, '$connector', {
       get () {
         return connector
