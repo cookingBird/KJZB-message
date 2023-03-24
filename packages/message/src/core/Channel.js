@@ -42,20 +42,39 @@ export class Channel extends Message {
     msg.sourceCode =
       msg.sourceCode === undefined ? this.appCode : msg.sourceCode
     msg.popSource = msg.popSource === undefined ? this.appCode : msg.popSource
-    msg.pop =
-      this.appCode === 'main' ? false : msg.pop === undefined ? true : false
+    //* 从主应用发出去的消息都为false
     if (target) {
       return super.__send(target, msg)
     } else {
-      console.log('passive sibling-------------------', msg, microAppMap)
       const promises = []
       //todo 如果target不存在，则向全局发送消息
-      if (window.parent !== window && msg.pop === true) {
-        promises.push(() => super.__send(window.parent, msg))
+      if (window.parent !== window) {
+        console.log(
+          `send >>> parent---${this.appCode}----------------`,
+          msg,
+          microAppMap
+        )
+        promises.push(
+          // new Promise((resolve, reject) => {
+          super.__send(window.parent, Object.assign({}, msg, { pop: true }))
+          // .then(resolve, reject)
+          // })
+        )
       }
       microAppMap.forEach((value, key) => {
-        promises.push(() =>
-          super.__send(value.contentWindow, Object.assign(msg, { pop: false }))
+        console.log(
+          `send >>> sibling--is ${key}--${this.appCode}----------------`,
+          msg,
+          microAppMap
+        )
+        promises.push(
+          // new Promise((resolve, reject) => {
+          super.__send(
+            value.contentWindow,
+            Object.assign({}, msg, { pop: false })
+          )
+          // .then(resolve, reject)
+          // })
         )
       })
       return Promise.any(promises)
@@ -112,7 +131,6 @@ export class Channel extends Message {
    * @param {targetLike | undefined} target
    */
   getApp (target) {
-    console.warn('------------------register---------------\n')
     return microAppMap.get(target)
   }
   /**
@@ -149,30 +167,43 @@ export class Channel extends Message {
     return super.__on(msg => {
       // todo 不属于当前appCode的消息传递
       if (msg.target !== this.appCode && msg.target !== 'parent') {
-        console.log('>>>>>>>>>>>>>>>>>>>passive----------------------', msg)
-        msg.popSource = this.appCode
+        console.log(
+          `>>>>>>>>>>>>>>>>>>>passive>>>${this.appCode}>>>>>>>>>>>>>>>>>>>>>>>\n`,
+          msg,
+          '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        )
+        //! 如果传递到根节点还未找到
+        if (this.appCode === 'main') msg.pop = false
         // todo 向main發送的消息只向上传递
         if (msg.target === 'main' && window.parent !== window) {
-          this.send(window.parent, Object.assign(msg, { pop: true }))
+          this.send(
+            window.parent,
+            Object.assign({}, msg, { pop: true, popSource: this.appCode })
+          )
           return
         }
 
         // todo 向全局发送的消息，或者向非当前子应用的消息全局传递
         if (msg.target === 'global' || msg.target !== this.appCode) {
-          //! 如果传递到根节点还未找到
-          if (this.appCode === 'main') msg.pop = false
           // todo sibling
           microAppMap.forEach((tar, tarCode) => {
             if (tarCode !== msg.popSource) {
-              this.send(
+              console.log(
+                `passive send sibling- ${tarCode}--------------- current is ${this.appCode}-----------------------\n`,
+                msg
+              )
+              this.__send(
                 tar.contentWindow,
-                Object.assign(msg, { popSource: this.appCode, pop: false })
+                Object.assign({}, msg, { pop: false, popSource: this.appCode })
               )
             }
           })
           //todo parent
           if (msg.pop === true && window.parent !== window) {
-            this.send(window.parent, Object.assign(msg, { pop: true }))
+            this.__send(
+              window.parent,
+              Object.assign({}, msg, { popSource: this.appCode, pop: true })
+            )
           }
         }
       }

@@ -38,8 +38,9 @@ export class Message {
       }
       return new Promise((resolve, reject) => {
         console.log(
-          `_postmessage from ${this.appCode} to ${sendRes.target}`,
-          sendRes
+          `+++++++++_postmessage from ${this.appCode} to ${sendRes.target}+++++++++++++++\n`,
+          sendRes,
+          '\n+++++++++++++++++++++++'
         )
         target.postMessage(sendRes, '*')
         const cancel = this.__on(data => {
@@ -51,7 +52,6 @@ export class Message {
         })
         setTimeout(() => {
           if (!isSendOK) {
-            console.warn('message missing response or response timeout !!!!!!!')
             cancel()
             reject()
           }
@@ -84,10 +84,12 @@ export class Message {
   __on (cb) {
     return onMessage(event => {
       if (isObject(event.data) && event.data.belong === this.belong) {
-        console.log(
-          `>>>>>>>>>>>>>>>>>>>>>>>>>>\non message from ${event.data.sourceCode},pop by ${event.data.popSource} current is ${this.appCode}\n`,
-          event.data
-        )
+        // console.log(
+        //   `---------------\non message from ${event.data.sourceCode},pop by ${event.data.popSource} ,current is ${this.appCode}\n`,
+        //   event,
+        //   event.data,
+        //   '\n-----------------------------'
+        // )
         cb(event.data)
       }
     })

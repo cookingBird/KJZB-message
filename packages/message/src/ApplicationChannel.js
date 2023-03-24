@@ -204,6 +204,7 @@ export class ApplicationChannel extends Channel {
     })
   }
   /**
+   * @description $on收到消息之后的回消息
    * @param {IMessage<*>&IPostMessageSyntax<*>} msg
    * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
    */
@@ -212,6 +213,7 @@ export class ApplicationChannel extends Channel {
       msg.target = msg.sourceCode
       msg.sourceCode = this.appCode
       msg.popSource = this.appCode
+      msg.pop = msg.type === 'config' ? true : undefined
       let type
       if (isObject(data) && data._type) {
         type = data._type
@@ -264,8 +266,9 @@ export class ApplicationChannel extends Channel {
     })
   }
   _onConfig () {
-    if (this.appCode === 'main') {
-      this.$on(null, 'config', ({ responser }) => {
+    if (this.isMain()) {
+      this.$on(null, 'config', ({ responser, rawData }) => {
+        console.log('+++++++++++++++++++++++++\n onConfig', rawData)
         responser(window[this.DEFAULT_GLOBAL_CONFIG])
       })
     }

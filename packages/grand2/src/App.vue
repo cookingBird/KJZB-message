@@ -31,20 +31,16 @@ export default {
     this.$connector.$on(this,'callback',(res) => {
       console.warn('success------callback--------',res)
     })
-    this.$connector.$on(this,"message",({ data }) => {
-      console.log('on message grand2---------------',data)
-      this.msg = data;
-    })
     this.$connector.$on(this,({ data }) => {
       if (data.type === 'message') {
-        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+        console.warn('callback global send success-----------------',data,this.$connector.getMicroAppCode());
       }
     })
   },
   methods: {
     getConfig () {
       this.$connector.getConfig().then(res => {
-        console.log('get config success--------------',res)
+        console.warn('get config success--------------',res)
       })
     },
     responserTest () {

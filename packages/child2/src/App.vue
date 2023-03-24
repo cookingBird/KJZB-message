@@ -36,7 +36,7 @@ export default {
   created () {
     this.$connector.$on(this,({ data }) => {
       if (data.type === 'message') {
-        console.log('callback global send success-----------------',data,this.$connector.getMicroAppCode());
+        console.warn('callback global send success-----------------',data,this.$connector.getMicroAppCode());
       }
     })
   },
