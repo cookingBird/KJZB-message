@@ -55,10 +55,7 @@ export class Channel extends Message {
           microAppMap
         )
         promises.push(
-          // new Promise((resolve, reject) => {
           super.__send(window.parent, Object.assign({}, msg, { pop: true }))
-          // .then(resolve, reject)
-          // })
         )
       }
       microAppMap.forEach((value, key) => {
@@ -68,13 +65,10 @@ export class Channel extends Message {
           microAppMap
         )
         promises.push(
-          // new Promise((resolve, reject) => {
           super.__send(
             value.contentWindow,
             Object.assign({}, msg, { pop: false })
           )
-          // .then(resolve, reject)
-          // })
         )
       })
       return Promise.any(promises)
