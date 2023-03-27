@@ -38,10 +38,7 @@ export default {
   mounted () {
     this.$connector.onState(this,
       res => {
-        this.state = {
-          ...this.state,
-          ...res
-        }
+        console.warn('onState----------------',res)
       })
     this.$connector.$on(this,({ data }) => {
       if (data.type === 'message') {

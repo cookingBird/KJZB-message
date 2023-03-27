@@ -67,14 +67,14 @@ export class ApplicationChannel extends Channel {
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
         const responser = this._getResponse(msg)
-        type({ data: msg, responser, rawData: msg })
+        type({ data: msg, responser, msg: msg })
       })
       return onCancel
     } else {
       onCancel = super.on(msg => {
         if (msg.type === type) {
           const responser = this._getResponse(msg)
-          cb({ data: msg.data, responser, rawData: msg })
+          cb({ data: msg.data, responser, msg: msg })
         }
       })
     }
@@ -116,8 +116,7 @@ export class ApplicationChannel extends Channel {
         `onCallback callback param error,current type is ${typeof cb}`
       )
     }
-    const onCancel = this.$on(null, ({ data, responser }) => {
-      const msg = data
+    const onCancel = this.$on(null, ({ msg, responser }) => {
       if (msg.type === 'callback') {
         const data = msg.data
         if (data.params !== null) {
@@ -195,14 +194,15 @@ export class ApplicationChannel extends Channel {
       target: 'parent',
       type: 'getState'
     }).then(res => {
-      cb(res.data)
+      cb(res)
     })
-    return this.$on(context, ({ data }) => {
-      if (data.type === 'setState') {
-        cb(data.data)
+    return this.$on(context, ({ msg }) => {
+      if (msg.type === 'setState') {
+        cb(msg.data)
       }
     })
   }
+
   /**
    * @description $on收到消息之后的回消息
    * @param {IMessage<*>&IPostMessageSyntax<*>} msg
@@ -260,15 +260,15 @@ export class ApplicationChannel extends Channel {
     if (key) this.DEFAULT_GLOBAL_CONFIG = key
   }
   _statePersistence () {
-    this.$on(null, 'getState', ({ responser, rawData }) => {
-      const state = stateMap.get(rawData.sourceCode)
+    this.$on(null, 'getState', ({ responser, msg }) => {
+      const state = stateMap.get(msg.sourceCode)
       if (state) responser(state)
     })
   }
   _onConfig () {
     if (this.isMain()) {
-      this.$on(null, 'config', ({ responser, rawData }) => {
-        console.log('+++++++++++++++++++++++++\n onConfig', rawData)
+      this.$on(null, 'config', ({ responser, msg }) => {
+        console.log('+++++++++++++++++++++++++\n onConfig', msg)
         responser(window[this.DEFAULT_GLOBAL_CONFIG])
       })
     }

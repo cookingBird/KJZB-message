@@ -1,39 +1,12 @@
 <template>
-  <div id="app">
-    <HelloWorld msg="This is main " />
-    <button @click="show = !show">关闭</button>
-    <button @click="changeState">改变state</button>
-    <button @click="globalSend">全局发送</button>
-    <div class="container">
-      <microApp
-        v-if="show"
-        :src="child1Config.url"
-        frameborder="0"
-        class="container-item"
-        :microAppCode="child1Config.microAppCode"
-        :state="child1Config.state"
-      >
-      </microApp>
-      <microApp
-        :src="child2Config.url"
-        frameborder="0"
-        class="container-item"
-        :microAppCode="child2Config.microAppCode"
-      >
-      </microApp>
-
-    </div>
-  </div>
+  <router-view />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  },
   data () {
     const IP = 'http://localhost';
 
@@ -42,7 +15,8 @@ export default {
         url: IP + ':7000/?microAppCode=child1',
         microAppCode: 'child1',
         state: {
-          name: 'state'
+          name: 'state',
+          route: this.$route
         }
       },
       child2Config: {
@@ -53,23 +27,6 @@ export default {
     }
   },
   mounted () {
-    this.$connector.$on(this,'responser',({ data,responser }) => {
-      console.log('on responser-----------------',data,responser);
-      responser({
-        msg: 'congratulation responser test !!!!!!!'
-      })
-    })
-    this.$connector.$on(this,'config',({ data,responser }) => {
-      console.log('on config-----------------',data,responser);
-      responser({
-        msg: 'congratulation config success !!!!!!!'
-      })
-    })
-    this.$connector.$on(this,({ data }) => {
-      if (data.type === 'message') {
-        console.warn('callback global send success-----------------',data,this.$connector.getMicroAppCode());
-      }
-    })
   },
   methods: {
     changeState () {

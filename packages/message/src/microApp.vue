@@ -33,10 +33,17 @@ export default {
 	computed: {
 		id () {
 			return 'gislife-' + this.microAppCode
+		},
+		passiveState () {
+			return {
+				route: this.excludeFunc(this.$route,(n,key) => typeof n !== 'function' && key !== 'matched'),
+				...Object.assign({},this.state)
+			}
 		}
 	},
 	watch: {
-		state: {
+		passiveState: {
+			immediate: true,
 			async handler (val,oldVal) {
 				await requestDom(this.id,(el) => el && el.contentWindow)
 				if (val != oldVal) {
@@ -47,7 +54,7 @@ export default {
 					})
 				}
 			}
-		}
+		},
 	},
 	destroyed () {
 		this.$connector.unRegisterApp(this.microAppCode)
@@ -56,6 +63,15 @@ export default {
 		buildSrc (src) {
 			const hasParam = src.includes('?');
 			return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
+		},
+		excludeFunc (obj,judgeCb) {
+			const res = {};
+			for (const key in obj) {
+				if (judgeCb && judgeCb(obj[key],key)) {
+					res[key] = obj[key];
+				}
+			}
+			return res
 		}
 	}
 }
