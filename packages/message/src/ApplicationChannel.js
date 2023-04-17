@@ -28,11 +28,13 @@ export class ApplicationChannel extends Channel {
     //todo main parent发送
     if (msg.target === 'main' || msg.target === 'parent') {
       if (window.parent === window && msg.target === 'main') {
-        throw Error('can not send message to myself')
+        console.warn('can not send message to myself')
+        return
       }
       return super.send(window.parent, msg)
     } else {
       if (msg.type === 'setState') {
+        //* cache state
         stateMap.set(msg.target, msg.data)
       }
       const targetEl = this.getApp(msg.target)

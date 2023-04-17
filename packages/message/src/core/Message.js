@@ -37,12 +37,17 @@ export class Message {
         sendRes = Object.assign({ id, belong: this.belong }, msg)
       }
       return new Promise((resolve, reject) => {
-        console.log(
-          `+++++++++_postmessage from ${this.appCode} to ${sendRes.target}+++++++++++++++\n`,
-          sendRes,
-          '\n+++++++++++++++++++++++'
-        )
-        target.postMessage(sendRes, '*')
+        try {
+          target.postMessage(sendRes, '*')
+        } catch (error) {
+          console.error(
+          `postMessage error, 
+          msg type is ${msg.type},
+          target is ${msg.target},
+          sourceCode is ${msg.sourceCode}\n`,
+            error
+          )
+        }
         const cancel = this.__on(data => {
           if (isObject(data) && data.id === id && data.belong === this.belong) {
             isSendOK = true

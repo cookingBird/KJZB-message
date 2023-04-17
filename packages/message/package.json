@@ -1,8 +1,8 @@
 {
   "name": "@gislife/micro-message",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "microapp",
-  "main": "src/index.js",
+  "main": "dist/micro-message.js",
   "style": "dist/micro-message.css",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
