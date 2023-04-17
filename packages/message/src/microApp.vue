@@ -11,8 +11,7 @@
 </template>
 
 <script>
-	import * as Validator from './util/validator'
-	import { omitKeys } from './util'
+	import { pickFileds,deepCloneBaseType } from './util'
 
 	export default {
 		name: "microApp",
@@ -28,6 +27,7 @@
 			},
 			state: {
 				type: Object,
+				default: () => ({})
 			},
 			classNmae: String
 		},
@@ -36,12 +36,14 @@
 				return 'gislife-' + this.microAppCode
 			},
 			passiveState () {
-				return {
-					route: omitKeys(this.$route,
-						(n,key) => Validator.isFunction(n) || key === 'matched'
+				const res = {
+					route: pickFileds(
+						this.$route,
+						['fullPath','hash','meta','name','params','path','query']
 					),
-					...Object.assign({},this.state)
+					...deepCloneBaseType(this.state)
 				}
+				return res
 			}
 		},
 		watch: {
@@ -65,7 +67,7 @@
 			buildSrc (src) {
 				const hasParam = src.includes('?');
 				return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
-			}
+			},
 		}
 	}
 </script>

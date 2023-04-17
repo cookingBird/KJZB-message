@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { onMessage, isObject, toObj } from '../util'
+import { onMessage, isObject } from '../util'
 
 /**
  * @description Message类只提供发送消息和接受消息的方法，只确保发送的消息属于当前命名空间
@@ -17,6 +17,7 @@ export class Message {
     this.targetOrigin = options.targetOrigin || '*'
     this.timeout = options.timeout || 3 * 1000
     this.belong = options.namespace || 'gislife'
+    this.options = options
   }
   /**
    * todo 包裹原生消息发生函数，保证消息唯一性,局部性;
@@ -41,10 +42,11 @@ export class Message {
           target.postMessage(sendRes, '*')
         } catch (error) {
           console.error(
-          `postMessage error, 
-          msg type is ${msg.type},
-          target is ${msg.target},
-          sourceCode is ${msg.sourceCode}\n`,
+            `postMessage error, 
+            msg type is ${msg.type},
+            target is ${msg.target},
+            sourceCode is ${msg.sourceCode}\n`,
+            msg.data,
             error
           )
         }
@@ -58,7 +60,9 @@ export class Message {
         setTimeout(() => {
           if (!isSendOK) {
             cancel()
-            reject()
+            if (this.options.rejectMissing) {
+              reject()
+            }
           }
         }, timeout)
       })
