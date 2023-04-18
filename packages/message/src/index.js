@@ -1,6 +1,7 @@
 /**
  * @author dengtao
  */
+import './polyfill';
 import * as Utils from './util'
 import { ApplicationChannel } from './ApplicationChannel'
 import microAppVue from './microApp.vue'
