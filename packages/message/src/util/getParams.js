@@ -4,7 +4,7 @@
  * @returns {object}
  */
 export function getParams (location) {
-  const search = location.search.slice(1)
+  const search = location.href.split('?')[1]
   const result = {}
   search
     .split('&')
