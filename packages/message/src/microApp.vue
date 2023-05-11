@@ -1,6 +1,6 @@
 <template>
 <iframe
-	:title="id"
+	:data-app-code="id"
 	:src="buildSrc(src)"
 	:id="id"
 	class="gislife-micro-app"
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import { pickFileds,deepCloneBaseType } from './util'
+	import { pickFileds, deepCloneBaseType } from './util'
 
 	export default {
 		name: "microApp",
@@ -32,14 +32,14 @@
 			classNmae: String
 		},
 		computed: {
-			id () {
+			id() {
 				return 'gislife-' + this.microAppCode
 			},
-			passiveState () {
+			passiveState() {
 				const res = {
 					route: pickFileds(
 						this.$route,
-						['fullPath','hash','meta','name','params','path','query']
+						['fullPath', 'hash', 'meta', 'name', 'params', 'path', 'query']
 					),
 					...deepCloneBaseType(this.state)
 				}
@@ -49,7 +49,7 @@
 		watch: {
 			passiveState: {
 				immediate: true,
-				handler (val,oldVal) {
+				handler(val, oldVal) {
 					if (val != oldVal) {
 						this.$connector.$send({
 							target: this.microAppCode,
@@ -60,11 +60,11 @@
 				}
 			},
 		},
-		destroyed () {
+		destroyed() {
 			this.$connector.unRegisterApp(this.microAppCode)
 		},
 		methods: {
-			buildSrc (src) {
+			buildSrc(src) {
 				const hasParam = src.includes('?');
 				return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
 			},

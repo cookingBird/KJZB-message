@@ -5799,7 +5799,7 @@ var ChainRunner = /*#__PURE__*/function (_ArrayVolume) {
  * @returns {object}
  */
 function getParams(location) {
-  var search = location.search.slice(1);
+  var search = location.href.split('?')[1];
   var result = {};
   search.split('&').map(function (p) {
     return p.split('=');
