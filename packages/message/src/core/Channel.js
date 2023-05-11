@@ -22,7 +22,7 @@ export class Channel extends Message {
    * @param { Window | windowContent} target 目标上下文
    * @param {ChannelOpts} options 其它参数
    */
-  constructor (target, options = {}) {
+  constructor(target, options = {}) {
     super(target, options)
     //*消息转发
     this._passive()
@@ -38,7 +38,7 @@ export class Channel extends Message {
    * @param {(IMessage<*>&IPostMessageSyntax<*>) | IPostMessageSyntax<*>} msg
    * @returns {Promise<IPostMessageSyntax<T>>}
    */
-  send (target, msg) {
+  send(target, msg) {
     msg.sourceCode =
       msg.sourceCode === undefined ? this.appCode : msg.sourceCode
     msg.popSource = msg.popSource === undefined ? this.appCode : msg.popSource
@@ -50,7 +50,7 @@ export class Channel extends Message {
       //todo 如果target不存在，则向全局发送消息
       if (window.parent !== window) {
         console.log(
-          `send >>> parent---${this.appCode}----------------`,
+          `send >>> parent---${ this.appCode }----------------`,
           msg,
           microAppMap
         )
@@ -60,7 +60,7 @@ export class Channel extends Message {
       }
       microAppMap.forEach((value, key) => {
         console.log(
-          `send >>> sibling--is ${key}--${this.appCode}----------------`,
+          `send >>> sibling--is ${ key }--${ this.appCode }----------------`,
           msg,
           microAppMap
         )
@@ -81,12 +81,13 @@ export class Channel extends Message {
    * @param { Vue.Component } context 组件上下文
    * @returns {cancelCallback} 取消监听的回调函数
    */
-  on (cb) {
+  on(cb) {
     return super.__on(res => {
       if (
         res.target === this.appCode ||
         res.target === 'parent' ||
-        res.target === 'global'
+        res.target === 'global' ||
+        res.target === 'pop'
       ) {
         cb(res)
       }
@@ -99,7 +100,7 @@ export class Channel extends Message {
    * @param {string} val
    * @returns {void}
    */
-  setAppCode (val) {
+  setAppCode(val) {
     this.appCode = val
     // todo 当前应用不是子应用，则向主应用注册
     // todo 自动向父级注册
@@ -117,14 +118,14 @@ export class Channel extends Message {
    * @description 取消注册子应用
    * @param {string} appCode 子应用Code
    */
-  unRegisterApp (appCode) {
+  unRegisterApp(appCode) {
     return microAppMap.delete(appCode)
   }
   /**
    * @typedef {[string,HTMLIFrameElement] } targetLike
    * @param {targetLike | undefined} target
    */
-  getApp (target) {
+  getApp(target) {
     return microAppMap.get(target)
   }
   /**
@@ -132,7 +133,7 @@ export class Channel extends Message {
    * @param {string} appCode 子应用Code
    * @param {HTMLIFrameElement} target 子应用Iframe元素
    */
-  registerApp (appCode, target) {
+  registerApp(appCode, target) {
     microAppMap.set(appCode, target)
   }
 
@@ -140,7 +141,7 @@ export class Channel extends Message {
    * @param {microAppCode} microAppCode
    * @returns {object | undefined}
    */
-  getState (microAppCode) {
+  getState(microAppCode) {
     return stateMap.get(microAppCode)
   }
   /**
@@ -149,7 +150,7 @@ export class Channel extends Message {
    * @param {object} state
    * @returns {IStateMap}
    */
-  setState (microAppCode, state) {
+  setState(microAppCode, state) {
     return stateMap.set(microAppCode, state)
   }
 
@@ -157,33 +158,34 @@ export class Channel extends Message {
    * @description 消息传递
    * @returns
    */
-  _passive () {
+  _passive() {
     return super.__on(msg => {
       // todo 不属于当前appCode的消息传递
       if (msg.target !== this.appCode && msg.target !== 'parent') {
         console.log(
-          `>>>>>>>>>>>>>>>>>>>passive>>>${this.appCode}>>>>>>>>>>>>>>>>>>>>>>>\n`,
+          `>>>>>>>>>>>>>>>>>>>passive>>>${ this.appCode }>>>>>>>>>>>>>>>>>>>>>>>\n`,
           msg,
           '\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         )
         //! 如果传递到根节点还未找到
         if (this.appCode === 'main') msg.pop = false
-        // todo 向main發送的消息只向上传递
-        if (msg.target === 'main' && window.parent !== window) {
-          this.send(
-            window.parent,
-            Object.assign({}, msg, { pop: true, popSource: this.appCode })
-          )
+        // todo 向main发送的消息只向上传递，直到root结束
+        if (msg.target === 'main' || msg.target === 'pop') {
+          if (window.parent !== window) {
+            this.send(
+              window.parent,
+              Object.assign({}, msg, { pop: true, popSource: this.appCode })
+            )
+          }
           return
         }
-
         // todo 向全局发送的消息，或者向非当前子应用的消息全局传递
-        if (msg.target === 'global' || msg.target !== this.appCode) {
-          // todo sibling
+        else if (msg.target === 'global' || msg.target !== this.appCode) {
+          // todo pass sibling
           microAppMap.forEach((tar, tarCode) => {
             if (tarCode !== msg.popSource) {
               console.log(
-                `passive send sibling- ${tarCode}--------------- current is ${this.appCode}-----------------------\n`,
+                `passive send sibling- ${ tarCode }--------------- current is ${ this.appCode }-----------------------\n`,
                 msg
               )
               this.__send(
@@ -192,7 +194,7 @@ export class Channel extends Message {
               )
             }
           })
-          //todo parent
+          //todo pass parent
           if (msg.pop === true && window.parent !== window) {
             this.__send(
               window.parent,
@@ -207,7 +209,7 @@ export class Channel extends Message {
    * @description 默认注册事件
    * @returns
    */
-  _maintainRegister () {
+  _maintainRegister() {
     return this.on(msg => {
       const microAppCode = msg.sourceCode
       if (msg.type === 'register' && msg.target === 'parent') {
@@ -217,7 +219,7 @@ export class Channel extends Message {
           this.registerApp(microAppCode, el)
         } else {
           throw Error(
-            `register error, can not find element named ${microAppCode}}`
+            `register error, can not find element named ${ microAppCode }}`
           )
         }
       }
@@ -228,7 +230,7 @@ export class Channel extends Message {
    * @description 是否是主应用
    * @returns {boolean}
    */
-  isMain () {
+  isMain() {
     return this.appCode === 'main'
   }
 }

@@ -1,11 +1,11 @@
 <template>
 <iframe
-	:data-app-code="id"
+	:data-app-code="microAppCode"
 	:src="buildSrc(src)"
 	:id="id"
 	class="gislife-micro-app"
-	:class="classNmae"
 	ref="window"
+	title
 >
 </iframe>
 </template>
@@ -29,7 +29,6 @@
 				type: Object,
 				default: () => ({})
 			},
-			classNmae: String
 		},
 		computed: {
 			id() {
@@ -59,6 +58,15 @@
 					}
 				}
 			},
+		},
+		mounted() {
+			this.$connector.$on(this, ({ msg }) => {
+				const emitType = msg.type;
+				const lisener = this.$listeners[emitType];
+				if (lisener) {
+					lisener(msg.data)
+				}
+			})
 		},
 		destroyed() {
 			this.$connector.unRegisterApp(this.microAppCode)
