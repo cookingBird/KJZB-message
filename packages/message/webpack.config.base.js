@@ -4,14 +4,10 @@ const { VueLoaderPlugin } = require('vue-loader')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const pkgName = 'micro-message'
-rewritePkgFile(
-  {
-    main: 'src/index.js'
-  },
-  {
-    main: 'dist/micro-message.js'
-  }
-)
+rewritePkgFile({
+  // main: ['src/index.js', 'dist/micro-message.js']
+  main: ['src/index.js', 'dist/micro-message.js']
+})
 const config = {
   devtool: 'source-map',
   entry: {
@@ -80,22 +76,15 @@ const config = {
   ]
 }
 
-function rewritePkgFile (devOps, prodOps) {
-  if (process.env.IS_BUILD === 'true') {
-    const fs = require('fs-extra')
-    const pkgJsonFile = JSON.parse(fs.readFileSync('./package.json'))
-    for (const key in prodOps) {
-      pkgJsonFile[key] = prodOps[key]
-    }
-    fs.writeFileSync('./package.json', JSON.stringify(pkgJsonFile))
+function rewritePkgFile(devOps) {
+  const fs = require('fs-extra')
+  const pkgJsonFile = JSON.parse(fs.readFileSync('./package.json'))
+  for (const key in devOps) {
+    const configVal = devOps[key]
+    pkgJsonFile[key] = process.env.NODE_ENV === 'development'
+      ? configVal[0]
+      : configVal[1]
   }
-  if (process.env.IS_BUILD === 'false') {
-    const fs = require('fs-extra')
-    const pkgJsonFile = JSON.parse(fs.readFileSync('./package.json'))
-    for (const key in devOps) {
-      pkgJsonFile[key] = devOps[key]
-    }
-    fs.writeFileSync('./package.json', JSON.stringify(pkgJsonFile))
-  }
+  fs.writeFileSync('./package.json', JSON.stringify(pkgJsonFile))
 }
 module.exports = config

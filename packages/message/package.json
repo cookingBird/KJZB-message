@@ -1,16 +1,16 @@
 {
   "name": "@gislife/micro-message",
-  "version": "3.6.9",
+  "version": "3.8.0",
   "description": "microapp",
-  "main": "src/index.js",
+  "main": "dist/micro-message.js",
   "style": "dist/micro-message.css",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production IS_BUILD=true npx webpack --config webpack.config.prod.js",
-    "dev": "cross-env NODE_ENV=development IS_BUILD=true npx webpack --config webpack.config.dev.js",
-    "publish:major": "npm version major && npm publish && nrm use local",
-    "publish:minor": "npm version minor && npm publish && nrm use local",
-    "publish:patch": "npm version patch && npm publish && nrm use local"
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
+    "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
+    "publish:major": "npm version major && npm publish",
+    "publish:minor": "npm version minor && npm publish",
+    "publish:patch": "npm version patch && npm publish"
   },
   "author": "dengtao",
   "license": "ISC",
@@ -38,5 +38,8 @@
   },
   "dependencies": {
     "uuid": "^9.0.0"
+  },
+  "publishConfig": {
+    "registry": "http://192.168.1.212:8081/repository/npm-releases/"
   }
 }
