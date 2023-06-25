@@ -219,7 +219,7 @@ export class Channel extends Message {
           this.registerApp(microAppCode, el)
         } else {
           throw Error(
-            `register error, can not find element named ${ microAppCode }}`
+            `register error, can not find element named ${ microAppCode }`
           )
         }
       }
