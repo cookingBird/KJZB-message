@@ -258,6 +258,7 @@ export class ApplicationChannel extends Channel {
       // TODO 获取子应用AppCode
       /**@type ParamsType */
       const params = getParams(window.location)
+      if (!params) throw Error("register micro application error params is null")
       // ! 子应用
       this.setAppCode(params.microAppCode)
     } else {

@@ -3,8 +3,9 @@
  * @param {Location} location
  * @returns {object}
  */
-export function getParams (location) {
+export function getParams(location) {
   const search = location.href.split('?')[1]
+  if (!search) return null;
   const result = {}
   search
     .split('&')
