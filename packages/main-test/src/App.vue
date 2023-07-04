@@ -5,43 +5,18 @@
 <script>
 
 
-  export default {
-    name: 'App',
-    data() {
-      const IP = 'http://localhost';
-
-      return {
-        child1Config: {
-          url: IP + ':7000/?microAppCode=child1',
-          microAppCode: 'child1',
-          state: {
-            name: 'state',
-            route: this.$route
-          }
-        },
-        child2Config: {
-          url: IP + ':7001/?microAppCode=child2',
-          microAppCode: 'child2'
-        },
-        show: true
-      }
-    },
-    mounted() {
-    },
-    methods: {
-      changeState() {
-        this.child1Config.state = { ...this.child1Config.state, value: Math.floor(Math.random() * 1021000) }
-      },
-      globalSend() {
-        this.$connector.$send({
-          target: 'global',
-          type: 'message',
-          data: Math.floor(Math.random() * 100000)
-        })
-      },
-
+export default {
+  name: 'App',
+  data() {
+    return {
+      show: true
     }
+  },
+  mounted() {
+  },
+  methods: {
   }
+}
 </script>
 
 <style>

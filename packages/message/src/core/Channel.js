@@ -1,5 +1,5 @@
 import { Message } from './Message'
-import { isObject, getParams } from '../util'
+import { getIframeEl } from '../util'
 
 /**@type {Map<microAppCode,microAppContext>} */
 const microAppMap = new Map()
@@ -214,12 +214,12 @@ export class Channel extends Message {
       const microAppCode = msg.sourceCode
       if (msg.type === 'register' && msg.target === 'parent') {
         //todo 注册
-        const el = document.getElementById('gislife-' + microAppCode)
+        const el = getIframeEl(microAppCode)
         if (el) {
           this.registerApp(microAppCode, el)
         } else {
           throw Error(
-            `register error, can not find element named ${ microAppCode }`
+            `register error, can not find element named ${ microAppCode }}`
           )
         }
       }

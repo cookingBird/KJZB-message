@@ -18,42 +18,42 @@
 </template>
 
 <script>
-  import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/HelloWorld.vue'
 
-  export default {
-    name: 'App',
-    components: {
-      HelloWorld
-    },
-    data() {
-      const IP = 'http://localhost';
-      return {
-        appConfig: {
-          url: IP + ':7004/?microAppCode=grand2',
-          microAppCode: 'grand2'
-        }
-      }
-    },
-    created() {
-      this.$connector.$on(this, ({ data }) => {
-        if (data.type === 'message') {
-          console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
-        }
-      })
-    },
-    methods: {
-      globalSend() {
-        this.$connector.$send({
-          target: 'global',
-          type: 'message',
-          data: Math.floor(Math.random() * 100000)
-        })
-      },
-      onEdit(data) {
-        console.log('onEdit,this is child2--------------', data)
+export default {
+  name: 'App',
+  components: {
+    HelloWorld
+  },
+  data() {
+    const IP = 'http://localhost';
+    return {
+      appConfig: {
+        url: IP + ':7012/?microAppCode=grand2',
+        microAppCode: 'grand2'
       }
     }
+  },
+  created() {
+    this.$connector.$on(this, ({ data }) => {
+      if (data.type === 'message') {
+        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
+      }
+    })
+  },
+  methods: {
+    globalSend() {
+      this.$connector.$send({
+        target: 'global',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
+      })
+    },
+    onEdit(data) {
+      console.log('onEdit,this is child2--------------', data)
+    }
   }
+}
 </script>
 
 <style>

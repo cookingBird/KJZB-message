@@ -19,48 +19,48 @@
 </template>
 
 <script>
-  import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/HelloWorld.vue'
 
-  export default {
-    name: 'App',
-    components: {
-      HelloWorld
-    },
-    data() {
-      const IP = 'http://localhost';
-      return {
-        appConfig: {
-          url: IP + ':7003/?microAppCode=grand1',
-          microAppCode: 'grand1'
-        },
-        state: {}
+export default {
+  name: 'App',
+  components: {
+    HelloWorld
+  },
+  data() {
+    const IP = 'http://localhost';
+    return {
+      appConfig: {
+        url: IP + ':7011/?microAppCode=grand1',
+        microAppCode: 'grand1'
+      },
+      state: {}
+    }
+  },
+  mounted() {
+    this.$connector.onState(this,
+      res => {
+        console.warn('onState----------------', res);
+        this.state = res;
+      })
+    this.$connector.$on(this, ({ data }) => {
+      if (data.type === 'message') {
+        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
       }
-    },
-    mounted() {
-      this.$connector.onState(this,
-        res => {
-          console.warn('onState----------------', res);
-          this.state = res;
-        })
-      this.$connector.$on(this, ({ data }) => {
-        if (data.type === 'message') {
-          console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
-        }
+    })
+  },
+  methods: {
+    sendGlobal() {
+      this.$connector.$send({
+        target: 'global',
+        type: 'message',
+        data: Math.floor(Math.random() * 100000)
       })
     },
-    methods: {
-      sendGlobal() {
-        this.$connector.$send({
-          target: 'global',
-          type: 'message',
-          data: Math.floor(Math.random() * 100000)
-        })
-      },
-      onEdit(data) {
-        console.warn('this is child1, i received--------------', data)
-      }
+    onEdit(data) {
+      console.warn('this is child1, i received--------------', data)
     }
   }
+}
 </script>
 
 <style>

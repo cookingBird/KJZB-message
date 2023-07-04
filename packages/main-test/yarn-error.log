@@ -14,53 +14,53 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: ENOTEMPTY: directory not empty, rmdir 'C:\Users\Administrator\AppData\Local\Yarn\Cache\v6\npm-vue-loader-17.1.1-546c85eb844f98653921c02e8b0b060ebea19bfb-integrity\node_modules\vue-loader'
+  Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\AppData\Local\Yarn\Cache\v6\npm-vue-loader-17.1.1-546c85eb844f98653921c02e8b0b060ebea19bfb-integrity\node_modules\vue-loader\.yarn-metadata.json'
 
 npm manifest: 
   {
-    "name": "@gislife/micro-message",
-    "version": "3.8.0",
-    "description": "microapp",
-    "main": "src/index.js",
-    "style": "dist/micro-message.css",
+    "name": "main-test",
+    "version": "0.1.0",
+    "private": true,
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
-      "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
-      "publish:major": "npm version major && npm publish",
-      "publish:minor": "npm version minor && npm publish",
-      "publish:patch": "npm version patch && npm publish"
-    },
-    "author": "dengtao",
-    "license": "ISC",
-    "devDependencies": {
-      "@babel/core": "^7.21.3",
-      "@babel/preset-env": "^7.20.2",
-      "babel-loader": "^9.1.2",
-      "babel-plugin-transform-remove-console": "^6.9.4",
-      "clean-webpack-plugin": "^4.0.0",
-      "css-loader": "^6.7.3",
-      "css-minimizer-webpack-plugin": "^4.2.2",
-      "fs": "0.0.1-security",
-      "fs-extra": "^11.1.1",
-      "mini-css-extract-plugin": "^2.7.5",
-      "node-polyfill-webpack-plugin": "^2.0.1",
-      "postcss": "^8.4.21",
-      "postcss-loader": "^7.1.0",
-      "postcss-preset-env": "^8.0.1",
-      "style-loader": "^3.3.2",
-      "vue-loader": "^15.10.1",
-      "vue-template-compiler": "^2.7.14",
-      "webpack": "^5.76.2",
-      "webpack-cli": "^5.0.1",
-      "webpack-merge": "^5.8.0"
+      "serve": "vue-cli-service serve",
+      "build": "vue-cli-service build",
+      "lint": "vue-cli-service lint"
     },
     "dependencies": {
-      "uuid": "^9.0.0"
+      "@gislife/micro-message": "*",
+      "core-js": "^3.8.3",
+      "vue": "^2.6.14",
+      "vue-router": "^3.6.5"
     },
-    "publishConfig": {
-      "registry": "http://192.168.1.212:8081/repository/npm-releases/"
-    }
+    "devDependencies": {
+      "@babel/core": "^7.12.16",
+      "@babel/eslint-parser": "^7.12.16",
+      "@vue/cli-plugin-babel": "~5.0.0",
+      "@vue/cli-plugin-eslint": "~5.0.0",
+      "@vue/cli-service": "~5.0.0",
+      "eslint": "^7.32.0",
+      "eslint-plugin-vue": "^8.0.3",
+      "vue-template-compiler": "^2.6.14"
+    },
+    "eslintConfig": {
+      "root": true,
+      "env": {
+        "node": true
+      },
+      "extends": [
+        "plugin:vue/essential",
+        "eslint:recommended"
+      ],
+      "parserOptions": {
+        "parser": "@babel/eslint-parser"
+      },
+      "rules": {}
+    },
+    "browserslist": [
+      "> 1%",
+      "last 2 versions",
+      "not dead"
+    ]
   }
 
 yarn manifest: 
