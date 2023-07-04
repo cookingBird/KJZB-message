@@ -4,8 +4,10 @@
     alt="Vue logo"
     src="./assets/logo.png"
   >
-  <HelloWorld msg="This is child2" />
+
+  <div>global:{{global}}</div>
   <button @click="globalSend">全局发送</button>
+  <HelloWorld msg="This is child2" />
   <microApp
     :src="appConfig.url"
     frameborder="0"
@@ -31,12 +33,14 @@ export default {
       appConfig: {
         url: IP + ':7012/?microAppCode=grand2',
         microAppCode: 'grand2'
-      }
+      },
+      global: ''
     }
   },
   created() {
     this.$connector.$on(this, ({ data }) => {
       if (data.type === 'message') {
+        this.global = data.data;
         console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
       }
     })

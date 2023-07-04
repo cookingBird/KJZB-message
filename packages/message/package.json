@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "style": "dist/micro-message.css",
   "scripts": {
+    "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
     "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",

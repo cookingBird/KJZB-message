@@ -1,6 +1,7 @@
 <template>
 <div id="app">
 	<HelloWorld msg="This is main " />
+	<div>global:{{global}}</div>
 	<button @click="show = !show">关闭</button>
 	<button @click="changeState">改变state</button>
 	<button @click="globalSend">全局发送</button>
@@ -50,7 +51,8 @@ export default {
 				url: IP + ':7010/?microAppCode=child2',
 				microAppCode: 'child2'
 			},
-			show: true
+			show: true,
+			global: ''
 		}
 	},
 	mounted() {
@@ -70,6 +72,7 @@ export default {
 		})
 		this.$connector.$on(this, ({ data }) => {
 			if (data.type === 'message') {
+				this.global = data.data;
 				console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
 			}
 		})
