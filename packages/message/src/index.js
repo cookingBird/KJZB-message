@@ -3,7 +3,7 @@
  */
 import './polyfill';
 import { ApplicationChannel } from './ApplicationChannel';
-import microAppVue from './MicroApp.vue';
+import microAppVue from './microApp.vue';
 
 /**@type {ApplicationChannel} */
 const connector = new ApplicationChannel()
@@ -24,7 +24,7 @@ export default {
         throw Error("$connector can't set value")
       }
     })
-    console.log("microAppVue", microAppVue);
+
     app.component(microAppVue.__name, microAppVue);
   }
 }

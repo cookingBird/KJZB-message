@@ -10,7 +10,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, watchEffect, computed,watch } from "vue";
+import { 	onMounted, 
+					onBeforeUnmount, 
+					watchEffect, 
+					computed,
+					defineProps,
+					defineEmits } from "vue";
 import { deepCloneBaseType } from './util';
 import { connector } from './index';
 
@@ -20,22 +25,20 @@ const props = defineProps<{
 	state?:unknown,
 }>()
 const emit = defineEmits();
-console.log("props",props);
+
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => (deepCloneBaseType(props.state)));
 const buildSrc = computed(() => (src:string) => (src + (src.includes('?') ? '&' : '?') + 'microAppCode=' + props.microAppCode))
 
-watch(passiveState,(val)=>{
-	console.log("watch passiveState",val);
-})
+
 watchEffect(() => {
+	console.log("watchEffect",passiveState);
 	const state = passiveState.value;
 	connector.$send({
 		target: props.microAppCode,
 		type: 'setState',
 		data: state
 	});
-	console.log("watchEffect state",state,props);
 })
 
 let cancel:Function;

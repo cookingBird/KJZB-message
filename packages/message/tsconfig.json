@@ -39,7 +39,11 @@
 		"target": 3
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*.vue",
+		"src/**/*.js",
+		"src/**/*.jsx",
+		"src/**/*.ts",
+		"src/**/*.tsx",
 	],
 	"exclude": [
 		"node_modules",

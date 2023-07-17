@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     devServer: {
-      port: 7000
+      port: 7001
     },
     module: {
       rules: [

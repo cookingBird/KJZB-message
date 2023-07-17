@@ -71,7 +71,8 @@ const config = {
     ]
   },
   externals: {
-    fs: 'fs-extra'
+    fs: 'fs-extra',
+    vue: 'vue'
   },
   resolve: {
     fallback: {
