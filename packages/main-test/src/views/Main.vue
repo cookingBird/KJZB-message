@@ -18,6 +18,8 @@
       class="container-item"
       :microAppCode="child1Config.microAppCode"
       :state="child1Config.state"
+      @test="onEmitTest"
+      @edit="onEmitTest"
     >
     </micro-app>
     <micro-app
@@ -108,6 +110,9 @@ export default {
     },
     onEdit(data) {
       console.warn('this is root, i received--------------', data);
+    },
+    onEmitTest(data) {
+      alert(`emit on success, ${data}`);
     },
   },
 };

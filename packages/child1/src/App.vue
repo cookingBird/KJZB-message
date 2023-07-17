@@ -7,6 +7,7 @@
 
   <div>global:{{global}}</div>
   <button @click="sendGlobal">全局发送</button>
+  <button @click="emitTest">emit</button>
   <div>state:{{state}}</div>
   <HelloWorld msg="This is child1" />
   <micro-app
@@ -21,49 +22,53 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import HelloWorld from './components/HelloWorld.vue'
+  import { connector } from '@gislife/micro-message';
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  data() {
-    const IP = 'http://localhost';
-    return {
-      appConfig: {
-        url: IP + ':7011/?microAppCode=grand1',
-        microAppCode: 'grand1'
-      },
-      state: {},
-      global: ''
-    }
-  },
-  mounted() {
-    this.$connector.onState(res => {
-      console.warn('onState----------------', res);
-      this.state = res;
-    })
-    this.$connector.$on(({ data }) => {
-      if (data.type === 'message') {
-        this.global = data.data
-        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
+  export default {
+    name: 'App',
+    components: {
+      HelloWorld
+    },
+    data() {
+      const IP = 'http://localhost';
+      return {
+        appConfig: {
+          url: IP + ':7003',
+          microAppCode: 'grand1'
+        },
+        state: {},
+        global: ''
       }
-    })
-  },
-  methods: {
-    sendGlobal() {
-      this.$connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
+    },
+    mounted() {
+      this.$connector.onState(res => {
+        console.warn('onState----------------', res);
+        this.state = res;
+      })
+      this.$connector.$on(({ data }) => {
+        if (data.type === 'message') {
+          this.global = data.data
+          console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
+        }
       })
     },
-    onEdit(data) {
-      console.warn('this is child1, i received--------------', data)
+    methods: {
+      sendGlobal() {
+        this.$connector.$send({
+          target: 'global',
+          type: 'message',
+          data: Math.floor(Math.random() * 100000)
+        })
+      },
+      onEdit(data) {
+        console.warn('this is child1, i received--------------', data)
+      },
+      emitTest() {
+        connector.$emit("test:parent", "emit test!")
+      }
     }
   }
-}
 </script>
 
 <style>

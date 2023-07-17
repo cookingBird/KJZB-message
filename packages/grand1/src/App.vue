@@ -53,7 +53,7 @@ export default {
       this.$connector.$emit('edit:child2', 'hello i am grand1')
     },
     emitPop() {
-      this.$connector.$emit('edit:pop', 'hello i am grand1')
+      this.$connector.$emit('edit:main', 'hello i am grand1')
     }
   }
 }
