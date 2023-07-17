@@ -1,0 +1,48 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"target": "esnext",
+		"module": "esnext",
+		"jsx": "preserve",
+		"moduleResolution": "Node",
+		"strict": false,
+		"alwaysStrict": false,
+		"useDefineForClassFields": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowSyntheticDefaultImports": true,
+		"strictFunctionTypes": false,
+		"strictNullChecks": false,
+		"allowJs": true,
+		"noEmit": true,
+		"sourceMap": false,
+		"noImplicitAny": false,
+		"experimentalDecorators": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"lib": [
+			"esnext",
+			"dom",
+			"dom.iterable",
+			"scripthost"
+		],
+		"isolatedModules": false,
+		"types": [
+			"node"
+		],
+		"paths": {
+			"@/*": [
+				"src/*"
+			]
+		}
+	},
+	"vueCompilerOptions": {
+		"target": 3
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
+}
