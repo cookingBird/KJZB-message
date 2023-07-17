@@ -4,80 +4,52 @@
 	:src="buildSrc(src)"
 	:id="id"
 	class="gislife-micro-app"
-	ref="window"
-	title
+	title=""
 >
 </iframe>
 </template>
 
-<script>
-import { pickFileds, deepCloneBaseType } from './util'
+<script setup lang="ts">
+import { onMounted, onBeforeUnmount, watchEffect, computed,watch } from "vue";
+import { deepCloneBaseType } from './util';
+import { connector } from './index';
 
-export default {
-	name: "microApp",
-	inheritAttrs: false,
-	props: {
-		src: {
-			type: String,
-			required: true
-		},
-		microAppCode: {
-			type: String,
-			required: true,
-		},
-		state: {
-			type: Object,
-			default: () => ({})
-		},
-	},
-	computed: {
-		id() {
-			return 'gislife-' + this.microAppCode
-		},
-		passiveState() {
-			const res = {
-				route: pickFileds(
-					this.$route,
-					['fullPath', 'hash', 'meta', 'name', 'params', 'path', 'query']
-				),
-				...deepCloneBaseType(this.state)
-			}
-			return res
-		}
-	},
-	watch: {
-		passiveState: {
-			immediate: true,
-			handler(val, oldVal) {
-				if (val != oldVal) {
-					this.$connector.$send({
-						target: this.microAppCode,
-						type: 'setState',
-						data: val
-					})
-				}
-			}
-		},
-	},
-	mounted() {
-		this.$connector.$on(this, ({ msg }) => {
-			const emitType = msg.type;
-			const lisener = this.$listeners[emitType];
-			if (lisener) {
-				lisener(msg.data)
-			}
-		})
-	},
-	destroyed() {
-		this.$connector.unRegisterApp(this.microAppCode)
-	},
-	methods: {
-		buildSrc(src) {
-			const hasParam = src.includes('?');
-			return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
-		},
-	}
-}
+const props = defineProps<{
+	src:string,
+	microAppCode:string,
+	state?:unknown,
+}>()
+const emit = defineEmits();
+console.log("props",props);
+const id = computed(() => ('gislife-' + props.microAppCode));
+const passiveState = computed(() => (deepCloneBaseType(props.state)));
+const buildSrc = computed(() => (src:string) => (src + (src.includes('?') ? '&' : '?') + 'microAppCode=' + props.microAppCode))
+
+watch(passiveState,(val)=>{
+	console.log("watch passiveState",val);
+})
+watchEffect(() => {
+	const state = passiveState.value;
+	connector.$send({
+		target: props.microAppCode,
+		type: 'setState',
+		data: state
+	});
+	console.log("watchEffect state",state,props);
+})
+
+let cancel:Function;
+onMounted(() => {
+	cancel = connector.$on(({ msg }) => {
+		emit(msg.type, msg.data)
+	})
+})
+
+onBeforeUnmount(() => {
+	cancel?.();
+	connector.unRegisterApp(props.microAppCode);
+})
+
 </script>
 
 <style lang="css">

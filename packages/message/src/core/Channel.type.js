@@ -4,26 +4,33 @@
  * @type { 'register'| 'unregister'  }
  * @description 业务事件类型
  * @typedef PostMessageTypeWork
- * @type { 'state' | 'config' |'callback'|'emit'| '*' }
+ * @type { 'state' | 'config' |'callback'|'emit'| string }
  *
  * @typedef { PostMessageTypeInner | PostMessageTypeWork } PostMessageType
  */
 
 /**
  * @description 消息发送对象
- * @typedef  { 'main' | 'parent' | 'global' |'*'} IPostTarget
+ * @typedef  { 'main' | 'parent' | 'global' | string} IPostTarget
+ */
+
+/**
+ * @description 消息格式
+ * @template T
+ * @typedef {object} IMessage
+ * @property { string | 'main' } target 发送消息的目标
+ * @property { PostMessageType } type 消息类型
+ * @property { T } data 发送的消息
  */
 
 /**
  * @description message消息格式
- * @template T
  * @typedef IPostMessageSyntax
  * @type {object}
- * @property {boolean} [pop] 是否冒泡
- * @property { string | 'main' } target 发送消息的目标
- * @property { string } [sourceCode] 冒泡消息来源
- * @property { PostMessageType } type 消息类型
- * @property { T } data 发送的消息
+ * @property { string } id uuidv4生成
+ * @property { string } belong namespace
+ * @property {boolean} pop 是否冒泡
+ * @property { string } sourceCode 冒泡消息来源
  */
 
 /**

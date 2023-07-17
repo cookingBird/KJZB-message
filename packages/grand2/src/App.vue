@@ -30,10 +30,10 @@ export default {
   },
   //grand2
   created() {
-    this.$connector.$on(this, 'callback', (res) => {
+    this.$connector.$on( 'callback', (res) => {
       console.warn('success------callback--------', res)
     })
-    this.$connector.$on(this, ({ data }) => {
+    this.$connector.$on( ({ data }) => {
       if (data.type === 'message') {
         this.global = data.data;
         console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());

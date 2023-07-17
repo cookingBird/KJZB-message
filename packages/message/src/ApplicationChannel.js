@@ -1,4 +1,4 @@
-import { Channel, stateMap } from './core/Channel'
+import { Channel, stateMap } from './core'
 import { v4 as uuidv4 } from 'uuid'
 import { isObject, getParams } from './util'
 
@@ -14,13 +14,16 @@ export class ApplicationChannel extends Channel {
    */
   constructor(target, options = {}) {
     super(target, options)
+    /**@private */
     this.DEFAULT_GLOBAL_CONFIG = options.configField || 'URL_CONFIG'
     this._statePersistence()
   }
   /**
-   * @description 处理多条件参数
-   * @param {IPostMessageSyntax<*> | (IPostMessageSyntax<*> & IMessage<*>)} msg
-   * @returns {Promise<IPostMessageSyntax<*> & IMessage<*>>}
+   * @description 发送消息
+   * @template T
+   * @template R
+   * @param {IMessage<T>} msg
+   * @returns {Promise<R>}
    */
   $send(msg) {
     let target
@@ -48,23 +51,22 @@ export class ApplicationChannel extends Channel {
       return super.send(target, msg)
     }
   }
+
+
   /**
-   * @param {Vue.Component} context
-   * @param {PostMessageType | IGenericFunction<{data:IMessage<IPostMessageSyntax<IUserData>>,responser:function},any>} type
-   * @param {IGenericFunction<IPostMessageSyntax<IUserData>,any> | IGenericFunction<IUserData,any>} cb
+   * @description 监听消息
+   * @template D
+   * @param {string | IGenericFunction<{data:D, responser:function, msg: IMessage<D>&IPostMessageSyntax }, void>} type 消息类型
+   * @param {IGenericFunction<{data:D, responser:function, msg: IMessage<D>&IPostMessageSyntax }, void>} [cb] 回调函数
+   * @return {cancelCallback} 取消监听的回调 
    */
-  $on(context, type, cb) {
+  $on(type, cb) {
     let onCancel
     if (cb && typeof cb !== 'function') {
       throw Error(`$on callback param error,current type is ${ typeof cb }`)
     }
     if (typeof type !== 'string' && typeof type !== 'function') {
       throw Error('type parma type error')
-    }
-    if (context) {
-      context.$on('hook:beforeDestory', () => {
-        onCancel && onCancel()
-      })
     }
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
@@ -94,7 +96,6 @@ export class ApplicationChannel extends Channel {
     }
     const target = emitAndTar.split(":")[1] || 'parent';
     const emitType = emitAndTar.split(":")[0];
-    console.log("$emit---------------", target, emitType);
     this.$send({
       target,
       type: emitType,
@@ -128,10 +129,9 @@ export class ApplicationChannel extends Channel {
   /**
    * @description 接收消息
    * @param {IGenericFunction<Function,any>} cb 接收消息的回调函数
-   * @param { Vue.Component } context 组件上下文
    * @returns {cancelCallback} 取消回调的函数
    */
-  onCallback(context, cb) {
+  onCallback(cb) {
     if (typeof cb !== 'function') {
       throw Error(
         `onCallback callback param error,current type is ${ typeof cb }`
@@ -164,9 +164,6 @@ export class ApplicationChannel extends Channel {
         }
       }
     })
-    if (context) {
-      context.$on('hook:beforeDestory', onCancel)
-    }
     return onCancel
   }
 
@@ -204,51 +201,23 @@ export class ApplicationChannel extends Channel {
    * @description 接收消息 T为消息的具体格式
    * @template T
    * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
-   * @param { Vue.Component } context 组件上下文
    * @returns {cancelCallback} 取消回调的函数
    */
-  onState(context, cb) {
+  onState(cb) {
     if (typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${ typeof cb }`)
     }
     this.$send({
       target: 'parent',
       type: 'getState'
-    }).then(res => {
-      cb(res)
-    })
-    return this.$on(context, ({ msg }) => {
+    }).then(cb)
+    return this.$on(({ msg }) => {
       if (msg.type === 'setState') {
         cb(msg.data)
       }
     })
   }
 
-  /**
-   * @description $on收到消息之后的回消息
-   * @param {IMessage<*>&IPostMessageSyntax<*>} msg
-   * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
-   */
-  _getResponse(msg) {
-    return data => {
-      msg.target = msg.sourceCode
-      msg.sourceCode = this.appCode
-      msg.popSource = this.appCode
-      msg.pop = msg.type === 'config' ? true : undefined
-      let type
-      if (isObject(data) && data._type) {
-        type = data._type
-        delete data._type
-      } else {
-        type = msg.type
-        console.warn(
-          `responser miss _type filed, maybe cause infinite loop,current type is ${ type }`
-        )
-      }
-
-      return this.$send(Object.assign(msg, { data: data, type: type }))
-    }
-  }
   /**
    * @description main
    * @param {Channel} instance
@@ -273,25 +242,13 @@ export class ApplicationChannel extends Channel {
   getMicroAppCode() {
     return this.appCode
   }
+
   /**
-   *
-   * @param {string} key
+   * @description 是否是主应用
+   * @returns {boolean}
    */
-  setGlobalConfigField(key) {
-    if (key) this.DEFAULT_GLOBAL_CONFIG = key
+  isMain() {
+    return this.appCode === 'main'
   }
-  _statePersistence() {
-    this.$on(null, 'getState', ({ responser, msg }) => {
-      const state = stateMap.get(msg.sourceCode)
-      if (state) responser(state)
-    })
-  }
-  _onConfig() {
-    if (this.isMain()) {
-      this.$on(null, 'config', ({ responser, msg }) => {
-        console.log('+++++++++++++++++++++++++\n onConfig', msg)
-        responser(window[this.DEFAULT_GLOBAL_CONFIG])
-      })
-    }
-  }
+
 }

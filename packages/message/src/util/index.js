@@ -5,11 +5,11 @@ export * from './validator'
 
 import * as Validator from './validator'
 
-export function toObj (t) {
+export function toObj(t) {
   return Object.assign({}, t)
 }
 
-export function omitFileds (obj, ...fileds) {
+export function omitFileds(obj, ...fileds) {
   const res = {}
   fileds = fileds.flat()
   for (const key in obj) {
@@ -27,7 +27,7 @@ export function omitFileds (obj, ...fileds) {
   return res
 }
 
-export function pickFileds (object, ...fileds) {
+export function pickFileds(object, ...fileds) {
   fileds = fileds.flat()
   const res = {}
   for (const key in object) {
@@ -39,7 +39,7 @@ export function pickFileds (object, ...fileds) {
   return res
 }
 
-export function deepCloneBaseType (object, maxDepth = 3, depth = 1) {
+export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
   const res = {}
   if (depth <= maxDepth) {
     for (const key in object) {
@@ -56,6 +56,7 @@ export function deepCloneBaseType (object, maxDepth = 3, depth = 1) {
         }
       }
     }
+
     return res
   }
   // return JSON.parse(JSON.stringify(object))

@@ -4,10 +4,12 @@
   "description": "microapp",
   "main": "src/index.js",
   "style": "dist/micro-message.css",
+  "typings": "types/index.d.ts",
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
+    "build:type": "tsc -p ./tsconfig.build.json",
     "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
     "publish:major": "npm version major && npm publish",
     "publish:minor": "npm version minor && npm publish",
@@ -16,8 +18,10 @@
   "author": "dengtao",
   "license": "ISC",
   "devDependencies": {
+    "vue": "^3.3.4",
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.22.5",
     "babel-loader": "^9.1.2",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "clean-webpack-plugin": "^4.0.0",
@@ -31,11 +35,16 @@
     "postcss-loader": "^7.1.0",
     "postcss-preset-env": "^8.0.1",
     "style-loader": "^3.3.2",
-    "vue-loader": "^15.10.1",
-    "vue-template-compiler": "^2.7.14",
+    "typescript": "^5.1.6",
+    "vue-loader": "^17.2.2",
+    "@vue/compiler-sfc": "^3.3.4",
+    "ts-loader": "^8.0.6",
+    "ts-loader-v9": "npm:ts-loader@^9.2.4",
     "webpack": "^5.76.2",
+    "webpack4": "npm:webpack@^4.46.0",
     "webpack-cli": "^5.0.1",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "cross-env": "^7.0.3"
   },
   "dependencies": {
     "uuid": "^9.0.0"

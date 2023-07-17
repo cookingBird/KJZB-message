@@ -2,35 +2,29 @@
  * @author dengtao
  */
 import './polyfill';
-import * as Utils from './util'
-import { ApplicationChannel } from './ApplicationChannel'
-import microAppVue from './microApp.vue'
+import { ApplicationChannel } from './ApplicationChannel';
+import microAppVue from './MicroApp.vue';
 
-/**
- * @typedef ParamsType
- * @type {object}
- * @property {string} appCode
- * @property {string} microAppCode
- */
+/**@type {ApplicationChannel} */
 const connector = new ApplicationChannel()
 connector.applicationBootstrap()
 
-export { Utils, connector }
+export { connector }
 
 export default {
-  install (vue, options = {}) {
+  install(app, options = {}) {
     if (options.configKey) {
       connector.setGlobalConfigField(configKey)
     }
-
-    Object.defineProperty(vue.prototype, '$connector', {
-      get () {
+    Object.defineProperty(app.config.globalProperties, '$connector', {
+      get() {
         return connector
       },
-      set (v) {
+      set(v) {
         throw Error("$connector can't set value")
       }
     })
-    vue.component(microAppVue.name, microAppVue)
+    console.log("microAppVue", microAppVue);
+    app.component(microAppVue.__name, microAppVue);
   }
 }

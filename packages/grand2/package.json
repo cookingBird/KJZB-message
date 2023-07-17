@@ -1,7 +1,6 @@
 {
   "name": "grand2",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -9,7 +8,8 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "vue": "^2.6.14",
+    "vue": "^3.1.0",
+    "@vue/compat": "^3.1.0",
     "@gislife/micro-message": "*"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "vue-template-compiler": "^2.6.14"
+    "@vue/compiler-sfc": "^3.1.0"
   },
   "eslintConfig": {
     "root": true,

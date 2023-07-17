@@ -1,5 +1,5 @@
 import { Message } from './Message'
-import { getIframeEl } from '../util'
+import { getIframeEl,isObject } from '../util'
 
 /**@type {Map<microAppCode,microAppContext>} */
 const microAppMap = new Map()
@@ -34,6 +34,7 @@ export class Channel extends Message {
    * !消息派发的主要逻辑
    * todo 如果消息没有target 默认target为 main
    * @description 为每条消息带上popSource
+   * @private
    * @param {?Window} target
    * @param {(IMessage<*>&IPostMessageSyntax<*>) | IPostMessageSyntax<*>} msg
    * @returns {Promise<IPostMessageSyntax<T>>}
@@ -71,14 +72,15 @@ export class Channel extends Message {
           )
         )
       })
-      return Promise.any(promises)
+      Promise.any(promises).catch(console.error)
     }
   }
   /**
    * todo 响应自己的消息，如果不是自己的消息则传递消息
    * @description 监听消息，并在自动取消监听
-   * @param {IGenericFunction<IMessage<*>&IPostMessageSyntax<*>,void>} cb 监听到消息的回调函数
-   * @param { Vue.Component } context 组件上下文
+   * @private
+   * @template R
+   * @param {IGenericFunction<IMessage<R>&IPostMessageSyntax,void>} cb 监听到消息的回调函数
    * @returns {cancelCallback} 取消监听的回调函数
    */
   on(cb) {
@@ -97,6 +99,7 @@ export class Channel extends Message {
   /**
    * !应用注册的主要逻辑
    * @description 设置当前应用的AppCode
+   * @private
    * @param {string} val
    * @returns {void}
    */
@@ -122,6 +125,7 @@ export class Channel extends Message {
     return microAppMap.delete(appCode)
   }
   /**
+   * @private
    * @typedef {[string,HTMLIFrameElement] } targetLike
    * @param {targetLike | undefined} target
    */
@@ -130,6 +134,7 @@ export class Channel extends Message {
   }
   /**
    * @description 注册子应用
+   * @private
    * @param {string} appCode 子应用Code
    * @param {HTMLIFrameElement} target 子应用Iframe元素
    */
@@ -138,6 +143,7 @@ export class Channel extends Message {
   }
 
   /**
+   * @private
    * @param {microAppCode} microAppCode
    * @returns {object | undefined}
    */
@@ -145,7 +151,7 @@ export class Channel extends Message {
     return stateMap.get(microAppCode)
   }
   /**
-   *
+   * @private
    * @param {microAppCode} microAppCode
    * @param {object} state
    * @returns {IStateMap}
@@ -155,11 +161,13 @@ export class Channel extends Message {
   }
 
   /**
+   * @private
    * @description 消息传递
    * @returns
    */
   _passive() {
     return super.__on(msg => {
+
       // todo 不属于当前appCode的消息传递
       if (msg.target !== this.appCode && msg.target !== 'parent') {
         console.log(
@@ -206,6 +214,7 @@ export class Channel extends Message {
     })
   }
   /**
+   * @private
    * @description 默认注册事件
    * @returns
    */
@@ -225,12 +234,56 @@ export class Channel extends Message {
       }
     })
   }
-
-  /**
-   * @description 是否是主应用
-   * @returns {boolean}
+    /**
+   * @private
+   * @param {string} key
    */
-  isMain() {
-    return this.appCode === 'main'
-  }
+    setGlobalConfigField(key) {
+      if (key) this.DEFAULT_GLOBAL_CONFIG = key
+    }
+    /**
+     * @private
+     */
+    _statePersistence() {
+      this.$on('getState', ({ responser, msg }) => {
+        const state = stateMap.get(msg.sourceCode)
+        if (state) responser(state)
+      })
+    }
+    /**
+     * @private
+     */
+    _onConfig() {
+      if (this.isMain()) {
+        this.$on('config', ({ responser, msg }) => {
+          responser(window[this.DEFAULT_GLOBAL_CONFIG])
+        })
+      }
+    }
+    /**
+   * @description $on收到消息之后的回消息
+   * @private
+   * @param {IMessage<*>&IPostMessageSyntax<*>} msg
+   * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
+   */
+    _getResponse(msg) {
+      return data => {
+        msg.target = msg.sourceCode
+        msg.sourceCode = this.appCode
+        msg.popSource = this.appCode
+        msg.pop = msg.type === 'config' ? true : undefined
+        let type
+        if (isObject(data) && data._type) {
+          type = data._type
+          delete data._type
+        } else {
+          type = msg.type
+          console.warn(
+            `responser miss _type filed, maybe cause infinite loop,current type is ${ type }`
+          )
+        }
+  
+        return this.$send(Object.assign(msg, { data: data, type: type }))
+      }
+    }
 }

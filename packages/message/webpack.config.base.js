@@ -4,10 +4,10 @@ const { VueLoaderPlugin } = require('vue-loader')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const pkgName = 'micro-message'
-rewritePkgFile({
-  // main: ['src/index.js', 'dist/micro-message.js']
-  main: ['src/index.js', 'dist/micro-message.js']
-})
+// rewritePkgFile({
+//   // main: ['src/index.js', 'dist/micro-message.js']
+//   main: ['src/index.js', 'dist/micro-message.js']
+// })
 const config = {
   devtool: 'source-map',
   entry: {
@@ -24,10 +24,20 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
+        }
+      },
+      {
+        test: /\.ts$/,
+        loader: process.env.WEBPACK4
+          ? require.resolve('ts-loader')
+          : require.resolve('ts-loader-v9'),
+        options: {
+          transpileOnly: true,
+          appendTsSuffixTo: [/\.vue$/],
         }
       },
       {
@@ -53,8 +63,11 @@ const config = {
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
-      }
+        loader: 'vue-loader',
+        options: {
+          // reactivityTransform: true,
+        },
+      },
     ]
   },
   externals: {

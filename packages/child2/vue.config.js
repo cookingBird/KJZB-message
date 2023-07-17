@@ -4,6 +4,20 @@ module.exports = defineConfig({
   configureWebpack: {
     devServer: {
       port: 7001
-    }
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              appendTsSuffixTo: [/\.vue$/],
+            }
+          },
+        },
+      ],
+    },
   }
 })

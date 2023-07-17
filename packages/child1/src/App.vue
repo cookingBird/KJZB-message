@@ -9,14 +9,14 @@
   <button @click="sendGlobal">全局发送</button>
   <div>state:{{state}}</div>
   <HelloWorld msg="This is child1" />
-  <microApp
+  <micro-app
     :src="appConfig.url"
     frameborder="0"
     class="container-item"
     :microAppCode="appConfig.microAppCode"
     @edit="onEdit"
   >
-  </microApp>
+  </micro-app>
 </div>
 </template>
 
@@ -40,12 +40,11 @@ export default {
     }
   },
   mounted() {
-    this.$connector.onState(this,
-      res => {
-        console.warn('onState----------------', res);
-        this.state = res;
-      })
-    this.$connector.$on(this, ({ data }) => {
+    this.$connector.onState(res => {
+      console.warn('onState----------------', res);
+      this.state = res;
+    })
+    this.$connector.$on(({ data }) => {
       if (data.type === 'message') {
         this.global = data.data
         console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());

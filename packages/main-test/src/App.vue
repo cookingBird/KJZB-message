@@ -2,21 +2,16 @@
 <router-view />
 </template>
 
-<script>
-
+<script lang="ts">
 
 export default {
   name: 'App',
   data() {
     return {
-      show: true
-    }
+      show: true,
+    };
   },
-  mounted() {
-  },
-  methods: {
-  }
-}
+};
 </script>
 
 <style>

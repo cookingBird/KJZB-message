@@ -23,7 +23,7 @@ export function getIframeEl(microAppCode) {
   }
 
   const iframes = document.querySelectorAll('iframe');
-  console.log('iframes', iframes, Array.from(iframes));
+
   const iframesSearch = Array.from(iframes)
     .filter(frm => frm.style.display !== 'none')
     .map(i => i.src.split("?")[1]);
