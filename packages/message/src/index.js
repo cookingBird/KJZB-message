@@ -14,7 +14,7 @@ export { connector }
 export default {
   install(app, options = {}) {
     if (options.configKey) {
-      connector.setGlobalConfigField(configKey)
+      connector.setGlobalConfigField(options.configKey)
     }
     Object.defineProperty(app.config.globalProperties, '$connector', {
       get() {

@@ -32,7 +32,6 @@ const buildSrc = computed(() => (src:string) => (src + (src.includes('?') ? '&' 
 
 
 watchEffect(() => {
-	console.log("watchEffect",passiveState);
 	const state = passiveState.value;
 	connector.$send({
 		target: props.microAppCode,
