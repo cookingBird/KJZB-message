@@ -62,9 +62,9 @@ export default {
 	mounted() {
 		this.$connector.$on(this, ({ msg }) => {
 			const emitType = msg.type;
-			const lisener = this.$listeners[emitType];
-			if (lisener) {
-				lisener(msg.data)
+			const listener = this.$listeners[emitType];
+			if (listener) {
+				listener(msg.data)
 			}
 		})
 	},
