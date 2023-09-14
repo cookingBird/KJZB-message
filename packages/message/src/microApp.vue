@@ -10,25 +10,40 @@
 </template>
 
 <script setup lang="ts">
-import { 	onMounted, 
-					onBeforeUnmount, 
-					watchEffect, 
-					computed,
-					defineProps,
-					defineEmits } from "vue";
+import {
+	onMounted,
+	onBeforeUnmount,
+	watchEffect,
+	computed,
+	defineProps,
+	defineEmits,
+	defineOptions
+} from "vue";
 import { deepCloneBaseType } from './util';
 import { connector } from './index';
+import * as Qs from 'qs';
+defineOptions({
+	name: 'MicroApp',
+})
 
 const props = defineProps<{
-	src:string,
-	microAppCode:string,
-	state?:unknown,
+	src: string,
+	microAppCode: string,
+	state?: Record<string, unknown>,
+	query?: Record<string, unknown>,
 }>()
 const emit = defineEmits();
 
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => (deepCloneBaseType(props.state)));
-const buildSrc = computed(() => (src:string) => (src + (src.includes('?') ? '&' : '?') + 'microAppCode=' + props.microAppCode))
+const buildSrc = computed(() => (src: string) => {
+	const query = Qs.stringify(props.query);
+	if (src.indexOf('?') === -1) {
+		return src + '?' + query + '&microAppCode=' + props.microAppCode;
+	} else {
+		return src + '&' + query + '&microAppCode=' + props.microAppCode;
+	}
+})
 
 
 watchEffect(() => {
@@ -40,7 +55,7 @@ watchEffect(() => {
 	});
 })
 
-let cancel:Function;
+let cancel: Function;
 onMounted(() => {
 	cancel = connector.$on(({ msg }) => {
 		emit(msg.type, msg.data)
