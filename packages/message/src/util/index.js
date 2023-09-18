@@ -45,9 +45,9 @@ export function cloneBaseTypeWithDepth(object, maxDepth = 3, depth = 1) {
       if (Object.hasOwn(object, key)) {
         const element = object[key]
         if (Validator.isObject(element)) {
-          res[key] = deepCloneBaseType(element, maxDepth, depth + 1)
+          res[key] = cloneBaseTypeWithDepth(element, maxDepth, depth + 1)
         } else if (Validator.isArray(element)) {
-          res[key] = element.map(deepCloneBaseType, maxDepth, depth + 1)
+          res[key] = element.map(cloneBaseTypeWithDepth, maxDepth, depth + 1)
         } else if (Validator.isFunction(element)) {
           res[key] = element.toString()
         } else {
@@ -57,5 +57,4 @@ export function cloneBaseTypeWithDepth(object, maxDepth = 3, depth = 1) {
     }
     return res
   }
-  // return JSON.parse(JSON.stringify(object))
 }
