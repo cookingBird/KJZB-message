@@ -1,5 +1,6 @@
 <template>
 <iframe
+	ref="iframe"
 	:data-app-code="microAppCode"
 	:src="buildSrc(src)"
 	:id="id"
@@ -13,13 +14,15 @@
 import {
 	onMounted,
 	onBeforeUnmount,
-	watchEffect,
 	computed,
 	defineProps,
 	defineEmits,
-	defineOptions
+	defineOptions,
+	ref,
+	nextTick,
+	watch,
 } from "vue";
-import { deepCloneBaseType } from './util';
+
 import { connector } from './index';
 import * as Qs from 'qs';
 defineOptions({
@@ -29,15 +32,15 @@ defineOptions({
 const props = defineProps<{
 	src: string,
 	microAppCode: string,
-	state?: Record<string, unknown>,
-	query?: Record<string, unknown>,
+	state?: Record<string, any>,
+	query?: Record<string, any>,
 }>()
-const emit = defineEmits();
+const emits = defineEmits();
 
 const id = computed(() => ('gislife-' + props.microAppCode));
-const passiveState = computed(() => (deepCloneBaseType(props.state)));
+const passiveState = computed(() => JSON.parse(JSON.stringify(props.state || {})));
 const buildSrc = computed(() => (src: string) => {
-	const query = Qs.stringify(props.query);
+	const query = Qs.stringify(props.query || {});
 	if (src.indexOf('?') === -1) {
 		return src + '?' + query + '&microAppCode=' + props.microAppCode;
 	} else {
@@ -45,25 +48,37 @@ const buildSrc = computed(() => (src: string) => {
 	}
 })
 
+const iframe = ref<HTMLElement>(null);
+onMounted(async () => {
+	await nextTick();
+	// 监听iframe加载完成
+	iframe.value!.addEventListener('load', () => {
+		emits('load', true);
+		connector.$send({
+			target: props.microAppCode,
+			type: 'setState',
+			data: passiveState.value
+		});
+	})
+});
 
-watchEffect(() => {
-	const state = passiveState.value;
+
+onBeforeUnmount(watch(passiveState, (val) => {
 	connector.$send({
 		target: props.microAppCode,
 		type: 'setState',
-		data: state
+		data: val
 	});
-})
+}))
 
-let cancel: Function;
 onMounted(() => {
-	cancel = connector.$on(({ msg }) => {
-		emit(msg.type, msg.data)
-	})
+	const cancel = connector.$on(({ msg }) => {
+		emits(msg.type, msg.data)
+	});
+	onBeforeUnmount(cancel);
 })
 
 onBeforeUnmount(() => {
-	cancel?.();
 	connector.unRegisterApp(props.microAppCode);
 })
 
