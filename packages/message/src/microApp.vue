@@ -11,73 +11,79 @@
 </template>
 
 <script>
-import { pickFileds, deepCloneBaseType } from './util'
+	import { pickFileds, deepCloneBaseType } from './util'
 
-export default {
-	name: "microApp",
-	inheritAttrs: false,
-	props: {
-		src: {
-			type: String,
-			required: true
+	export default {
+		name: "microApp",
+		inheritAttrs: false,
+		props: {
+			src: {
+				type: String,
+				required: true
+			},
+			microAppCode: {
+				type: String,
+				required: true,
+			},
+			state: {
+				type: Object,
+				default: () => ({})
+			},
 		},
-		microAppCode: {
-			type: String,
-			required: true,
-		},
-		state: {
-			type: Object,
-			default: () => ({})
-		},
-	},
-	computed: {
-		id() {
-			return 'gislife-' + this.microAppCode
-		},
-		passiveState() {
-			const res = {
-				route: pickFileds(
-					this.$route,
-					['fullPath', 'hash', 'meta', 'name', 'params', 'path', 'query']
-				),
-				...deepCloneBaseType(this.state)
+		computed: {
+			id() {
+				return 'gislife-' + this.microAppCode
+			},
+			passiveState() {
+				const res = {
+					route: pickFileds(
+						this.$route,
+						['fullPath', 'hash', 'meta', 'name', 'params', 'path', 'query']
+					),
+					...deepCloneBaseType(this.state)
+				}
+				return res
 			}
-			return res
-		}
-	},
-	watch: {
-		passiveState: {
-			immediate: true,
-			handler(val, oldVal) {
+		},
+		watch: {
+			passiveState(val, oldVal) {
 				if (val != oldVal) {
 					this.$connector.$send({
 						target: this.microAppCode,
 						type: 'setState',
-						data: val
+						data: this.passiveState
 					})
 				}
-			}
+			},
 		},
-	},
-	mounted() {
-		this.$connector.$on(this, ({ msg }) => {
-			const emitType = msg.type;
-			const listener = this.$listeners[emitType];
-			if (listener) {
-				listener(msg.data)
-			}
-		})
-	},
-	destroyed() {
-		this.$connector.unRegisterApp(this.microAppCode)
-	},
-	methods: {
-		buildSrc(src) {
-			const hasParam = src.includes('?');
-			return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
+		mounted() {
+			const loadCancel = this.$refs.window?.addEventListener('load', () => {
+				this.$connector.$send({
+					target: this.microAppCode,
+					type: 'setState',
+					data: val
+				})
+			});
+
+			this.$connector.$on(this, ({ msg }) => {
+				const emitType = msg.type;
+				const listener = this.$listeners[emitType];
+				if (listener) {
+					listener(msg.data)
+				}
+			});
+			this.$on('hook:beforeDestory', loadCancel)
 		},
+		destroyed() {
+			this.$connector.unRegisterApp(this.microAppCode)
+		},
+		methods: {
+			buildSrc(src) {
+				const hasParam = src.includes('?');
+				return src + (hasParam ? '&' : '?') + 'microAppCode=' + this.microAppCode
+			},
+		}
 	}
-}
 </script>
 
 <style lang="css">

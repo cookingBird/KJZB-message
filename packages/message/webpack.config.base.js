@@ -57,9 +57,6 @@ const config = {
       }
     ]
   },
-  externals: {
-    fs: 'fs-extra'
-  },
   resolve: {
     fallback: {
       fs: false,
