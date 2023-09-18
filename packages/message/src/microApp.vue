@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import { pickFileds, deepCloneBaseType } from './util'
+	import { cloneBaseTypeWithDepth } from './util'
 
 	export default {
 		name: "microApp",
@@ -25,24 +25,14 @@
 				type: String,
 				required: true,
 			},
-			state: {
-				type: Object,
-				default: () => ({})
-			},
+			state: Object,
 		},
 		computed: {
 			id() {
 				return 'gislife-' + this.microAppCode
 			},
 			passiveState() {
-				const res = {
-					route: pickFileds(
-						this.$route,
-						['fullPath', 'hash', 'meta', 'name', 'params', 'path', 'query']
-					),
-					...deepCloneBaseType(this.state)
-				}
-				return res
+				return JSON.parse(JSON.stringify(cloneBaseTypeWithDepth(this.state)))
 			}
 		},
 		watch: {
@@ -58,10 +48,11 @@
 		},
 		mounted() {
 			const loadCancel = this.$refs.window?.addEventListener('load', () => {
+				this.$emit('load');
 				this.$connector.$send({
 					target: this.microAppCode,
 					type: 'setState',
-					data: val
+					data: this.passiveState
 				})
 			});
 

@@ -4,12 +4,12 @@ const { VueLoaderPlugin } = require('vue-loader')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const pkgName = 'micro-message'
-if (process.env.NODE_ENV === 'production') {
-  rewritePkgFile({
-    // main: ['src/index.js', 'dist/micro-message.js']
-    main: ['src/index.js', 'dist/micro-message.js']
-  })
-}
+// if (process.env.NODE_ENV === 'production') {
+// rewritePkgFile({
+// main: ['src/index.js', 'dist/micro-message.js']
+//   main: ['src/index.js', 'dist/micro-message.js']
+// })
+// }
 const config = {
   devtool: 'source-map',
   entry: {
