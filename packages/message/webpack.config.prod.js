@@ -1,11 +1,13 @@
+//@ts-nocheck
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { merge } = require('webpack-merge')
 const base = require('./webpack.config.base')
 const pkgName = 'micro-message'
 const config = {
   mode: 'production',
-  externals: {
-    fs: 'fs-extra',
+
+  output: {
+    filename: '[name].min.js',
   },
   optimization: {
     minimizer: [`...`, new CssMinimizerPlugin()],

@@ -15,9 +15,6 @@ import {
 	onMounted,
 	onBeforeUnmount,
 	computed,
-	defineProps,
-	defineEmits,
-	defineOptions,
 	ref,
 	nextTick,
 	watch,
@@ -35,7 +32,7 @@ const props = defineProps<{
 	state?: Record<string, any>,
 	query?: Record<string, any>,
 }>()
-const emits = defineEmits();
+const emits = defineEmits([]);
 
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => JSON.parse(JSON.stringify(props.state || {})));

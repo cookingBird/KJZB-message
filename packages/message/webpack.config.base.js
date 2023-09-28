@@ -1,3 +1,4 @@
+//@ts-nocheck
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
@@ -19,6 +20,15 @@ const config = {
     library: {
       name: '[name]',
       type: 'umd'
+    }
+  },
+  externals: {
+    fs: 'fs-extra',
+    vue: {
+      root:'Vue',
+      commonjs: 'vue',
+      commonjs2: 'vue',
+      amd:'vue'
     }
   },
   module: {
@@ -82,7 +92,7 @@ const config = {
   plugins: [
     new MiniCssExtractPlugin(),
     new VueLoaderPlugin(),
-    new CleanWebpackPlugin(),
+    // new CleanWebpackPlugin(),
     new NodePolyfillPlugin()
   ]
 }
