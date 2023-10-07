@@ -18,23 +18,16 @@ export function getParams(location) {
 
 
 export function getIframeEl(microAppCode) {
-  if (document.getElementById('gislife-' + microAppCode)) {
-    return document.getElementById('gislife-' + microAppCode)
-  }
-
-  const iframes = document.querySelectorAll('iframe');
-
-  const iframesSearch = Array.from(iframes)
-    .filter(frm => frm.style.display !== 'none')
-    .map(i => i.src.split("?")[1]);
-
   let target = null;
-
-  for (let index = 0; index < iframesSearch.length; index++) {
-    const search = iframesSearch[index];
-    if ((new URLSearchParams(search)).has('microAppCode')) {
-      target = iframes[index];
-    }
+  if (document.getElementById('gislife-' + microAppCode)) {
+    target = document.getElementById('gislife-' + microAppCode)
+  }
+  /** 
+    * wujie.__WUJIE 如果为true说明当前运行环境是子应用
+    * window.__POWERED_BY_WUJIE__ 如果为false说明子应用还没初始化完成 
+    */ 
+  else if (window.__POWERED_BY_WUJIE__) {
+    target = document.querySelector(`iframe[data-wujie-flag][name='${ microAppCode }']`);
   }
 
   return target

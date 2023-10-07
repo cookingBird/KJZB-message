@@ -19,7 +19,7 @@ import {
 	nextTick,
 	watch,
 } from "vue";
-
+import { ensureInstance } from "./util";
 import { connector } from './index';
 import * as Qs from 'qs';
 defineOptions({
@@ -47,16 +47,17 @@ const buildSrc = computed(() => (src: string) => {
 
 const iframe = ref<HTMLElement>(null);
 onMounted(async () => {
-	await nextTick();
-	// 监听iframe加载完成
-	iframe.value!.addEventListener('load', () => {
-		emits('load', true);
-		connector.$send({
-			target: props.microAppCode,
-			type: 'setState',
-			data: passiveState.value
-		});
-	})
+	ensureInstance(() => iframe.value)
+		.then((dom) => {
+			dom.addEventListener('load', () => {
+				emits('load', true);
+				connector.$send({
+					target: props.microAppCode,
+					type: 'setState',
+					data: passiveState.value
+				});
+			})
+		})
 });
 
 

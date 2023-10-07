@@ -38,7 +38,7 @@ export class ApplicationChannel extends Channel {
     } else {
       if (msg.type === 'setState') {
         //* cache state
-        stateMap.set(msg.target, msg.data)
+        stateMap.set(msg.target, msg.data);
       }
       const targetEl = this.getApp(msg.target)
       if (!targetEl) {

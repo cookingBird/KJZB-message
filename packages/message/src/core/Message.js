@@ -45,7 +45,6 @@ export class Message {
       }
       return new Promise((resolve, reject) => {
         try {
-          console.log("postMessage sendRes", sendRes);
           target.postMessage(sendRes, '*')
         } catch (error) {
           console.error(
@@ -101,12 +100,6 @@ export class Message {
   __on(cb) {
     return onMessage(event => {
       if (isObject(event.data) && event.data.belong === this.belong) {
-        console.log(
-          `---------------\non message from ${ event.data.sourceCode },pop by ${ event.data.popSource } ,current is ${ this.appCode }\n`,
-          event,
-          event.data,
-          '\n-----------------------------'
-        )
         cb(event.data)
       }
     })

@@ -1,14 +1,14 @@
 {
   "name": "@gislife/micro-message",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "microapp",
-  "main": "dist/micro-message.min.js",
+  "main": "dist/micro-message.js",
   "style": "dist/micro-message.css",
   "typings": "types/index.d.ts",
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js && webpack --config webpack.plugin.config.js",
     "build:type": "tsc -p ./tsconfig.build.json",
     "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
     "publish:major": "npm run build && npm version major && npm publish",

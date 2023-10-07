@@ -1,5 +1,5 @@
 import { Message } from './Message'
-import { getIframeEl,isObject } from '../util'
+import { getIframeEl, isObject } from '../util'
 
 /**@type {Map<microAppCode,microAppContext>} */
 const microAppMap = new Map()
@@ -122,6 +122,7 @@ export class Channel extends Message {
    * @param {string} appCode 子应用Code
    */
   unRegisterApp(appCode) {
+    stateMap.delete(appCode)
     return microAppMap.delete(appCode)
   }
   /**
@@ -170,11 +171,6 @@ export class Channel extends Message {
 
       // todo 不属于当前appCode的消息传递
       if (msg.target !== this.appCode && msg.target !== 'parent') {
-        console.log(
-          `>>>>>>>>>>>>>>>>>>>passive>>>${ this.appCode }>>>>>>>>>>>>>>>>>>>>>>>\n`,
-          msg,
-          '\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-        )
         //! 如果传递到根节点还未找到
         if (this.appCode === 'main') msg.pop = false
         // todo 向main发送的消息只向上传递，直到root结束
@@ -192,10 +188,6 @@ export class Channel extends Message {
           // todo pass sibling
           microAppMap.forEach((tar, tarCode) => {
             if (tarCode !== msg.popSource) {
-              console.log(
-                `passive send sibling- ${ tarCode }--------------- current is ${ this.appCode }-----------------------\n`,
-                msg
-              )
               this.__send(
                 tar.contentWindow,
                 Object.assign({}, msg, { pop: false, popSource: this.appCode })
@@ -234,56 +226,58 @@ export class Channel extends Message {
       }
     })
   }
-    /**
-   * @private
-   * @param {string} key
-   */
-    setGlobalConfigField(key) {
-      if (key) this.DEFAULT_GLOBAL_CONFIG = key
+  /**
+ * @private
+ * @param {string} key
+ */
+  setGlobalConfigField(key) {
+    if (key) {
+      this.DEFAULT_GLOBAL_CONFIG = key
     }
-    /**
-     * @private
-     */
-    _statePersistence() {
-      this.$on('getState', ({ responser, msg }) => {
-        const state = stateMap.get(msg.sourceCode)
-        if (state) responser(state)
+  }
+  /**
+   * @private
+   */
+  _statePersistence() {
+    this.$on('getState', ({ responser, msg }) => {
+      const state = stateMap.get(msg.sourceCode)
+      if (state) responser(state)
+    })
+  }
+  /**
+   * @private
+   */
+  _onConfig() {
+    if (this.isMain()) {
+      this.$on('config', ({ responser, msg }) => {
+        responser(window[this.DEFAULT_GLOBAL_CONFIG])
       })
     }
-    /**
-     * @private
-     */
-    _onConfig() {
-      if (this.isMain()) {
-        this.$on('config', ({ responser, msg }) => {
-          responser(window[this.DEFAULT_GLOBAL_CONFIG])
-        })
+  }
+  /**
+ * @description $on收到消息之后的回消息
+ * @private
+ * @param {IMessage<*>&IPostMessageSyntax<*>} msg
+ * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
+ */
+  _getResponse(msg) {
+    return data => {
+      msg.target = msg.sourceCode
+      msg.sourceCode = this.appCode
+      msg.popSource = this.appCode
+      msg.pop = msg.type === 'config' ? true : undefined
+      let type
+      if (isObject(data) && data._type) {
+        type = data._type
+        delete data._type
+      } else {
+        type = msg.type
+        console.warn(
+          `responser miss _type filed, maybe cause infinite loop,current type is ${ type }`
+        )
       }
+
+      return this.$send(Object.assign(msg, { data: data, type: type }))
     }
-    /**
-   * @description $on收到消息之后的回消息
-   * @private
-   * @param {IMessage<*>&IPostMessageSyntax<*>} msg
-   * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
-   */
-    _getResponse(msg) {
-      return data => {
-        msg.target = msg.sourceCode
-        msg.sourceCode = this.appCode
-        msg.popSource = this.appCode
-        msg.pop = msg.type === 'config' ? true : undefined
-        let type
-        if (isObject(data) && data._type) {
-          type = data._type
-          delete data._type
-        } else {
-          type = msg.type
-          console.warn(
-            `responser miss _type filed, maybe cause infinite loop,current type is ${ type }`
-          )
-        }
-  
-        return this.$send(Object.assign(msg, { data: data, type: type }))
-      }
-    }
+  }
 }

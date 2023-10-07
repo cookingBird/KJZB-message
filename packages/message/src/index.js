@@ -28,3 +28,11 @@ export default {
     app.component(microAppVue.name, microAppVue);
   }
 }
+
+
+export function use(plugin) {
+  const eventOff = plugin.install(connector);
+  return () => {
+    eventOff();
+  }
+}

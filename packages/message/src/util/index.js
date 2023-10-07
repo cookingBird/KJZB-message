@@ -5,10 +5,6 @@ export * from './validator'
 
 import * as Validator from './validator'
 
-export function toObj(t) {
-  return Object.assign({}, t)
-}
-
 export function omitFileds(obj, ...fileds) {
   const res = {}
   fileds = fileds.flat()
@@ -60,4 +56,43 @@ export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
     return res
   }
   // return JSON.parse(JSON.stringify(object))
+}
+
+
+export function ensureInstance(fn) {
+  function _getDOM(resolver) {
+    const instance = fn();
+    if (!instance) {
+      requestAnimationFrame(() => _getDOM(resolver))
+    } else {
+      resolver(instance)
+    }
+  }
+  return new Promise(resolve => {
+    _getDOM(resolve)
+  })
+}
+
+
+export function mergeOps(_defalut, ...others) {
+  function _merge(a, b) {
+    if (b === void 0) return a;
+    return Object.entries(a)
+      .map(([key, value]) => {
+        const valueA = value;
+        const valueB = b[key];
+
+        let res = [key, valueB || valueA];
+        if (typeof valueA === 'object' && !Array.isArray(valueA)) {
+          res = [key, _merge(valueA, valueB)]
+        }
+        return res;
+      })
+  }
+  let res = _defalut;
+  others.forEach(ops => {
+    res = _merge(res, ops)
+  })
+
+  return res;
 }
