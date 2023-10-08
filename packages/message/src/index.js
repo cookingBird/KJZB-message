@@ -25,6 +25,7 @@ export default {
       }
     })
 
+    
     app.component(microAppVue.name, microAppVue);
   }
 }

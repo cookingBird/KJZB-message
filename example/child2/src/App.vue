@@ -1,63 +1,60 @@
 <template>
-<div id="app">
-  <img
-    alt="Vue logo"
-    src="./assets/logo.png"
-  >
+  <div id="app">
+    <img
+      alt="Vue logo"
+      src="./assets/logo.png" />
 
-  <div>global:{{global}}</div>
-  <button @click="globalSend">全局发送</button>
-  <HelloWorld msg="This is child2" />
-  <microApp
-    :src="appConfig.url"
-    frameborder="0"
-    class="container-item"
-    :microAppCode="appConfig.microAppCode"
-    @edit="onEdit"
-  >
-  </microApp>
-</div>
+    <div>global:{{global}}</div>
+    <button @click="globalSend">全局发送</button>
+    <HelloWorld msg="This is child2" />
+    <WujieVue
+      :url="appConfig.url"
+      class="container-item"
+      :name="appConfig.microAppCode"
+      :sync="true">
+    </WujieVue>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import HelloWorld from './components/HelloWorld.vue'
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  data() {
-    const IP = 'http://localhost';
-    return {
-      appConfig: {
-        url: IP + ':7012/?microAppCode=grand2',
-        microAppCode: 'grand2'
-      },
-      global: ''
-    }
-  },
-  created() {
-    this.$connector.$on( ({ data }) => {
-      if (data.type === 'message') {
-        this.global = data.data;
-        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
+  export default {
+    name: 'App',
+    components: {
+      HelloWorld
+    },
+    data() {
+      const IP = 'http://localhost';
+      return {
+        appConfig: {
+          url: IP + ':7004/?microAppCode=grand2',
+          microAppCode: 'grand2'
+        },
+        global: ''
       }
-    })
-  },
-  methods: {
-    globalSend() {
-      this.$connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
+    },
+    created() {
+      this.$connector.$on( ({ data }) => {
+        if (data.type === 'message') {
+          this.global = data.data;
+          console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
+        }
       })
     },
-    onEdit(data) {
-      console.log('onEdit,this is child2--------------', data)
+    methods: {
+      globalSend() {
+        this.$connector.$send({
+          target: 'global',
+          type: 'message',
+          data: Math.floor(Math.random() * 100000)
+        })
+      },
+      onEdit(data) {
+        console.log('onEdit,this is child2--------------', data)
+      }
     }
   }
-}
 </script>
 
 <style>

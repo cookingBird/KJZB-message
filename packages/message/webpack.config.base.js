@@ -18,7 +18,7 @@ function rewritePkgFile(devOps) {
   fs.writeJsonSync('./package.json', pkgJson, { spaces: 2 })
 }
 rewritePkgFile({
-  main: ['src/index.js', 'dist/micro-message.js']
+  main: ['src/index.js', 'dist/micro-message.min.js']
 })
 
 const config = {
@@ -37,7 +37,7 @@ const config = {
       commonjs: 'vue',
       commonjs2: 'vue',
       amd: 'vue'
-    }
+    },
   },
   module: {
     rules: [

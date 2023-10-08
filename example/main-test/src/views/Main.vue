@@ -1,101 +1,88 @@
 <template>
-<div id="app">
-  <HelloWorld msg="This is main " />
-  <div>global:{{global}}</div>
-  <a-space>
-    <a-button
-      type="primary"
-      @click="show = !show"
-    >关闭</a-button>
-    <a-button @click="changeState">改变state</a-button>
-    <a-button @click="globalSend">全局发送</a-button>
-  </a-space>
-  <div class="container">
-    <micro-app
-      v-if="show"
-      :src="child1Config.url"
-      frameborder="0"
-      class="container-item"
-      :microAppCode="child1Config.microAppCode"
-      :state="child1Config.state"
-      @test="onEmitTest"
-      @edit="onEmitTest"
-    >
-    </micro-app>
-    <micro-app
-      :src="child2Config.url"
-      frameborder="0"
-      class="container-item"
-      :microAppCode="child2Config.microAppCode"
-      :state="child2Config.state"
-    >
-    </micro-app>
-
+  <div id="app">
+    <HelloWorld msg="This is main " />
+    <a-space>
+      <a-button @click="() => sendToByWujie('child1')">发送child1--Wujie</a-button>
+      <a-button @click="() => sendToByWujie('grand1')">发送grand1--Wujie</a-button>
+      <a-button @click="() => sendTo('child1')">发送child1</a-button>
+      <a-button @click="() => sendTo('grand1')">grand1</a-button>
+      <a-button @click="globalSend">全局发送</a-button>
+    </a-space>
+    <div class="container">
+      <WujieVue
+        :url="child1Config.url"
+        class="container-item"
+        :name="child1Config.microAppCode"
+        :sync="true"
+      >
+      </WujieVue>
+      <WujieVue
+        :url="child2Config.url"
+        class="container-item"
+        :name="child2Config.microAppCode"
+        :sync="true"
+      >
+      </WujieVue>
+    </div>
   </div>
-</div>
 </template>
 
-<script >
-import HelloWorld from '@/components/HelloWorld.vue';
+<script>
+import HelloWorld from "@/components/HelloWorld.vue";
+import { connector, use } from "@gislife/micro-message";
+import createWujieVue3Plugin from "@gislife/micro-message/plugins/wujieVue3.js";
+import WUjieVue3 from "wujie-vue3";
 
+use(
+  createWujieVue3Plugin({
+    wujieName: "child1",
+  })
+);
+use(
+  createWujieVue3Plugin({
+    wujieName: "grand1",
+  })
+);
 export default {
-  name: 'App',
+  name: "App",
   components: {
     HelloWorld,
   },
   data() {
-    const IP = 'http://localhost';
+    const IP = "http://localhost";
 
     return {
       child1Config: {
-        url: `${IP}:7001`,
-        microAppCode: 'child1',
-        state: {
-          name: 'state',
-        },
+        url: `${IP}:7001/?microAppCode=child1`,
+        microAppCode: "child1",
       },
       child2Config: {
         url: `${IP}:7002/?microAppCode=child2`,
-        microAppCode: 'child2',
+        microAppCode: "child2",
       },
       show: true,
-      global: '',
+      global: "",
     };
   },
-  mounted() {
-    console.log('main---------------ROUTER', this.$route);
-    console.log('main---------------ROUTER exclude', this.excludeFunc(this.$route, (n, key) => typeof n !== 'function' && key !== 'matched'));
-
-    this.$connector.$on('responser', ({ data, responser }) => {
-      console.log('on responser-----------------', data, responser);
-      responser({
-        msg: 'congratulation responser test !!!!!!!',
-      });
-    });
-    this.$connector.$on('config', ({ data, responser }) => {
-      console.log('on config-----------------', data, responser);
-      responser({
-        msg: 'congratulation config success !!!!!!!',
-      });
-    });
-    this.$connector.$on(({ data }) => {
-      if (data.type === 'message') {
-        this.global = data.data;
-        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
-      }
-    });
-  },
+  mounted() {},
   methods: {
-    changeState() {
-      this.child1Config.state = { ...this.child1Config.state, value: Math.floor(Math.random() * 1021000) };
+    sendTo(target) {
+      connector.$send({
+        target,
+        type: "test",
+        data: "i am main",
+      });
     },
-    changeState2() {
-      this.child2Config.state = { ...this.child2Config.state, value: Math.floor(Math.random() * 1021000) };
+    sendToByWujie(target) {
+      WUjieVue3.bus.$emit(target, {
+        type:'test',
+        data: "i am main",
+      });
     },
     globalSend() {
       this.$connector.$send({
-        target: 'global',
-        type: 'message',
+        target: "global",
+        type: "message",
         data: Math.floor(Math.random() * 100000),
       });
     },
@@ -108,38 +95,32 @@ export default {
       });
       return res;
     },
-    onEdit(data) {
-      console.warn('this is root, i received--------------', data);
-    },
-    onEmitTest(data) {
-      alert(`emit on success, ${data}`);
-    },
   },
 };
 </script>
 
 <style>
-  .container {
-    display: flex;
-    height: 100%;
-  }
+.container {
+  display: flex;
+  height: 100%;
+}
 
-  .container-item {
-    flex-grow: 1;
-  }
+.container-item {
+  flex-grow: 1;
+}
 
-  html,
-  body {
-    height: 100vh;
-    margin: 0;
-  }
+html,
+body {
+  height: 100vh;
+  margin: 0;
+}
 
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    height: 100%;
-  }
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  height: 100%;
+}
 </style>

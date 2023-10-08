@@ -14,8 +14,6 @@ export class ApplicationChannel extends Channel {
    */
   constructor(target, options = {}) {
     super(target, options)
-    /**@private */
-    this.DEFAULT_GLOBAL_CONFIG = options.configField || 'URL_CONFIG'
     this._statePersistence()
   }
   /**
@@ -102,7 +100,18 @@ export class ApplicationChannel extends Channel {
       data: data
     })
   }
-
+  /**
+   * @description 发送全局消息
+   * @param {*} event 
+   * @param {*} data 
+   */
+  $emitAll(event, data) {
+    return this.$send({
+      target: 'all',
+      type: event,
+      data: data
+    })
+  }
   /**
    * @description 发送回调消息
    * @param { string } target 目标应用CODE
@@ -128,6 +137,7 @@ export class ApplicationChannel extends Channel {
   }
   /**
    * @description 接收消息
+   * @deprecated
    * @param {IGenericFunction<Function,any>} cb 接收消息的回调函数
    * @returns {cancelCallback} 取消回调的函数
    */
@@ -137,7 +147,7 @@ export class ApplicationChannel extends Channel {
         `onCallback callback param error,current type is ${ typeof cb }`
       )
     }
-    const onCancel = this.$on(null, ({ msg, responser }) => {
+    const onCancel = this.$on(({ msg, responser }) => {
       if (msg.type === 'callback') {
         const data = msg.data
         if (data.params !== null) {
@@ -165,36 +175,6 @@ export class ApplicationChannel extends Channel {
       }
     })
     return onCancel
-  }
-
-  /**
-   * @description 获取主应用全局配置
-   * @returns {Promise<object>}
-   */
-  getConfig(options = {}) {
-    const { timeout = 3 * 1000 } = options
-    let sendOk = false
-    return new Promise((resolve, reject) => {
-      const id = uuidv4()
-      this.$send({
-        target: 'main',
-        type: 'config',
-        id: id
-      })
-      const cancel = this.$on(undefined, ({ data }) => {
-        if (isObject(data) && data.id === id) {
-          cancel()
-          sendOk = true
-          resolve(data.data)
-        }
-      })
-      setTimeout(() => {
-        if (!sendOk) {
-          reject('getConfig error')
-          cancel()
-        }
-      }, timeout)
-    })
   }
 
   /**
@@ -233,7 +213,6 @@ export class ApplicationChannel extends Channel {
       // ! 主应用
       this.setAppCode('main')
     }
-    this._onConfig()
   }
   /**
    * @description AppCode

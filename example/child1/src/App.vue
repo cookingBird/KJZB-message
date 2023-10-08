@@ -1,24 +1,21 @@
 <template>
-<div id="app">
-  <img
-    alt="Vue logo"
-    src="./assets/logo.png"
-  >
+  <div id="app">
+    <img
+      alt="Vue logo"
+      src="./assets/logo.png" />
 
-  <div>global:{{global}}</div>
-  <button @click="sendGlobal">全局发送</button>
-  <button @click="emitTest">emit</button>
-  <div>state:{{state}}</div>
-  <HelloWorld msg="This is child1" />
-  <micro-app
-    :src="appConfig.url"
-    frameborder="0"
-    class="container-item"
-    :microAppCode="appConfig.microAppCode"
-    @edit="onEdit"
-  >
-  </micro-app>
-</div>
+    <div>global:{{global}}</div>
+    <button @click="sendGlobal">全局发送</button>
+    <button @click="emitTest">emit</button>
+    <div>state:{{state}}</div>
+    <HelloWorld msg="This is child1" />
+    <WujieVue
+      :url="appConfig.url"
+      class="container-item"
+      :name="appConfig.microAppCode"
+      :sync="true">
+    </WujieVue>
+  </div>
 </template>
 
 <script>
@@ -34,7 +31,7 @@
       const IP = 'http://localhost';
       return {
         appConfig: {
-          url: IP + ':7003',
+          url: IP + ':7003/?microAppCode=grand1',
           microAppCode: 'grand1'
         },
         state: {},
@@ -42,15 +39,9 @@
       }
     },
     mounted() {
-      this.$connector.onState(res => {
-        console.warn('onState----------------', res);
-        this.state = res;
-      })
-      this.$connector.$on(({ data }) => {
-        if (data.type === 'message') {
-          this.global = data.data
-          console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
-        }
+      connector.$on('test',({data}) => {
+        console.log('data',data);
+        alert('there is child1, '+data);
       })
     },
     methods: {

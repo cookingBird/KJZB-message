@@ -10,7 +10,8 @@
     "core-js": "^3.8.3",
     "vue": "^3.1.0",
     "@vue/compat": "^3.1.0",
-    "@gislife/micro-message": "*"
+    "@gislife/micro-message": "*",
+    "wujie-vue3":"1.0.18"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

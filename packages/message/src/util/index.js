@@ -83,11 +83,19 @@ export function mergeOps(_defalut, ...others) {
         const valueB = b[key];
 
         let res = [key, valueB || valueA];
+
         if (typeof valueA === 'object' && !Array.isArray(valueA)) {
           res = [key, _merge(valueA, valueB)]
         }
+
         return res;
       })
+      .reduce((pre, cur) => {
+        return {
+          ...pre,
+          [cur[0]]: cur[1]
+        }
+      }, {})
   }
   let res = _defalut;
   others.forEach(ops => {

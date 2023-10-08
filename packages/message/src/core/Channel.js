@@ -219,21 +219,14 @@ export class Channel extends Message {
         if (el) {
           this.registerApp(microAppCode, el)
         } else {
-          throw Error(
-            `register error, can not find element named ${ microAppCode }}`
-          )
+          if (!window.__WUJIE) {
+            console.error(
+              `register error, can not find element named ${ microAppCode }`
+            )
+          }
         }
       }
     })
-  }
-  /**
- * @private
- * @param {string} key
- */
-  setGlobalConfigField(key) {
-    if (key) {
-      this.DEFAULT_GLOBAL_CONFIG = key
-    }
   }
   /**
    * @private
@@ -243,16 +236,6 @@ export class Channel extends Message {
       const state = stateMap.get(msg.sourceCode)
       if (state) responser(state)
     })
-  }
-  /**
-   * @private
-   */
-  _onConfig() {
-    if (this.isMain()) {
-      this.$on('config', ({ responser, msg }) => {
-        responser(window[this.DEFAULT_GLOBAL_CONFIG])
-      })
-    }
   }
   /**
  * @description $on收到消息之后的回消息

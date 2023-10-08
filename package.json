@@ -5,6 +5,9 @@
     "packages/*",
     "example/*"
   ],
+  "scripts": {
+    "start": "npx lerna run serve --parallel"
+  },
   "devDependencies": {
     "lerna": "^7.1.4"
   },

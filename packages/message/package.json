@@ -2,7 +2,7 @@
   "name": "@gislife/micro-message",
   "version": "4.0.6",
   "description": "microapp",
-  "main": "dist/micro-message.js",
+  "main": "dist/micro-message.min.js",
   "style": "dist/micro-message.css",
   "typings": "types/index.d.ts",
   "scripts": {
