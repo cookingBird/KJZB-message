@@ -8,9 +8,9 @@
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js && webpack --config webpack.plugin.config.js",
+    "build": "cross-env NODE_ENV=production webpack --config ./scripts/webpack.config.prod.js && webpack --config ./scripts/webpack.plugin.config.js && webpack --config ./scripts/webpack.component.config.js",
     "build:type": "tsc -p ./tsconfig.build.json",
-    "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
+    "dev": "cross-env NODE_ENV=development webpack --config ./scripts/webpack.config.dev.js",
     "publish:major": "npm run build && npm version major && npm publish",
     "publish:minor": "npm run build && npm version minor && npm publish",
     "publish:patch": "npm run build && npm version patch && npm publish"

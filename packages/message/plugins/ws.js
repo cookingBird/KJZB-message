@@ -2,24 +2,17 @@ import { mergeOps } from "../src/util"
 const defaultOps = {
 	wujieName: 'gislifeMap',
 	url: '',
-	messageCallback: (msg) => {
-		return msg
-	},
 	afterOpen: (ws) => { },
 	afterClose: (ws) => { },
-	afterMessage: (ws) => { },
+	afterMessage: (msg) =>  {},
+	beforeMessage: (msg) =>  msg,
 };
 
 export default function createWuJiePlugin(options) {
-	//@ts-expect-error
-	if (!window.__POWERED_BY_WUJIE__) {
-		throw Error("__POWERED_BY_WUJIE__ is undefined");
-	}
-
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		url,
-		messageCallback,
+		beforeMessage,
 		wujieName,
 		afterOpen,
 		afterClose,
@@ -33,7 +26,12 @@ export default function createWuJiePlugin(options) {
 			const socket = new WebSocket(url);
 
 			const onMessage = (msg) => {
-				const buildMsg = messageCallback(msg);
+				let buildMsg;
+				try {
+					buildMsg = beforeMessage(JSON.parse(msg));
+				} catch (error) {
+					console.error("message build error", error)
+				}
 				connector.$send({
 					target: wujieName,
 					...buildMsg
