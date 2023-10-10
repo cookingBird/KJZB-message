@@ -1,0 +1,1 @@
+export const DEFAULT_GLOBAL_CONFIG: "URL_CONFIG";

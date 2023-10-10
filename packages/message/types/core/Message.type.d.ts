@@ -1,4 +1,4 @@
-export type MessageOpts = {
+type MessageOpts = {
     /**
      * 目标源
      */
@@ -20,11 +20,11 @@ export type MessageOpts = {
      */
     appCode?: string;
 };
-export type onCallback<T> = IGenericFunction<IPostMessageSyntax<T>, void>;
-export type cancelCallback = () => void;
-export type IMessageEvent<T> = {
+type onCallback<T> = IGenericFunction<IPostMessageSyntax<T>, void>;
+type cancelCallback = () => void;
+type IMessageEvent<T> = {
     source: MessageEventSource;
     origin: string;
     data: T;
 };
-export type IMessageEventResponse<T> = IMessageEvent<IMessage<PostMessageType<T>>>;
+type IMessageEventResponse<T> = IMessageEvent<IMessage<PostMessageType<T>>>;

@@ -8,28 +8,26 @@ import { ApplicationChannel } from './ApplicationChannel';
 const connector = new ApplicationChannel()
 connector.applicationBootstrap()
 
-export { connector }
-
-export default {
-  install(app, options = {}) {
-    if (options.configKey) {
-      connector.setGlobalConfigField(options.configKey)
+function install(app, options = {}) {
+  Object.defineProperty(app.config.globalProperties, '$connector', {
+    get() {
+      return connector
+    },
+    set(v) {
+      throw Error("$connector can't set value")
     }
-    Object.defineProperty(app.config.globalProperties, '$connector', {
-      get() {
-        return connector
-      },
-      set(v) {
-        throw Error("$connector can't set value")
-      }
-    })
-  }
+  })
 }
 
-
-export function use(plugin) {
+function use(plugin) {
   const eventOff = plugin.install(connector);
   return () => {
     eventOff();
   }
+}
+
+export {
+  connector,
+  use,
+  install as default
 }

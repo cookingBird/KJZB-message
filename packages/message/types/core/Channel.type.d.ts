@@ -1,8 +1,8 @@
-export type PostMessageTypeInner = 'register' | 'unregister';
-export type PostMessageTypeWork = 'state' | 'config' | 'callback' | 'emit' | string;
-export type PostMessageType = PostMessageTypeInner | PostMessageTypeWork;
-export type IPostTarget = 'main' | 'parent' | 'global' | string;
-export type IMessage<T> = {
+type PostMessageTypeInner = 'register' | 'unregister';
+type PostMessageTypeWork = 'state' | 'config' | 'callback' | 'emit' | string;
+type PostMessageType = PostMessageTypeInner | PostMessageTypeWork;
+type IPostTarget = 'main' | 'parent' | 'global' | string;
+type IMessage<T> = {
     /**
      * 发送消息的目标
      */
@@ -16,7 +16,7 @@ export type IMessage<T> = {
      */
     data: T;
 };
-export type IPostMessageSyntax = {
+type IPostMessageSyntax = {
     /**
      * uuidv4生成
      */
@@ -34,8 +34,8 @@ export type IPostMessageSyntax = {
      */
     sourceCode: string;
 };
-export type IGenericFunction<P, T> = (response: P) => T;
-export type ChannelOptsRest = {
+type IGenericFunction<P, T> = (response: P) => T;
+type ChannelOptsRest = {
     /**
      * 本地存储namespace
      */
@@ -45,8 +45,8 @@ export type ChannelOptsRest = {
      */
     appCode?: string;
 };
-export type ChannelOpts = ChannelOptsRest & MessageOpts;
-export type microAppCode = string;
-export type microAppContext = HTMLIFrameElement;
-export type IUserData = any;
-export type onCallback<T> = IGenericFunction<IPostMessageSyntax<T>, void>;
+type ChannelOpts = ChannelOptsRest & MessageOpts;
+type microAppCode = string;
+type microAppContext = HTMLIFrameElement;
+type IUserData = any;
+type onCallback<T> = IGenericFunction<IPostMessageSyntax<T>, void>;

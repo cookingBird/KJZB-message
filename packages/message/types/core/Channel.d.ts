@@ -80,19 +80,9 @@ export class Channel extends Message {
      */
     private _maintainRegister;
     /**
-   * @private
-   * @param {string} key
-   */
-    private setGlobalConfigField;
-    DEFAULT_GLOBAL_CONFIG: string;
-    /**
      * @private
      */
     private _statePersistence;
-    /**
-     * @private
-     */
-    private _onConfig;
     /**
    * @description $on收到消息之后的回消息
    * @private

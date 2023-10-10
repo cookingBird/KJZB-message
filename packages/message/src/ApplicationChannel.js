@@ -1,6 +1,6 @@
 import { Channel, stateMap } from './core'
 import { v4 as uuidv4 } from 'uuid'
-import { isObject, getParams } from './util'
+import { getParams } from './util'
 
 /**
  * @class ApplicationChannel
