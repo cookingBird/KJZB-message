@@ -8,7 +8,7 @@ import { ApplicationChannel } from './ApplicationChannel';
 const connector = new ApplicationChannel()
 connector.applicationBootstrap()
 
-function install(app, options = {}) {
+function install(app) {
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {
       return connector

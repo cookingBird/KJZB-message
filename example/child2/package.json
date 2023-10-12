@@ -7,11 +7,11 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@gislife/micro-message": "*",
+    "@vue/compat": "^3.1.0",
     "core-js": "^3.8.3",
     "vue": "^3.1.0",
-    "@vue/compat": "^3.1.0",
-    "@gislife/micro-message": "*",
-    "wujie-vue3":"1.0.18"
+    "wujie-vue3": "^1.0.18"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -19,9 +19,9 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/compiler-sfc": "^3.1.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3",
-    "@vue/compiler-sfc": "^3.1.0"
+    "eslint-plugin-vue": "^8.0.3"
   },
   "eslintConfig": {
     "root": true,

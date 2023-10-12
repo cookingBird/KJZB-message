@@ -21,10 +21,15 @@ export default function createWuJieVue3Plugin(options) {
 		install(connector) {
 			const msgProcess = (...params) => {
 				const buildMsg = messageCallback(...params);
-
 				connector.$send({
 					target: wujieName,
 					...buildMsg
+				});
+				connector.on((msg) => {
+					bus.$emit(wujieName + '-Receive', {
+						type: msg.type,
+						response: connector._getResponse(msg)
+					})
 				})
 			};
 

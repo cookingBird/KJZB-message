@@ -4,18 +4,41 @@
  * @returns {object}
  */
 export function getParams(location) {
-  const search = location.href.split('?')[1]
-  if (!search) return null;
-  const result = {}
-  search
-    .split('&')
-    .map(p => p.split('='))
-    .forEach(item => {
-      result[item[0]] = item[1]
-    })
-  return result
+  const { href, hash, search } = location;
+  const result = {};
+  if(search){ // normal condition
+    Object.assign(result, parseQuery(search.slice(1)))
+  }
+  if (hash && href.includes('?')) { 
+    // in hash mode
+    if(href.endsWith('#/')){
+      // pass param incorrect (access by history)
+      Object.assign(result, parseQuery(href.split('?')[1]?.slice(0,-2)))
+    }else if(search){
+      // pass params correct (by broswer query)
+      Object.assign(result, parseQuery(search.slice(1)))
+    }else if(href.includes('#')) {
+      // pass params by hash
+      Object.assign(result, parseQuery(href.split('?')[1]?.slice(0)))
+    }
+  }
+
+  return result;
 }
 
+
+export function parseQuery(query = ''){
+  return query
+  .split('&')
+  .map(p => p.split('='))
+  .reduce((pre, cur) => {
+    const [key, value] = cur
+    return {
+      ...pre,
+      [key]: value
+    }
+  }, {})
+}
 
 export function getIframeEl(microAppCode) {
   const iframes = Array.from(document.querySelectorAll('iframe'));

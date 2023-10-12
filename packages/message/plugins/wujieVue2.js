@@ -27,7 +27,13 @@ export default function createWuJieVue2Plugin(options) {
 				connector.$send({
 					target: wujieName,
 					...buildMsg
-				})
+				});
+				connector.on((msg) => {
+					bus.$emit(wujieName + '-Receive', {
+						type: msg.type,
+						response: connector._getResponse(msg)
+					})
+				});
 			};
 
 			bus.$on(wujieName, msgProcess);

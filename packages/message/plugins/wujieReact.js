@@ -28,6 +28,12 @@ export default function createWuJieReactPlugin(options) {
 			};
 
 			bus.$on(wujieName, msgProcess);
+			connector.on((msg) => {
+				bus.$emit(wujieName + '-Receive', {
+					type: msg.type,
+					response: connector._getResponse(msg)
+				})
+			})
 			return () => {
 				bus.$off(wujieName, msgProcess);
 				connector.unRegisterApp(wujieName);
