@@ -95,7 +95,8 @@ const config = {
       path: require.resolve('path-browserify'),
       stream: require.resolve('stream-browserify'),
       constants: require.resolve('constants-browserify')
-    }
+    },
+    extensions: ['.ts', '.js', '.css', '.vue']
   },
   plugins: [
     new MiniCssExtractPlugin(),

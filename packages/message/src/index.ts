@@ -2,13 +2,14 @@
  * @author dengtao
  */
 import './polyfill';
+import type { App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
+export * as tools from './tools';
 
-/**@type {ApplicationChannel} */
-const connector = new ApplicationChannel()
-connector.applicationBootstrap()
+export const connector = new ApplicationChannel();
+connector.applicationBootstrap();
 
-function install(app) {
+export default function install(app: App) {
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {
       return connector
@@ -19,15 +20,9 @@ function install(app) {
   })
 }
 
-function use(plugin) {
+export function use(plugin: { install: (connector: ApplicationChannel) => () => void }) {
   const eventOff = plugin.install(connector);
   return () => {
     eventOff();
   }
-}
-
-export {
-  connector,
-  use,
-  install as default
 }

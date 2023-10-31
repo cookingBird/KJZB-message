@@ -1,6 +1,12 @@
-/**@type {ApplicationChannel} */
-export const connector: ApplicationChannel;
-export function use(plugin: any): () => void;
-declare function install(app: any): void;
+/**
+ * @author dengtao
+ */
+import './polyfill';
+import type { App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
-export { install as default };
+export * as tools from './tools';
+export declare const connector: ApplicationChannel;
+export default function install(app: App): void;
+export declare function use(plugin: {
+    install: (connector: ApplicationChannel) => () => void;
+}): () => void;

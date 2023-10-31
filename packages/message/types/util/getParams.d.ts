@@ -1,9 +1,8 @@
 /**
  * @description 获取URL search参数
- * @param {Location} location
- * @returns {object}
  */
-export function getParams(location: Location): object;
-export function getIframeEl(microAppCode: any): HTMLIFrameElement;
-export function querySelectBodyIframe(body: any): any[];
-export function querySelectAllIframeIncludeShadow(el?: HTMLElement, result?: any[]): any[];
+export declare function getParams(location: Location): Record<string, any>;
+export declare function parseQuery(query?: string): {};
+export declare function getIframeEl(microAppCode: string): HTMLIFrameElement | undefined;
+export declare function querySelectBodyIframe(body: any): unknown[];
+export declare function querySelectAllIframeIncludeShadow(el?: HTMLElement, result?: any[]): HTMLIFrameElement[];

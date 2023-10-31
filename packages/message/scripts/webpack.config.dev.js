@@ -6,7 +6,7 @@ const pkgName = 'micro-message'
 const config = {
   mode: 'development',
   entry: {
-    [pkgName]: path.resolve(__dirname, '../src/index.js')
+    [pkgName]: path.resolve(__dirname, '../src/index.ts')
   },
   output: {
     path: path.resolve(__dirname, '../dist'),

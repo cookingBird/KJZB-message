@@ -1,76 +1,58 @@
+import { Message } from './Message';
+import type { BaseMsg } from './Message';
+export type PassiveMsg = {
+    target: 'global' | 'main' | 'parent' | string;
+    sourceCode: string;
+    popSource: string;
+    pop: boolean;
+} & BaseMsg;
+/**@type {Map<microAppCode,microAppContext>} */
+export declare const microAppMap: Map<string, HTMLIFrameElement>;
+/**
+ * @typedef {Map<microAppContext,object>} IStateMap
+ * @description 组件状态Map
+ * @type {IStateMap}
+ */
+export declare const stateMap: Map<string, any>;
 /**
  * @class Channel
  */
-export class Channel extends Message {
+export declare class Channel extends Message {
+    constructor(options?: {});
     /**
-     * @description 新建一个目标连接频道
-     * @constructor
-     * @param { Window | windowContent} target 目标上下文
-     * @param {ChannelOpts} options 其它参数
+     * @description send or passive message
      */
-    constructor(target: Window | windowContent, options?: ChannelOpts);
+    protected send(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<any>;
     /**
-     * !消息派发的主要逻辑
-     * todo 如果消息没有target 默认target为 main
-     * @description 为每条消息带上popSource
-     * @private
-     * @param {?Window} target
-     * @param {(IMessage<*>&IPostMessageSyntax<*>) | IPostMessageSyntax<*>} msg
-     * @returns {Promise<IPostMessageSyntax<T>>}
+     * @description receive message
      */
-    private send;
+    protected on(cb: (res: PassiveMsg) => void): import("../util").NOOP;
     /**
-     * todo 响应自己的消息，如果不是自己的消息则传递消息
-     * @description 监听消息，并在自动取消监听
-     * @private
-     * @template R
-     * @param {IGenericFunction<IMessage<R>&IPostMessageSyntax,void>} cb 监听到消息的回调函数
-     * @returns {cancelCallback} 取消监听的回调函数
+     * @description set current appcode and registry to parent window
      */
-    private on;
+    protected setAppCode(val: string): void;
     /**
-     * !应用注册的主要逻辑
-     * @description 设置当前应用的AppCode
-     * @private
-     * @param {string} val
-     * @returns {void}
+     * @description cancel registry
      */
-    private setAppCode;
+    protected unRegisterApp(appCode: string): boolean;
     /**
-     * @description 取消注册子应用
-     * @param {string} appCode 子应用Code
+     * @description get app
      */
-    unRegisterApp(appCode: string): boolean;
+    protected getApp(target: string): HTMLIFrameElement | null;
     /**
-     * @private
-     * @typedef {[string,HTMLIFrameElement] } targetLike
-     * @param {targetLike | undefined} target
+     * @description registry app
      */
-    private getApp;
+    protected registerApp(appCode: string, target: HTMLIFrameElement): Map<string, HTMLIFrameElement>;
     /**
-     * @description 注册子应用
-     * @private
-     * @param {string} appCode 子应用Code
-     * @param {HTMLIFrameElement} target 子应用Iframe元素
+     * @description get app state
      */
-    private registerApp;
+    protected getState(microAppCode: string): any;
     /**
-     * @private
-     * @param {microAppCode} microAppCode
-     * @returns {object | undefined}
+     * @description set app state
      */
-    private getState;
+    protected setState(microAppCode: string, state: any): Map<string, any>;
     /**
-     * @private
-     * @param {microAppCode} microAppCode
-     * @param {object} state
-     * @returns {IStateMap}
-     */
-    private setState;
-    /**
-     * @private
-     * @description 消息传递
-     * @returns
+     * @description pass message
      */
     private _passive;
     /**
@@ -79,25 +61,4 @@ export class Channel extends Message {
      * @returns
      */
     private _maintainRegister;
-    /**
-     * @private
-     */
-    private _statePersistence;
-    /**
-   * @description $on收到消息之后的回消息
-   * @private
-   * @param {IMessage<*>&IPostMessageSyntax<*>} msg
-   * @returns {IGenericFunction<IMessage<IPostMessageSyntax<*>>,IMessage<IPostMessageSyntax<*>>>}
-   */
-    private _getResponse;
 }
-export type IStateMap = Map<microAppContext, object>;
-/**@type {Map<microAppCode,microAppContext>} */
-export const microAppMap: Map<microAppCode, microAppContext>;
-/**
- * @typedef {Map<microAppContext,object>} IStateMap
- * @description 组件状态Map
- * @type {IStateMap}
- */
-export const stateMap: IStateMap;
-import { Message } from './Message';

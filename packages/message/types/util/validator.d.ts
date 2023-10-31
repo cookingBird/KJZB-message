@@ -1,3 +1,3 @@
-export function isObject(t: any): boolean;
-export function isArray(t: any): boolean;
-export function isFunction(t: any): boolean;
+export declare function isObject(t: any): boolean;
+export declare function isArray(t: any): boolean;
+export declare function isFunction(t: any): boolean;

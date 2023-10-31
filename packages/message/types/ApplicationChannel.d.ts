@@ -1,65 +1,41 @@
-/**
- * @class ApplicationChannel
- */
-export class ApplicationChannel extends Channel {
+import { Channel } from './core';
+import type { PassiveMsg } from './core/Channel';
+export type DataMsg<T = any> = {
+    type: string;
+    data?: T;
+} & Pick<PassiveMsg, 'target'> & Partial<Pick<PassiveMsg, 'sourceCode'>>;
+export declare class ApplicationChannel extends Channel {
+    constructor(options?: {});
     /**
      * @description 发送消息
-     * @template T
-     * @template R
-     * @param {IMessage<T>} msg
-     * @returns {Promise<R>}
      */
-    $send<T, R>(msg: IMessage<T>): Promise<R>;
+    $send(msg: DataMsg): Promise<any>;
     /**
      * @description 监听消息
-     * @template D
-     * @param {string | IGenericFunction<{data:D, responser:function, msg: IMessage<D>&IPostMessageSyntax }, void>} type 消息类型
-     * @param {IGenericFunction<{data:D, responser:function, msg: IMessage<D>&IPostMessageSyntax }, void>} [cb] 回调函数
-     * @return {cancelCallback} 取消监听的回调
      */
-    $on<D>(type: string | IGenericFunction<{
-        data: D;
-        responser: Function;
-        msg: IMessage<D> & IPostMessageSyntax;
-    }, void>, cb?: IGenericFunction<{
-        data: D;
-        responser: Function;
-        msg: IMessage<D> & IPostMessageSyntax;
-    }, void>): cancelCallback;
+    $on<T = any>(type: string | ((res: {
+        msg: DataMsg<T>;
+        responser: (msg: DataMsg) => void;
+    }) => void), cb?: (res: {
+        msg: DataMsg<T>;
+        data: T;
+        responser: (msg: DataMsg) => void;
+    }) => void): any;
     /**
-     *
-     * @param {string} emitAndTar
-     * @param {object} data
+     * @description send message to parent
      */
-    $emit(emitAndTar: string, data: object): void;
+    $emit(emitAndTar: string, data: any): Promise<any>;
     /**
-     * @description 发送全局消息
-     * @param {*} event
-     * @param {*} data
+     * @description send global message
      */
-    $emitAll(event: any, data: any): Promise<any>;
-    /**
-     * @description 发送回调消息
-     * @param { string } target 目标应用CODE
-     * @param { function } cb 回调函数
-     * @param { object | null} params 回调函数参数
-     * @returns { promise }
-     */
-    sendCallback(target: string, cb: Function, params: object | null): Promise<any>;
-    /**
-     * @description 接收消息
-     * @deprecated
-     * @param {IGenericFunction<Function,any>} cb 接收消息的回调函数
-     * @returns {cancelCallback} 取消回调的函数
-     */
-    onCallback(cb: IGenericFunction<Function, any>): cancelCallback;
+    $emitAll(event: string, data: any): void;
     /**
      * @description 接收消息 T为消息的具体格式
      * @template T
      * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
      * @returns {cancelCallback} 取消回调的函数
      */
-    onState<T_1>(cb: IGenericFunction<T_1, any>): cancelCallback;
+    onState(cb: any): any;
     /**
      * @description main
      * @param {Channel} instance
@@ -75,5 +51,12 @@ export class ApplicationChannel extends Channel {
      * @returns {boolean}
      */
     isMain(): boolean;
+    /**
+     * @description maintain state map
+     */
+    private _statePersistence;
+    /**
+    * @description build response msg
+    */
+    private _getResponse;
 }
-import { Channel } from './core';

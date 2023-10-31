@@ -59,7 +59,7 @@ export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
 }
 
 
-export function ensureInstance(fn) {
+export function ensureInstance(fn: () => any): Promise<ReturnType<typeof fn>> {
   function _getDOM(resolver) {
     const instance = fn();
     if (!instance) {
@@ -74,7 +74,7 @@ export function ensureInstance(fn) {
 }
 
 
-export function mergeOps(_defalut, ...others) {
+export function mergeOps<T>(_defalut: T, ...others: Partial<T>[]): T {
   function _merge(a, b) {
     if (b === void 0) return a;
     return Object.entries(a)
