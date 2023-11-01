@@ -1,5 +1,5 @@
 import { mergeOps } from "../util";
-import WujieVue3 from 'wujie-vue2';
+import WujieVue2 from 'wujie-vue2';
 
 const defaultOps = {
 	wujieName: 'gislifeMap',
@@ -18,7 +18,7 @@ export default function createWuJieVue2Plugin(options) {
 	} = mergedOps;
 
 
-	const { bus } = WuJiePackage;
+	const { bus } = WujieVue2;
 	return {
 		install(connector) {
 			const msgProcess = (...params) => {

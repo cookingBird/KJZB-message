@@ -1,5 +1,5 @@
 import { mergeOps } from "../util";
-import WujieVue3 from 'wujie-react';
+import WujieReact from 'wujie-react';
 
 
 const defaultOps = {
@@ -16,7 +16,7 @@ export default function createWuJieReactPlugin(options) {
 		wujieName
 	} = mergedOps;
 
-	const { bus } = WuJiePackage;
+	const { bus } = WujieReact;
 	return {
 		install(connector) {
 			const msgProcess = (...params) => {
