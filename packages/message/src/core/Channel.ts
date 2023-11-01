@@ -88,7 +88,7 @@ export class Channel extends Message {
   /**
    * @description cancel registry
    */
-  protected unRegisterApp(appCode: string): boolean {
+  public unRegisterApp(appCode: string): boolean {
     stateMap.delete(appCode)
     return microAppMap.delete(appCode)
   }

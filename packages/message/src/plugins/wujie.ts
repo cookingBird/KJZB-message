@@ -1,4 +1,4 @@
-import { mergeOps } from "../src/util";
+import { mergeOps } from "../util";
 const WuJiePackage = require("wujie");
 
 const defaultOps = {
@@ -8,7 +8,7 @@ const defaultOps = {
 	},
 };
 
-export function createWuJiePlugin(options) {
+export default function createWuJiePlugin(options) {
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		messageCallback,

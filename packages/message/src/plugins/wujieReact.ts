@@ -1,5 +1,5 @@
-import { mergeOps } from "../src/util";
-const WuJiePackage = require("wujie-vue2").default;
+import { mergeOps } from "../util";
+const WuJiePackage = require("wujie-react").default;
 
 const defaultOps = {
 	wujieName: 'gislifeMap',
@@ -8,15 +8,12 @@ const defaultOps = {
 	},
 };
 
-
-
-export default function createWuJieVue2Plugin(options) {
+export default function createWuJieReactPlugin(options) {
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		messageCallback,
 		wujieName
 	} = mergedOps;
-
 
 	const { bus } = WuJiePackage;
 	return {
@@ -27,16 +24,16 @@ export default function createWuJieVue2Plugin(options) {
 				connector.$send({
 					target: wujieName,
 					...buildMsg
-				});
-				connector.on((msg) => {
-					bus.$emit(wujieName + '-Receive', {
-						type: msg.type,
-						response: connector._getResponse(msg)
-					})
-				});
+				})
 			};
 
 			bus.$on(wujieName, msgProcess);
+			connector.on((msg) => {
+				bus.$emit(wujieName + '-Receive', {
+					type: msg.type,
+					response: connector._getResponse(msg)
+				})
+			})
 			return () => {
 				bus.$off(wujieName, msgProcess);
 				connector.unRegisterApp(wujieName);

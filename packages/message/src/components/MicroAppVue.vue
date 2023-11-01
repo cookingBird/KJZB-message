@@ -10,7 +10,7 @@
 </iframe>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   onMounted,
   onBeforeUnmount,
@@ -18,11 +18,11 @@ import {
   ref,
   watch,
 } from "vue";
-import { ensureInstance } from "../src/util";
-import { connector } from '../src/index';
+import { ensureInstance } from "../util";
+import { connector } from '../index';
 import { stringify } from 'qs';
 defineOptions({
-  name: 'MicroAppVue',
+  name: 'MicroMessageApp',
 })
 
 const props = defineProps({
@@ -37,10 +37,13 @@ const props = defineProps({
   state: Object,
   query: Object
 })
-const emits = defineEmits(['load']);
+const emits = defineEmits<{
+  (e: 'load'): void;
+  (e: any, data: any): void;
+}>();
 
 const id = computed(() => ('gislife-' + props.microAppCode));
-const passiveState = computed(() => JSON.parse(JSON.stringify(props.state || {})));
+const passiveState = computed(() => JSON.parse(JSON.stringify(props.state ?? {})));
 function buildSrc(src) {
   const query = stringify(props.query || {});
   if (src.indexOf('?') === -1) {
@@ -55,7 +58,7 @@ onMounted(() => {
   ensureInstance(() => container.value)
     .then((dom) => {
       dom.addEventListener('load', () => {
-        emits('load', true);
+        emits('load');
         connector.$send({
           target: props.microAppCode,
           type: 'setState',
@@ -76,7 +79,6 @@ onBeforeUnmount(watch(passiveState, (val) => {
 
 onMounted(() => {
   const cancel = connector.$on(({ msg }) => {
-    // @ts-expect-error
     emits(msg.type, msg.data)
   });
   onBeforeUnmount(cancel);

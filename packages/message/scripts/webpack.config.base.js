@@ -18,7 +18,7 @@ function rewritePkgFile(devOps) {
   fs.writeJsonSync('./package.json', pkgJson, { spaces: 2 })
 }
 rewritePkgFile({
-  main: ['src/index.js', 'dist/micro-message.min.js']
+  main: ['src/index.js', 'dist/MicroMessage.min.js']
 })
 
 const config = {

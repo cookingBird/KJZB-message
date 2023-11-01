@@ -7,11 +7,11 @@ const base = require('./webpack.config.base')
 const config = {
 	mode: 'development',
 	entry: {
-		wujie: path.resolve(__dirname, '../plugins/wujie.js'),
-		wujieReact: path.resolve(__dirname, '../plugins/wujieReact.js'),
-		wujieVue2: path.resolve(__dirname, '../plugins/wujieVue2.js'),
-		wujieVue3: path.resolve(__dirname, '../plugins/wujieVue3.js'),
-		ws: path.resolve(__dirname, '../plugins/ws.js')
+		wujie: path.resolve(__dirname, '../plugins/wujie.ts'),
+		wujieReact: path.resolve(__dirname, '../plugins/wujieReact.ts'),
+		wujieVue2: path.resolve(__dirname, '../plugins/wujieVue2.ts'),
+		wujieVue3: path.resolve(__dirname, '../plugins/wujieVue3.ts'),
+		ws: path.resolve(__dirname, '../plugins/ws.ts')
 	},
 	output: {
 		path: path.resolve(__dirname, '../dist/plugins'),

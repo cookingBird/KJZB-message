@@ -1,5 +1,5 @@
-import { mergeOps } from "../src/util";
-const WuJiePackage = require("wujie-vue3").default;
+import { mergeOps } from "../util";
+const WuJiePackage = require("wujie-vue2").default;
 
 const defaultOps = {
 	wujieName: 'gislifeMap',
@@ -8,7 +8,9 @@ const defaultOps = {
 	},
 };
 
-export default function createWuJieVue3Plugin(options) {
+
+
+export default function createWuJieVue2Plugin(options) {
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		messageCallback,
@@ -21,6 +23,7 @@ export default function createWuJieVue3Plugin(options) {
 		install(connector) {
 			const msgProcess = (...params) => {
 				const buildMsg = messageCallback(...params);
+
 				connector.$send({
 					target: wujieName,
 					...buildMsg
@@ -30,7 +33,7 @@ export default function createWuJieVue3Plugin(options) {
 						type: msg.type,
 						response: connector._getResponse(msg)
 					})
-				})
+				});
 			};
 
 			bus.$on(wujieName, msgProcess);
@@ -41,3 +44,4 @@ export default function createWuJieVue3Plugin(options) {
 		}
 	}
 }
+

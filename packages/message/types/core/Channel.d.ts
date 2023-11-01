@@ -34,7 +34,7 @@ export declare class Channel extends Message {
     /**
      * @description cancel registry
      */
-    protected unRegisterApp(appCode: string): boolean;
+    unRegisterApp(appCode: string): boolean;
     /**
      * @description get app
      */

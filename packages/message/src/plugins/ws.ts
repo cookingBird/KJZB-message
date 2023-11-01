@@ -1,14 +1,23 @@
-import { mergeOps } from "../src/util"
+import { mergeOps } from "../util"
+export type PluginOpsWs = {
+	wujieName: string,
+	url: string,
+	afterOpen?: (ws: WebSocket) => void,
+	afterClose?: (ws: WebSocket) => void,
+	afterMessage?: (msg: any) => void,
+	beforeMessage?: (msg: any) => { type: string, data: any },
+};
+
 const defaultOps = {
 	wujieName: 'gislifeMap',
 	url: '',
 	afterOpen: (ws) => { },
 	afterClose: (ws) => { },
-	afterMessage: (msg) =>  {},
-	beforeMessage: (msg) =>  msg,
+	afterMessage: (msg) => { },
+	beforeMessage: (msg) => msg,
 };
 
-export default function createWuJiePlugin(options) {
+export default function createWsPlugin(options: PluginOpsWs) {
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		url,

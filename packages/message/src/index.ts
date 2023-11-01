@@ -5,6 +5,8 @@ import './polyfill';
 import type { App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
+export * as plugins from './plugins';
+export * as components from './components';
 
 export const connector = new ApplicationChannel();
 connector.applicationBootstrap();
