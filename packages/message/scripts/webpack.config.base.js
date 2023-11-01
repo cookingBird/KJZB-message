@@ -18,7 +18,7 @@ function rewritePkgFile(devOps) {
   fs.writeJsonSync('./package.json', pkgJson, { spaces: 2 })
 }
 rewritePkgFile({
-  main: ['src/index.js', 'dist/MicroMessage.min.js']
+  main: ['src/index.ts', 'dist/MicroMessage.min.js']
 })
 
 const config = {
@@ -38,6 +38,30 @@ const config = {
       commonjs2: 'vue',
       amd: 'vue'
     },
+    'wujie': {
+      root: 'wujie',
+      commonjs: 'wujie',
+      commonjs2: 'wujie',
+      amd: 'wujie'
+    },
+    'wujie-react': {
+      root: 'WujieReact',
+      commonjs: 'wujie-react',
+      commonjs2: 'wujie-react',
+      amd: 'wujie-react'
+    },
+    'wujie-vue2': {
+      root: 'WujieVue',
+      commonjs: 'wujie-vue2',
+      commonjs2: 'wujie-vue2',
+      amd: 'wujie-vue2'
+    },
+    'wujie-vue3': {
+      root: 'WujieVue',
+      commonjs: 'wujie-vue3',
+      commonjs2: 'wujie-vue3',
+      amd: 'wujie-vue3'
+    }
   },
   module: {
     rules: [
@@ -92,9 +116,9 @@ const config = {
   resolve: {
     fallback: {
       fs: false,
-      path: require.resolve('path-browserify'),
-      stream: require.resolve('stream-browserify'),
-      constants: require.resolve('constants-browserify')
+      path: false,
+      stream: false,
+      constants: false
     },
     extensions: ['.ts', '.js', '.css', '.vue']
   },

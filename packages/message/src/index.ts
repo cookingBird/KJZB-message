@@ -6,12 +6,17 @@ import type { App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
 export * as plugins from './plugins';
-export * as components from './components';
+import * as components from './components';
+
+export {
+  components
+}
 
 export const connector = new ApplicationChannel();
 connector.applicationBootstrap();
 
 export default function install(app: App) {
+  components.vuePlugin.install(app);
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {
       return connector

@@ -2,15 +2,15 @@
   "name": "@gislife/micro-message",
   "version": "4.1.6",
   "description": "message",
-  "main": "dist/MicroMessage.min.js",
+  "main": "dist/MicroMessage.js",
   "style": "dist/MicroMessage.css",
   "typings": "types/index.d.ts",
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development webpack --config ./scripts/webpack.config.dev.js",
     "build": "cross-env NODE_ENV=production webpack --config ./scripts/webpack.config.prod.js",
     "build:type": "vue-tsc -p ./tsconfig.build.json",
-    "dev": "cross-env NODE_ENV=development webpack --config ./scripts/webpack.config.dev.js",
     "publish:major": "npm version major && npm publish",
     "publish:minor": "npm version minor && npm publish",
     "publish:patch": "npm version patch && npm publish"
@@ -44,14 +44,15 @@
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1",
     "webpack-merge": "^5.8.0",
-    "webpack4": "npm:webpack@^4.46.0",
     "vue-tsc": "^1.8.22",
     "@vue/runtime-core": "3.3.4",
     "@vue/runtime-dom": "3.3.4"
   },
   "dependencies": {
     "@vue/runtime-dom": "^3.3.4",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "wujie-vue3": "1.0.18",
+    "qs": "6.11.2"
   },
   "publishConfig": {
     "registry": "http://192.168.1.212:8081/repository/npm-releases/"

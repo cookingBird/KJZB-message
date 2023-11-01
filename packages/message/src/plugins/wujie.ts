@@ -1,5 +1,5 @@
 import { mergeOps } from "../util";
-const WuJiePackage = require("wujie");
+import WujieVue3 from 'wujie';
 
 const defaultOps = {
 	wujieName: 'gislifeMap',
@@ -14,7 +14,7 @@ export default function createWuJiePlugin(options) {
 		messageCallback,
 		wujieName
 	} = mergedOps;
-	
+
 	const { bus } = WuJiePackage;
 	return {
 		install(connector) {

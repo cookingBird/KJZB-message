@@ -1,5 +1,6 @@
 import { mergeOps } from "../util";
-const WuJiePackage = require("wujie-vue3").default;
+import WujieVue3 from 'wujie-vue3';
+
 
 export type PluginOpsWs = {
 	wujieName: string;
@@ -13,15 +14,13 @@ const defaultOps = {
 	},
 };
 
-export default function createWuJieVue3Plugin(options:PluginOpsWs) {
+export default function createWuJieVue3Plugin(options: PluginOpsWs) {
 	const mergedOps = mergeOps(defaultOps, options);
 	const {
 		messageCallback,
 		wujieName
 	} = mergedOps;
 
-
-	const { bus } = WuJiePackage;
 	return {
 		install(connector) {
 			const msgProcess = (...params) => {
@@ -38,6 +37,7 @@ export default function createWuJieVue3Plugin(options:PluginOpsWs) {
 				})
 			};
 
+			const { bus } = WujieVue3;
 			bus.$on(wujieName, msgProcess);
 			return () => {
 				bus.$off(wujieName, msgProcess);

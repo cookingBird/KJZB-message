@@ -1,5 +1,6 @@
 import { mergeOps } from "../util";
-const WuJiePackage = require("wujie-react").default;
+import WujieVue3 from 'wujie-react';
+
 
 const defaultOps = {
 	wujieName: 'gislifeMap',

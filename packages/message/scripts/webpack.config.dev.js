@@ -2,7 +2,7 @@
 const path = require('path')
 const { merge } = require('webpack-merge')
 const base = require('./webpack.config.base')
-const pkgName = 'micro-message'
+const pkgName = 'MicroMessage'
 const config = {
   mode: 'development',
   entry: {
