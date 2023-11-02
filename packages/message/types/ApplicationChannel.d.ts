@@ -9,7 +9,7 @@ export declare class ApplicationChannel extends Channel {
     /**
      * @description 发送消息
      */
-    $send(msg: DataMsg): Promise<any>;
+    $send<R = any>(msg: DataMsg): Promise<R>;
     /**
      * @description 监听消息
      */
@@ -24,7 +24,7 @@ export declare class ApplicationChannel extends Channel {
     /**
      * @description send message to parent
      */
-    $emit(emitAndTar: string, data: any): Promise<any>;
+    $emit(tarAndEvent: string, data: any): Promise<any>;
     /**
      * @description send global message
      */

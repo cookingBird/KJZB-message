@@ -37,12 +37,12 @@ export class Channel extends Message {
   /**
    * @description send or passive message
    */
-  protected send(target: Window | undefined, msg: Partial<PassiveMsg>) {
+  protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>) {
     msg.sourceCode = msg.sourceCode ?? this.appCode;
     msg.popSource = msg.popSource ?? this.appCode;
     //* 从主应用发出去的消息都为false
     if (target) {
-      return super.__send(target, msg)
+      return super.__send<R>(target, msg)
     } else {
       const promises = []
       // 如果target不存在，则向全局发送消息

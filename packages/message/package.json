@@ -2,7 +2,7 @@
   "name": "@gislife/micro-message",
   "version": "4.1.6",
   "description": "message",
-  "main": "dist/MicroMessage.js",
+  "main": "src/index.ts",
   "style": "dist/MicroMessage.css",
   "typings": "types/index.d.ts",
   "scripts": {
@@ -51,8 +51,11 @@
   "dependencies": {
     "@vue/runtime-dom": "^3.3.4",
     "uuid": "^9.0.0",
+    "qs": "6.11.2",
+    "wujie": "1.0.18",
     "wujie-vue3": "1.0.18",
-    "qs": "6.11.2"
+    "wujie-react": "1.0.18",
+    "wujie-vue2": "1.0.18"
   },
   "publishConfig": {
     "registry": "http://192.168.1.212:8081/repository/npm-releases/"

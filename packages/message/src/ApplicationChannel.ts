@@ -18,7 +18,7 @@ export class ApplicationChannel extends Channel {
   /**
    * @description 发送消息
    */
-  public $send(msg: DataMsg) {
+  public $send<R = any>(msg: DataMsg) {
     let target
     if (!msg.target || !msg.type) throw Error('message syntax error')
     //todo main parent发送
@@ -27,7 +27,7 @@ export class ApplicationChannel extends Channel {
         console.warn('can not send message to myself')
         return
       }
-      return super.send(window.parent, msg)
+      return super.send<R>(window.parent, msg)
     } else {
       if (msg.type === 'setState') {
         //* cache state
@@ -41,7 +41,7 @@ export class ApplicationChannel extends Channel {
       } else {
         target = targetEl.contentWindow
       }
-      return super.send(target, msg)
+      return super.send<R>(target, msg)
     }
   }
 
@@ -81,15 +81,21 @@ export class ApplicationChannel extends Channel {
   /**
    * @description send message to parent
    */
-  public $emit(emitAndTar: string, data: any) {
-    if (!emitAndTar) {
+  public $emit(tarAndEvent: string, data: any) {
+    if (!tarAndEvent) {
       throw Error('emit is empty')
     }
-    const target = emitAndTar.split(":")[1] || 'parent';
-    const emitType = emitAndTar.split(":")[0];
+    let target = 'parent';
+    let event: string;
+    if (tarAndEvent.includes(':')) {
+      target = tarAndEvent.split(":")[0] || 'parent';
+      event = tarAndEvent.split(":")[1];
+    } else {
+      event = tarAndEvent;
+    }
     return this.$send({
       target,
-      type: emitType,
+      type: event,
       data: data
     })
   }

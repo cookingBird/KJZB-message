@@ -22,7 +22,7 @@ export declare class Channel extends Message {
     /**
      * @description send or passive message
      */
-    protected send(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<any>;
+    protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<R>;
     /**
      * @description receive message
      */
