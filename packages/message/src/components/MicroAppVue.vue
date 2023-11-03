@@ -17,6 +17,7 @@ import {
   computed,
   ref,
   watch,
+  defineOptions
 } from "vue";
 import { ensureInstance } from "../util";
 import { connector } from '../index';
