@@ -16,7 +16,7 @@ export class ApplicationChannel extends Channel {
     super(options)
     this._statePersistence()
   }
-  
+
   /**
    * @description 发送消息
    */
@@ -171,8 +171,8 @@ export class ApplicationChannel extends Channel {
   }
 
   /**
-  * @description build response msg
-  */
+    * @description build response msg
+    */
   private _getResponse(msg) {
     return data => {
       const responseMsg = {
