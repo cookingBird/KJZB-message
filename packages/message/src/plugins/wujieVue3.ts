@@ -25,20 +25,32 @@ export default function createWuJieVue3Plugin(options: PluginOpsWs) {
 		install(connector) {
 			const msgProcess = (...params) => {
 				const buildMsg = messageCallback(...params);
-				connector.$send({
-					target: wujieName,
-					...buildMsg
-				});
-				connector.on((msg) => {
-					bus.$emit(wujieName + '-Receive', {
-						type: msg.type,
-						response: connector._getResponse(msg)
+				// send msg forward
+				connector
+					.$send({
+						target: wujieName,
+						...buildMsg
 					})
-				})
+					?.then((data) => {
+						bus.$emit(wujieName + '-Receive', {
+							type: buildMsg.type,
+							data
+						})
+					});
+				// on msg forward
+				connector
+					.on((msg) => {
+						bus.$emit(wujieName + '-Receive', {
+							type: msg.type,
+							response: connector._getResponse(msg)
+						})
+					});
 			};
 
 			const { bus } = WujieVue3;
 			bus.$on(wujieName, msgProcess);
+
+			
 			return () => {
 				bus.$off(wujieName, msgProcess);
 				connector.unRegisterApp(wujieName);
