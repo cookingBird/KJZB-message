@@ -1,6 +1,7 @@
 import { Channel, stateMap } from './core';
 import { getParams, isObject } from './util';
 import type { PassiveMsg } from './core/Channel';
+import type { MessageOps } from './core/Message';
 
 
 export type DataMsg<T = any> = {
@@ -11,10 +12,11 @@ export type DataMsg<T = any> = {
 
 export class ApplicationChannel extends Channel {
 
-  constructor(options = {}) {
+  constructor(options: Partial<MessageOps> = {}) {
     super(options)
     this._statePersistence()
   }
+  
   /**
    * @description 发送消息
    */
@@ -44,8 +46,6 @@ export class ApplicationChannel extends Channel {
       return super.send<R>(target, msg)
     }
   }
-
-
 
   /**
    * @description 监听消息
@@ -99,6 +99,7 @@ export class ApplicationChannel extends Channel {
       data: data
     })
   }
+
   /**
    * @description send global message
    */
@@ -113,11 +114,8 @@ export class ApplicationChannel extends Channel {
 
   /**
    * @description 接收消息 T为消息的具体格式
-   * @template T
-   * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
-   * @returns {cancelCallback} 取消回调的函数
    */
-  public onState(cb) {
+  public onState<T>(cb: (data: T) => {}) {
     if (typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
@@ -134,7 +132,6 @@ export class ApplicationChannel extends Channel {
 
   /**
    * @description main
-   * @param {Channel} instance
    */
   public applicationBootstrap() {
     if (window.parent !== window) {
@@ -148,9 +145,9 @@ export class ApplicationChannel extends Channel {
       this.setAppCode('main')
     }
   }
+
   /**
    * @description AppCode
-   * @returns {string} microAppCode
    */
   public getMicroAppCode() {
     return this.appCode
@@ -158,7 +155,6 @@ export class ApplicationChannel extends Channel {
 
   /**
    * @description 是否是主应用
-   * @returns {boolean}
    */
   public isMain() {
     return this.appCode === 'main'
@@ -173,6 +169,7 @@ export class ApplicationChannel extends Channel {
       if (state) responser(state)
     })
   }
+
   /**
   * @description build response msg
   */
