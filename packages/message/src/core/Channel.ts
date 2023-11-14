@@ -61,9 +61,10 @@ export class Channel extends Message {
   protected on(cb: (res: PassiveMsg) => void) {
     return super.__on(res => {
       if (
-        res.target === this.appCode ||
-        res.target === 'parent' ||
-        res.target === 'global'
+        res.target === this.appCode
+        || res.target === 'parent'
+        || res.target === 'global'
+        || (res.target === 'main' && window.parent === window)
       ) {
         cb(res as PassiveMsg)
       }
