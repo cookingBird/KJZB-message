@@ -4,18 +4,18 @@
     alt="Vue logo"
     src="./assets/logo.png"
   >
-  <div>global:{{global}}</div>
-  <button @click="getConfig">获取全局配置</button>
+  <div>global:{{ global }}</div>
   <button @click="responserTest">Responser Test</button>
-  <button @click="configTest">Config Test</button>
   <button @click="globalSend">全局发送</button>
-  <div>{{msg}}</div>
+  <button @click="getFromParents">getFromParents</button>
+  <div>{{ msg }}</div>
   <HelloWorld msg="This is grand2" />
 </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import { connector } from '@gislife/micro-message'
 
 export default {
   name: 'App',
@@ -30,24 +30,13 @@ export default {
   },
   //grand2
   created() {
-    this.$connector.$on( 'callback', (res) => {
+    connector.$on('callback', (res) => {
       console.warn('success------callback--------', res)
-    })
-    this.$connector.$on( ({ data }) => {
-      if (data.type === 'message') {
-        this.global = data.data;
-        console.warn('callback global send success-----------------', data, this.$connector.getMicroAppCode());
-      }
     })
   },
   methods: {
-    getConfig() {
-      this.$connector.getConfig().then(res => {
-        console.warn('get config success--------------', res)
-      })
-    },
     responserTest() {
-      this.$connector.$send({
+      connector.$send({
         target: 'main',
         type: 'responser',
         timeout: 3000
@@ -55,20 +44,19 @@ export default {
         console.error('test responser success--------------', res)
       })
     },
-    configTest() {
-      this.$connector.$send({
-        target: 'main',
-        type: 'configTest',
-        timeout: 3000
-      }).then(res => {
-        console.error('test configTest success--------------', res)
-      })
-    },
     globalSend() {
-      this.$connector.$send({
+      connector.$send({
         target: 'global',
         type: 'message',
         data: Math.floor(Math.random() * 100000)
+      })
+    },
+    getFromParents() {
+      connector.$send({
+        target: 'main',
+        type: 'testGet'
+      }).then((r) => {
+        console.log('---------get success', r)
       })
     }
   }
@@ -76,16 +64,16 @@ export default {
 </script>
 
 <style>
-  body {
-    height: 100vh;
-    margin: 0;
-  }
+body {
+  height: 100vh;
+  margin: 0;
+}
 
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 </style>

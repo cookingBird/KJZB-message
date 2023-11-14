@@ -9,7 +9,10 @@ module.exports = defineConfig({
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "X-Requested-With,Content-Type",
         "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        "Content-Type": "application/json; charset=utf-8",
+        // "Content-Type": "application/json; charset=utf-8",
+      },
+      client: {
+        overlay: false,
       }
     }
   }

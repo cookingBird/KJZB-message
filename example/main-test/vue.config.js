@@ -6,6 +6,9 @@ module.exports = defineConfig({
   configureWebpack: {
     devServer: {
       port: 7070,
+      client: {
+        overlay: false,
+      },
     },
     module: {
       rules: [

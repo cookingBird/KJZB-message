@@ -6,7 +6,6 @@
     "moduleResolution": "Node",
     "strict": false,
     "alwaysStrict": false,
-    "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "strictFunctionTypes": false,

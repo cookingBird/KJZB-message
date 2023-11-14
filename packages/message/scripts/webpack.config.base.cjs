@@ -17,51 +17,57 @@ function rewritePkgFile(devOps) {
   }
   fs.writeJsonSync('./package.json', pkgJson, { spaces: 2 })
 }
-rewritePkgFile({
-  main: ['src/index.ts', 'dist/MicroMessage.min.js']
-})
+// rewritePkgFile({
+//   main: ['src/index.ts', 'dist/MicroMessage.min.js']
+// })
 
 const config = {
   devtool: 'source-map',
+  experiments: {
+    outputModule: true
+  },
   output: {
     filename: '[name].js',
+    globalObject: 'this || globalThis || self || window',
     library: {
-      name: '[name]',
-      type: 'umd'
+      // name: '[name]',
+      type: 'module'
     }
   },
   externals: {
     fs: 'fs-extra',
-    vue: {
-      root: 'Vue',
-      commonjs: 'vue',
-      commonjs2: 'vue',
-      amd: 'vue'
-    },
-    'wujie': {
-      root: 'wujie',
-      commonjs: 'wujie',
-      commonjs2: 'wujie',
-      amd: 'wujie'
-    },
-    'wujie-react': {
-      root: 'WujieReact',
-      commonjs: 'wujie-react',
-      commonjs2: 'wujie-react',
-      amd: 'wujie-react'
-    },
-    'wujie-vue2': {
-      root: 'WujieVue',
-      commonjs: 'wujie-vue2',
-      commonjs2: 'wujie-vue2',
-      amd: 'wujie-vue2'
-    },
-    'wujie-vue3': {
-      root: 'WujieVue',
-      commonjs: 'wujie-vue3',
-      commonjs2: 'wujie-vue3',
-      amd: 'wujie-vue3'
-    }
+    // vue: {
+    //   root: 'Vue',
+    //   commonjs: 'vue',
+    //   commonjs2: 'vue',
+    //   amd: 'vue'
+    // },
+    // 'wujie': {
+    //   root: 'wujie',
+    //   commonjs: 'wujie',
+    //   commonjs2: 'wujie',
+    //   amd: 'wujie'
+    // },
+    // 'wujie-react': {
+    //   root: 'WujieReact',
+    //   commonjs: 'wujie-react',
+    //   commonjs2: 'wujie-react',
+    //   amd: 'wujie-react'
+    // },
+    // 'wujie-vue2': {
+    //   root: 'WujieVue',
+    //   commonjs: 'wujie-vue2',
+    //   commonjs2: 'wujie-vue2',
+    //   amd: 'wujie-vue2'
+    // },
+    // 'wujie-vue3': {
+    //   root: 'WujieVue',
+    //   commonjs: 'wujie-vue3',
+    //   commonjs2: 'wujie-vue3',
+    //   amd: 'wujie-vue3'
+    // },
+    "wujie-vue3": 'wujie-vue3',
+    "vue": "vue"
   },
   module: {
     rules: [
