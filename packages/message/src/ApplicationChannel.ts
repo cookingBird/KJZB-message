@@ -1,13 +1,13 @@
 import { Channel, stateMap } from './core';
 import { getParams, isObject } from './util';
 import type { PassiveMsg } from './core/Channel';
-import type { MessageOps } from './core/Message';
+import type { MessageOps, BaseMsg } from './core/Message';
 
 
 export type DataMsg<T = any> = {
   type: string;
   data?: T;
-} & Pick<PassiveMsg, 'target'> & Partial<Pick<PassiveMsg, 'sourceCode'>>
+} & Partial<PassiveMsg>
 
 
 export class ApplicationChannel extends Channel {
@@ -63,14 +63,14 @@ export class ApplicationChannel extends Channel {
     }
     if (typeof type === 'function') {
       onCancel = super.on(msg => {
-        const responser = this._getResponse(msg)
+        const responser = this._getResponse(msg as DataMsg)
         type({ responser, msg: msg as unknown as DataMsg<T> })
       })
       return onCancel
     } else {
       onCancel = super.on(msg => {
         if (msg.type === type) {
-          const responser = this._getResponse(msg)
+          const responser = this._getResponse(msg as DataMsg)
           cb({ data: msg.data, responser, msg: msg as unknown as DataMsg<T> })
         }
       })
@@ -173,13 +173,14 @@ export class ApplicationChannel extends Channel {
   /**
     * @description build response msg
     */
-  private _getResponse(msg) {
+  private _getResponse(msg: DataMsg<any>) {
     return data => {
       const responseMsg = {
         target: msg.sourceCode,
         sourceCode: this.appCode,
         popSource: this.appCode,
         type: msg.type,
+        id: msg.id
       };
       let type
       if (isObject(data) && data._type) {
