@@ -44,47 +44,38 @@ export class Message {
     if (!msg) {
       throw Error(`_postmessage msg not exist;`)
     };
-
-    if (msg?.id) {
+    const sendMsg = JSON.parse(JSON.stringify(msg)) as Partial<BaseMsg>;
+    sendMsg.belong = sendMsg.belong ?? this.belong;
+    sendMsg.id = sendMsg.id ?? uuidv4();
+    return new Promise((resolve, reject) => {
       try {
-        target.postMessage(msg, '*');
-        return
+        target.postMessage(sendMsg, '*');
       } catch (error) {
-        console.error(`response message error`);
-      }
-    } else {
-      const id = uuidv4();
-      const sendRes = { id, belong: this.belong, ...msg }
-      return new Promise((resolve, reject) => {
-        try {
-          target.postMessage(sendRes, '*');
-        } catch (error) {
-          console.error(
-            `postMessage error, 
+        console.error(
+          `postMessage error, 
               msg type is ${msg.type},
               target is ${msg.target},
               sourceCode is ${msg.sourceCode}\n`,
-            msg.data,
-            error
-          )
+          msg.data,
+          error
+        )
+      }
+      const cancel = this.__on(data => {
+        if (isObject(data) && data.id === sendMsg.id && data.belong === sendMsg.belong) {
+          isSendOK = true
+          cancel()
+          resolve(data.data)
         }
-        const cancel = this.__on(data => {
-          if (isObject(data) && data.id === id && data.belong === this.belong) {
-            isSendOK = true
-            cancel()
-            resolve(data.data)
-          }
-        })
-        setTimeout(() => {
-          if (!isSendOK) {
-            cancel()
-            if (this.rejectMissing) {
-              reject()
-            }
-          }
-        }, timeout)
       })
-    };
+      setTimeout(() => {
+        if (!isSendOK) {
+          cancel()
+          if (this.rejectMissing) {
+            reject()
+          }
+        }
+      }, timeout)
+    })
   }
 
   /**
