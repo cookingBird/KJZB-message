@@ -23,7 +23,7 @@ export class Message {
   protected belong: string;
   protected rejectMissing: boolean;
   constructor(options: Partial<MessageOps> = {}) {
-    this.appCode = ''
+    this.appCode = window.parent === window ? 'main' : '';
     this.targetOrigin = options.targetOrigin ?? '*'
     this.timeout = options.timeout ?? 3 * 1000
     this.belong = options.namespace ?? 'gislife'
