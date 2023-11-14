@@ -2,9 +2,9 @@
   "name": "@gislife/micro-message",
   "version": "4.1.6",
   "description": "message",
-  "main": "src/index.ts",
+  "main": "dist/MicroMessage.min.js",
   "style": "dist/MicroMessage.css",
-  "typings": "types/index.d.ts",
+  "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
     "serve": "",
