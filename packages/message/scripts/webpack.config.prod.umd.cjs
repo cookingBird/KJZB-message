@@ -17,7 +17,9 @@ module.exports = (env, argv) => {
       [pkgName]: path.resolve(__dirname, '../src/index.ts')
     },
     output: {
+      path: path.resolve(__dirname, '../dist'),
       filename: '[name].umd.js',
+      globalObject: 'this || globalThis || self || window',
       library: {
         name: '[name]',
         type: 'umd'

@@ -24,10 +24,6 @@ function rewritePkgFile(devOps) {
 
 const config = {
   devtool: 'source-map',
-  output: {
-    path: path.resolve(__dirname, '../dist'),
-    globalObject: 'this || globalThis || self || window',
-  },
   module: {
     rules: [
       {
