@@ -2,9 +2,10 @@
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const isProd = process.env.NODE_ENV === 'production';
 
 function rewritePkgFile(devOps) {
   const fs = require('fs-extra')
@@ -23,51 +24,9 @@ function rewritePkgFile(devOps) {
 
 const config = {
   devtool: 'source-map',
-  experiments: {
-    outputModule: true
-  },
   output: {
-    filename: '[name].js',
+    path: path.resolve(__dirname, '../dist'),
     globalObject: 'this || globalThis || self || window',
-    library: {
-      // name: '[name]',
-      type: 'module'
-    }
-  },
-  externals: {
-    fs: 'fs-extra',
-    // vue: {
-    //   root: 'Vue',
-    //   commonjs: 'vue',
-    //   commonjs2: 'vue',
-    //   amd: 'vue'
-    // },
-    // 'wujie': {
-    //   root: 'wujie',
-    //   commonjs: 'wujie',
-    //   commonjs2: 'wujie',
-    //   amd: 'wujie'
-    // },
-    // 'wujie-react': {
-    //   root: 'WujieReact',
-    //   commonjs: 'wujie-react',
-    //   commonjs2: 'wujie-react',
-    //   amd: 'wujie-react'
-    // },
-    // 'wujie-vue2': {
-    //   root: 'WujieVue',
-    //   commonjs: 'wujie-vue2',
-    //   commonjs2: 'wujie-vue2',
-    //   amd: 'wujie-vue2'
-    // },
-    // 'wujie-vue3': {
-    //   root: 'WujieVue',
-    //   commonjs: 'wujie-vue3',
-    //   commonjs2: 'wujie-vue3',
-    //   amd: 'wujie-vue3'
-    // },
-    "wujie-vue3": 'wujie-vue3',
-    "vue": "vue"
   },
   module: {
     rules: [
@@ -118,7 +77,6 @@ const config = {
       },
     ]
   },
-
   resolve: {
     fallback: {
       fs: false,
@@ -133,7 +91,7 @@ const config = {
     new VueLoaderPlugin(),
     // new CleanWebpackPlugin(),
     new NodePolyfillPlugin()
-  ]
+  ],
 }
 
 

@@ -54,6 +54,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^8.0.3
         version: 8.7.1(eslint@7.32.0)
+      ts-loader:
+        specifier: 9.5.0
+        version: 9.5.0(typescript@5.2.2)(webpack@5.89.0)
 
   example/child2:
     dependencies:
@@ -97,6 +100,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^8.0.3
         version: 8.7.1(eslint@7.32.0)
+      ts-loader:
+        specifier: 9.5.0
+        version: 9.5.0(typescript@5.2.2)(webpack@5.89.0)
 
   example/grand1:
     dependencies:
@@ -140,6 +146,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^8.0.3
         version: 8.7.1(eslint@7.32.0)
+      ts-loader:
+        specifier: 9.5.0
+        version: 9.5.0(typescript@5.2.2)(webpack@5.89.0)
 
   example/grand2:
     dependencies:
@@ -183,6 +192,9 @@ importers:
       eslint-plugin-vue:
         specifier: ^8.0.3
         version: 8.7.1(eslint@7.32.0)
+      ts-loader:
+        specifier: 9.5.0
+        version: 9.5.0(typescript@5.2.2)(webpack@5.89.0)
 
   example/main-test:
     dependencies:
