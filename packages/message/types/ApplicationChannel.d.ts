@@ -1,11 +1,12 @@
 import { Channel } from './core';
 import type { PassiveMsg } from './core/Channel';
+import type { MessageOps } from './core/Message';
 export type DataMsg<T = any> = {
     type: string;
     data?: T;
-} & Pick<PassiveMsg, 'target'> & Partial<Pick<PassiveMsg, 'sourceCode'>>;
+} & Partial<PassiveMsg>;
 export declare class ApplicationChannel extends Channel {
-    constructor(options?: {});
+    constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息
      */
@@ -15,11 +16,11 @@ export declare class ApplicationChannel extends Channel {
      */
     $on<T = any>(type: string | ((res: {
         msg: DataMsg<T>;
-        responser: (msg: DataMsg) => void;
+        responser: (data: any) => void;
     }) => void), cb?: (res: {
         msg: DataMsg<T>;
         data: T;
-        responser: (msg: DataMsg) => void;
+        responser: (data: any) => void;
     }) => void): any;
     /**
      * @description send message to parent
@@ -31,24 +32,18 @@ export declare class ApplicationChannel extends Channel {
     $emitAll(event: string, data: any): void;
     /**
      * @description 接收消息 T为消息的具体格式
-     * @template T
-     * @param {IGenericFunction<T,any>} cb 接收消息的回调函数
-     * @returns {cancelCallback} 取消回调的函数
      */
-    onState(cb: any): any;
+    onState<T>(cb: (data: T) => {}): any;
     /**
      * @description main
-     * @param {Channel} instance
      */
     applicationBootstrap(): void;
     /**
      * @description AppCode
-     * @returns {string} microAppCode
      */
     getMicroAppCode(): string;
     /**
      * @description 是否是主应用
-     * @returns {boolean}
      */
     isMain(): boolean;
     /**
@@ -56,7 +51,7 @@ export declare class ApplicationChannel extends Channel {
      */
     private _statePersistence;
     /**
-    * @description build response msg
-    */
+      * @description build response msg
+      */
     private _getResponse;
 }
