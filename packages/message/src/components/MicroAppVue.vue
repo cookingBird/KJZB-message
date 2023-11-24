@@ -1,9 +1,9 @@
 <template>
 <iframe
   ref="container"
-  :data-app-code="microAppCode"
-  :src="buildSrc(src)"
-  :id="id"
+  :data-app-code=" microAppCode "
+  :src=" buildSrc(src) "
+  :id=" id "
   class="gislife-micro-app"
   title=""
 >
@@ -40,16 +40,18 @@ const props = defineProps({
 })
 const emits = defineEmits<{
   (e: 'load'): void;
-  (e: any, data: any): void;
+  (e: any, data: any, responsor: (d: any) => void, msg: any): void;
 }>();
 
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => JSON.parse(JSON.stringify(props.state ?? {})));
 function buildSrc(src) {
   const query = stringify(props.query || {});
-  if (src.indexOf('?') === -1) {
+  if(src.indexOf('?') === -1)
+  {
     return src + '?' + query + '&microAppCode=' + props.microAppCode;
-  } else {
+  } else
+  {
     return src + '&' + query + '&microAppCode=' + props.microAppCode;
   }
 }
@@ -79,8 +81,8 @@ onBeforeUnmount(watch(passiveState, (val) => {
 }))
 
 onMounted(() => {
-  const cancel = connector.$on(({ msg }) => {
-    emits(msg.type, msg.data)
+  const cancel = connector.$on(({ msg, responser }) => {
+    emits(msg.type, msg.data, responser, msg)
   });
   onBeforeUnmount(cancel);
 })
@@ -91,8 +93,8 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="css">
-  .gislife-micro-app {
-    width: 100%;
-    height: 100%;
-  }
+.gislife-micro-app {
+  width: 100%;
+  height: 100%;
+}
 </style>

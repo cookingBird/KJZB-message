@@ -10,7 +10,7 @@ declare const _default: import("vue").DefineComponent<{
     state: ObjectConstructor;
     query: ObjectConstructor;
 }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
-    [x: string]: (data: any) => void;
+    [x: string]: (data: any, responsor: (d: any) => void, msg: any) => void;
     load: () => void;
 }, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
     src: {
@@ -24,6 +24,6 @@ declare const _default: import("vue").DefineComponent<{
     state: ObjectConstructor;
     query: ObjectConstructor;
 }>> & {
-    [x: `on${Capitalize<any>}`]: (data: any) => any;
+    [x: `on${Capitalize<any>}`]: (data: any, responsor: (d: any) => void, msg: any) => any;
 }, {}, {}>;
 export default _default;

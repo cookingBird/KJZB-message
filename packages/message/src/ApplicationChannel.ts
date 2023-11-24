@@ -10,11 +10,9 @@ export type DataMsg<T = any> = {
 } & Partial<PassiveMsg>
 
 
-export class ApplicationChannel extends Channel
-{
+export class ApplicationChannel extends Channel {
 
-  constructor(options: Partial<MessageOps> = {})
-  {
+  constructor(options: Partial<MessageOps> = {}) {
     super(options)
     this._statePersistence()
   }
@@ -22,8 +20,7 @@ export class ApplicationChannel extends Channel
   /**
    * @description 发送消息
    */
-  public $send<R = any>(msg: DataMsg)
-  {
+  public $send<R = any>(msg: DataMsg) {
     let target
     if(!msg.target || !msg.type) throw Error('message syntax error')
     //todo main parent发送
@@ -61,8 +58,7 @@ export class ApplicationChannel extends Channel
    */
   public $on<T = any>(
     type: string | ((res: { msg: DataMsg<T>, responser: (data: any) => void }) => void),
-    cb?: (res: { msg: DataMsg<T>, data: T, responser: (data: any) => void }) => void)
-  {
+    cb?: (res: { msg: DataMsg<T>, data: T, responser: (data: any) => void }) => void) {
 
     let onCancel
     if(cb && typeof cb !== 'function')
@@ -75,16 +71,15 @@ export class ApplicationChannel extends Channel
     }
     if(typeof type === 'function')
     {
-      onCancel = super.on(msg =>
-      {
+      onCancel = super.on(msg => {
         const responser = this._getResponse(msg as DataMsg)
         type({ responser, msg: msg as unknown as DataMsg<T> })
       })
       return onCancel
-    } else
+    }
+    else
     {
-      onCancel = super.on(msg =>
-      {
+      onCancel = super.on(msg => {
         if(msg.type === type)
         {
           const responser = this._getResponse(msg as DataMsg)
@@ -98,8 +93,7 @@ export class ApplicationChannel extends Channel
   /**
    * @description send message to parent
    */
-  public $emit(tarAndEvent: string, data: any)
-  {
+  public $emit(tarAndEvent: string, data: any) {
     if(!tarAndEvent)
     {
       throw Error('emit is empty')
@@ -124,8 +118,7 @@ export class ApplicationChannel extends Channel
   /**
    * @description send global message
    */
-  public $emitAll(event: string, data: any)
-  {
+  public $emitAll(event: string, data: any) {
     this.$send({
       target: 'global',
       type: event,
@@ -137,8 +130,7 @@ export class ApplicationChannel extends Channel
   /**
    * @description 接收消息 T为消息的具体格式
    */
-  public onState<T>(cb: (data: T) => {})
-  {
+  public onState<T>(cb: (data: T) => {}) {
     if(typeof cb !== 'function')
     {
       throw Error(`onState callback param error,current type is ${ typeof cb }`)
@@ -147,8 +139,7 @@ export class ApplicationChannel extends Channel
       target: 'parent',
       type: 'getState'
     })?.then(cb)
-    return this.$on(({ msg }) =>
-    {
+    return this.$on(({ msg }) => {
       if(msg.type === 'setState')
       {
         cb(msg.data)
@@ -159,8 +150,7 @@ export class ApplicationChannel extends Channel
   /**
    * @description main
    */
-  public applicationBootstrap()
-  {
+  public applicationBootstrap() {
     if(window.parent !== window)
     {
       // TODO 获取子应用AppCode
@@ -178,26 +168,22 @@ export class ApplicationChannel extends Channel
   /**
    * @description AppCode
    */
-  public getMicroAppCode()
-  {
+  public getMicroAppCode() {
     return this.appCode
   }
 
   /**
    * @description 是否是主应用
    */
-  public isMain()
-  {
+  public isMain() {
     return this.appCode === 'main'
   }
 
   /**
    * @description maintain state map
    */
-  private _statePersistence()
-  {
-    this.$on('getState', ({ responser, msg }) =>
-    {
+  private _statePersistence() {
+    this.$on('getState', ({ responser, msg }) => {
       const state = stateMap.get(msg.sourceCode)
       if(state) responser(state)
     })
@@ -206,10 +192,8 @@ export class ApplicationChannel extends Channel
   /**
     * @description build response msg
     */
-  private _getResponse(msg: DataMsg<any>)
-  {
-    return data =>
-    {
+  private _getResponse(msg: DataMsg<any>) {
+    return data => {
       const responseMsg = {
         target: msg.sourceCode,
         sourceCode: this.appCode,
