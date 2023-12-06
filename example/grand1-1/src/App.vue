@@ -11,7 +11,7 @@
   <button @click="emit2">emit to child2</button>
   <button @click="emitPop">emit pop</button>
 
-  <HelloWorld msg="This is grand1" />
+  <HelloWorld msg="This is grand1-1" />
 </div>
 </template>
 
