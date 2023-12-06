@@ -23,14 +23,11 @@ export class ApplicationChannel extends Channel {
   public $send<R = any>(msg: DataMsg) {
     if(!msg.target || !msg.type) throw Error('message syntax error')
     //* main parent发送
-    if(msg.target === 'main' || msg.target === 'parent')
-    {
+    if(msg.target === 'main' || msg.target === 'parent') {
       return super.send<R>(window.parent, msg)
     }
-    else
-    {
-      if(msg.type === 'setState')
-      {
+    else {
+      if(msg.type === 'setState') {
         //* cache state
         stateMap.set(msg.target, msg.data);
       }
@@ -48,27 +45,22 @@ export class ApplicationChannel extends Channel {
     cb?: (res: { msg: DataMsg<T>, data: T, responser: (data: any) => void }) => void) {
 
     let onCancel
-    if(cb && typeof cb !== 'function')
-    {
+    if(cb && typeof cb !== 'function') {
       throw Error(`$on callback param error,current type is ${typeof cb}`)
     }
-    if(typeof type !== 'string' && typeof type !== 'function')
-    {
+    if(typeof type !== 'string' && typeof type !== 'function') {
       throw Error('type parma type error')
     }
-    if(typeof type === 'function')
-    {
+    if(typeof type === 'function') {
       onCancel = super.on(msg => {
         const responser = this._getResponse(msg as DataMsg)
         type({ responser, msg: msg as unknown as DataMsg<T> })
       })
       return onCancel
     }
-    else
-    {
+    else {
       onCancel = super.on(msg => {
-        if(msg.type === type)
-        {
+        if(msg.type === type) {
           const responser = this._getResponse(msg as DataMsg)
           cb({ data: msg.data, responser, msg: msg as unknown as DataMsg<T> })
         }
@@ -81,18 +73,15 @@ export class ApplicationChannel extends Channel {
    * @description send message to parent
    */
   public $emit(tarAndEvent: string, data: any) {
-    if(!tarAndEvent)
-    {
+    if(!tarAndEvent) {
       throw Error('emit is empty')
     }
     let target = 'parent';
     let event: string;
-    if(tarAndEvent.includes(':'))
-    {
+    if(tarAndEvent.includes(':')) {
       target = tarAndEvent.split(":")[0] || 'parent';
       event = tarAndEvent.split(":")[1];
-    } else
-    {
+    } else {
       event = tarAndEvent;
     }
     return this.$send({
@@ -118,8 +107,7 @@ export class ApplicationChannel extends Channel {
    * @description 接收消息 T为消息的具体格式
    */
   public onState<T>(cb: (data: T) => {}) {
-    if(typeof cb !== 'function')
-    {
+    if(typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
     this.$send({
@@ -127,8 +115,7 @@ export class ApplicationChannel extends Channel {
       type: 'getState'
     })?.then(cb)
     return this.$on(({ msg }) => {
-      if(msg.type === 'setState')
-      {
+      if(msg.type === 'setState') {
         cb(msg.data)
       }
     })
@@ -138,16 +125,17 @@ export class ApplicationChannel extends Channel {
    * @description main
    */
   public applicationBootstrap() {
-    if(window.parent !== window)
-    {
-      //* 获取子应用AppCode
-      const params = getParams(window.location);
+    //* 获取应用AppCode
+    const params = getParams(window.location);
+    const { microAppCode: appCode } = params;
+    // todo 此处应设置一个获取appCode的HOOK
+    //* 如果当前应用不是主应用，且当前应用是被嵌入到message框架之中
+    if(window.parent !== window && appCode) {
       //* 子应用
-      this.setAppCode(params.microAppCode);
-      this.emitRegisterEvent(params.microAppCode);
+      this.setAppCode(appCode);
+      this.emitRegisterEvent(appCode);
     }
-    else
-    {
+    else {
       //* 主应用
       this.setAppCode('main');
     }
