@@ -1,26 +1,19 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "target": "ES5",
     "module": "esnext",
-    "jsx": "preserve",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "strict": false,
-    "alwaysStrict": false,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    "strictFunctionTypes": false,
-    "strictNullChecks": false,
-    "allowJs": true,
-    "noEmit": true,
-    "sourceMap": false,
-    "noImplicitAny": false,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
-    "isolatedModules": false,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
   "vueCompilerOptions": {
@@ -33,5 +26,8 @@
     "src/**/*.js",
     "src/**/*.jsx"
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

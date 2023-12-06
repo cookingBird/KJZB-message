@@ -1,5 +1,21 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "0.0.0",
-  "packages": ["packages/*", "example/*"]
+  "packages": [
+    "packages/*",
+    "example/*"
+  ],
+  "npmClient": "pnpm",
+  "command": {
+    "version": {
+      "allowBranch": "master"
+    },
+    "bootstrap": {
+      "npmClientArgs": [
+        "--no-package-lock",
+        "--strict-peer-dependencies",
+        "--ignore-scripts"
+      ]
+    }
+  }
 }

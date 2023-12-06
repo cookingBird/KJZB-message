@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     devServer: {
-      port: 7003,
+      port: 7004,
       headers: {
         "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Origin": "*",
@@ -13,21 +13,7 @@ module.exports = defineConfig({
       },
       client: {
         overlay: false,
-      },
-    },
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              appendTsSuffixTo: [/\.vue$/],
-            }
-          },
-        },
-      ],
-    },
+      }
+    }
   }
 })

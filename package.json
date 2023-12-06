@@ -1,5 +1,5 @@
 {
-  "name": "root",
+  "name": "message",
   "private": true,
   "packageManager": "pnpm",
   "scripts": {

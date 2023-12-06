@@ -13,15 +13,15 @@
       :url="child1Config.url"
       class="container-item"
       :name="child1Config.microAppCode"
-      :sync="true"
+      :degrade="false"
     >
     </WujieVue>
-    <MicroMessageApp
+    <!-- <MicroMessageApp
       :src="child2Config.url"
       class="container-item"
       :microAppCode="child2Config.microAppCode"
     >
-    </MicroMessageApp>
+    </MicroMessageApp> -->
   </div>
 </div>
 </template>
@@ -69,7 +69,7 @@ export default {
     }))
     onBeforeUnmount(connector.$on('config', ({ responser, msg }) => {
       console.log('on config', msg);
-      responser({appCode:"GHGQSB"})
+      responser({ appCode: "GHGQSB" })
     }))
   },
   methods: {

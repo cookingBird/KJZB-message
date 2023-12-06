@@ -2,7 +2,7 @@
  * @author dengtao
  */
 import './polyfill';
-import type { App } from 'vue';
+import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
 export * as plugins from './plugins';

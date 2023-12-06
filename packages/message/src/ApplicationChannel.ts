@@ -21,18 +21,13 @@ export class ApplicationChannel extends Channel {
    * @description 发送消息
    */
   public $send<R = any>(msg: DataMsg) {
-    let target
     if(!msg.target || !msg.type) throw Error('message syntax error')
-    //todo main parent发送
+    //* main parent发送
     if(msg.target === 'main' || msg.target === 'parent')
     {
-      if(window.parent === window && msg.target === 'main')
-      {
-        console.warn('can not send message to myself')
-        return
-      }
       return super.send<R>(window.parent, msg)
-    } else
+    }
+    else
     {
       if(msg.type === 'setState')
       {
@@ -40,16 +35,8 @@ export class ApplicationChannel extends Channel {
         stateMap.set(msg.target, msg.data);
       }
       const targetEl = this.getApp(msg.target)
-      if(!targetEl)
-      {
-        console.warn(
-          `current layer target not exist target named ${ msg.target }`
-        )
-      } else
-      {
-        target = targetEl.contentWindow
-      }
-      return super.send<R>(target, msg)
+      if(!targetEl) throw Error(`current layer target not exist target named ${msg.target}`);
+      return super.send<R>(targetEl.contentWindow, msg);
     }
   }
 
@@ -63,7 +50,7 @@ export class ApplicationChannel extends Channel {
     let onCancel
     if(cb && typeof cb !== 'function')
     {
-      throw Error(`$on callback param error,current type is ${ typeof cb }`)
+      throw Error(`$on callback param error,current type is ${typeof cb}`)
     }
     if(typeof type !== 'string' && typeof type !== 'function')
     {
@@ -133,7 +120,7 @@ export class ApplicationChannel extends Channel {
   public onState<T>(cb: (data: T) => {}) {
     if(typeof cb !== 'function')
     {
-      throw Error(`onState callback param error,current type is ${ typeof cb }`)
+      throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
     this.$send({
       target: 'parent',
@@ -153,15 +140,16 @@ export class ApplicationChannel extends Channel {
   public applicationBootstrap() {
     if(window.parent !== window)
     {
-      // TODO 获取子应用AppCode
-      /**@type ParamsType */
-      const params = getParams(window.location)
-      // ! 子应用
-      this.setAppCode(params.microAppCode)
-    } else
+      //* 获取子应用AppCode
+      const params = getParams(window.location);
+      //* 子应用
+      this.setAppCode(params.microAppCode);
+      this.emitRegisterEvent(params.microAppCode);
+    }
+    else
     {
-      // ! 主应用
-      this.setAppCode('main')
+      //* 主应用
+      this.setAppCode('main');
     }
   }
 
@@ -195,26 +183,14 @@ export class ApplicationChannel extends Channel {
   private _getResponse(msg: DataMsg<any>) {
     return data => {
       const responseMsg = {
+        id: msg.id,
         target: msg.sourceCode,
+        type: msg.type,
         sourceCode: this.appCode,
         popSource: this.appCode,
-        type: msg.type,
-        id: msg.id
+        data: data
       };
-      let type
-      if(isObject(data) && data._type)
-      {
-        type = data._type
-        delete data._type
-      } else
-      {
-        type = msg.type
-        console.warn(
-          `responser miss _type filed, maybe cause infinite loop,current type is ${ type }`
-        )
-      }
-
-      return this.$send({ ...responseMsg, data: data, type: type })
+      return this.$send(responseMsg);
     }
   }
 }

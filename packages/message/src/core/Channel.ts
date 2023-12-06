@@ -41,12 +41,16 @@ export class Channel extends Message {
     msg.sourceCode = msg.sourceCode ?? this.appCode;
     msg.popSource = msg.popSource ?? this.appCode;
     //* 从主应用发出去的消息都为false
-    if (target) {
+    if(target)
+    {
       return super.__send<R>(target, msg)
-    } else {
+    }
+    else
+    {
       const promises = []
       // 如果target不存在，则向全局发送消息
-      if (window.parent !== window) {
+      if(window.parent !== window)
+      {
         promises.push(super.__send(window.parent, { ...msg, pop: true }))
       }
       microAppMap.forEach((value, key) => {
@@ -60,12 +64,12 @@ export class Channel extends Message {
    */
   protected on(cb: (res: PassiveMsg) => void) {
     return super.__on(res => {
-      if (
+      if(
         res.target === this.appCode
         || res.target === 'parent'
         || res.target === 'global'
-        || (res.target === 'main' && window.parent === window)
-      ) {
+      )
+      {
         cb(res as PassiveMsg)
       }
     })
@@ -75,15 +79,19 @@ export class Channel extends Message {
    * @description set current appcode and registry to parent window
    */
   protected setAppCode(val: string): void {
-    this.appCode = val
-    if (window.parent !== window) {
-      this.send(window.parent, {
-        target: 'parent',
-        type: 'register',
-        sourceCode: this.appCode,
-        pop: false
-      })
-    }
+    this.appCode = val;
+  }
+  /**
+   * @description set current appcode and registry to parent window
+   */
+  protected emitRegisterEvent(val: string): void {
+    const payload = {
+      target: 'parent',
+      type: 'register',
+      sourceCode: val,
+      pop: false
+    };
+    this.send(window.parent, payload);
   }
 
   /**
@@ -124,26 +132,31 @@ export class Channel extends Message {
    */
   private _passive() {
     return super.__on((msg: PassiveMsg) => {
-      if (msg.target === this.appCode || msg.target === 'parent') return;
+      if(msg.target === this.appCode || msg.target === 'parent') return;
       // 不属于当前appCode的消息传递
       //! 如果传递到根节点还未找到
-      if (this.appCode === 'main') msg.pop = false
+      if(this.appCode === 'main') msg.pop = false
       // 向main发送的消息只向上传递，直到root结束
-      if (msg.target === 'main') {
-        if (window.parent !== window) {
+      if(msg.target === 'main')
+      {
+        if(window.parent !== window)
+        {
           this.send(window.parent, { ...msg, pop: true, popSource: this.appCode })
         }
       }
       //  全局发送的消息，或者向非当前应用发送的消息
-      else if (msg.target === 'global' || msg.target !== this.appCode) {
+      else if(msg.target === 'global' || msg.target !== this.appCode)
+      {
         //  pass sibling
         microAppMap.forEach((tar, tarCode) => {
-          if (tarCode !== msg.popSource) {
+          if(tarCode !== msg.popSource)
+          {
             this.__send(tar.contentWindow, { ...msg, pop: false, popSource: this.appCode })
           }
         })
         // pass parent
-        if (msg.pop === true && window.parent !== window) {
+        if(msg.pop === true && window.parent !== window)
+        {
           this.__send(window.parent, { ...msg, popSource: this.appCode, pop: true })
         }
       }
@@ -158,18 +171,13 @@ export class Channel extends Message {
   private _maintainRegister() {
     return this.on(msg => {
       const microAppCode = msg.sourceCode
-      if (msg.type === 'register' && msg.target === 'parent') {
+      if(msg.type === 'register' && msg.target === 'parent')
+      {
         // 注册
         const el = getIframeEl(microAppCode)
-        if (el) {
+        if(el)
+        {
           this.registerApp(microAppCode, el)
-        } else {
-          // @ts-expect-error
-          if (!window.__WUJIE) {
-            console.error(
-              `register error, can not find element named ${microAppCode}`
-            )
-          }
         }
       }
     })
