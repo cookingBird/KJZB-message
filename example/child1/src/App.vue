@@ -1,16 +1,18 @@
 <template>
 <div id="app">
-  <img
-    alt="Vue logo"
-    src="./assets/logo.png"
-  />
-
-  <div>global:{{ global }}</div>
-  <button @click="sendGlobal">全局发送</button>
-  <button @click="emitTest">emit</button>
-  <div>state:{{ state }}</div>
-  <HelloWorld msg="This is child1" />
-  <div class=" w-full h-full flex">
+  <div class="flex-grow-0">
+    <HelloWorld msg="This is child1" />
+    <img
+      alt="Vue logo"
+      src="./assets/logo.png"
+    />
+    <div>
+      <template v-for="btn of btns">
+        <button @click="btn.onClick">{{ btn.label }}</button>
+      </template>
+    </div>
+  </div>
+  <div class="flex flex-grow">
     <MicroMessageApp
       :src="appConfig.url"
       :microAppCode="appConfig.microAppCode"
@@ -55,13 +57,14 @@ export default {
       global: ''
     }
   },
+  computed: {
+    btns() {
+      return []
+    }
+  },
   mounted() {
     // @ts-expect-error
     console.log('window query all mounted', window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe'));
-    connector.$on('test', ({ data }) => {
-      console.log('data', data);
-      alert('there is child1, ' + data);
-    })
   },
   methods: {
     sendGlobal() {
@@ -99,5 +102,23 @@ iframe {
   text-align: center;
   color: #2c3e50;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-grow-0 {
+  flex-grow: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex {
+  display: flex;
+}
+
+.container-item {
+  flex-grow: 1;
 }
 </style>

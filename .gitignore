@@ -1,6 +1,8 @@
 node_modules
+example/**/node_modules
+packages/**/node_modules
+example/**/dist
 packages/**/dist
 /**/.svn
 package-lock.json
 yarn.lock
-example/**/node_modules

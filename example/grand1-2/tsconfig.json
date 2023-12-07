@@ -1,9 +1,17 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "baseUrl": "./",
     "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": false,
     "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "types": [
+      "webpack-env",
+    ],
     "paths": {
       "@/*": [
         "src/*"
@@ -16,13 +24,10 @@
       "scripthost"
     ]
   },
-  "vueCompilerOptions": {
-    "target": 3
-  },
   "include": [
     "src/**/*.ts",
-    "src/**/*.vue",
-    "src/**/*.d.ts"
+    "src/**/*.tsx",
+    "src/**/*.vue"
   ],
   "exclude": [
     "node_modules"

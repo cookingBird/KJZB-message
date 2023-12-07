@@ -1,9 +1,12 @@
-const { defineConfig } = require('@vue/cli-service')
+const { defineConfig } = require('@vue/cli-service');
+
 module.exports = defineConfig({
+  lintOnSave: true,
   transpileDependencies: true,
   configureWebpack: {
     devServer: {
       port: 7002,
+      // @ts-expect-error
       headers: {
         "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Origin": "*",
@@ -24,10 +27,10 @@ module.exports = defineConfig({
             options: {
               transpileOnly: true,
               appendTsSuffixTo: [/\.vue$/],
-            }
+            },
           },
         },
       ],
     },
-  }
-})
+  },
+});

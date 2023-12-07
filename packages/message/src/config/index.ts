@@ -11,5 +11,9 @@ export default {
      * 当前应用bootstrap时，需要根据父应用parse出当前应用的appcode
      */
     praseAppCode: new SyncWaterfallHook<[string | undefined]>(),
+    /**
+     * 获取上下文
+     */
+    getContext: new SyncWaterfallHook<[Window]>(),
   })
 }

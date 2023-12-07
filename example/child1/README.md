@@ -1,4 +1,4 @@
-# child1
+# main-test
 
 ## Project setup
 ```

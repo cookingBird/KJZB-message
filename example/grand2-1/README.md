@@ -1,4 +1,4 @@
-# grand2
+# main-test
 
 ## Project setup
 ```

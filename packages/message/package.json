@@ -1,9 +1,11 @@
 {
   "name": "@gislife/micro-message",
   "version": "4.1.8",
+  "author": "dengtao",
+  "license": "ISC",
   "description": "message",
-  "main": "dist/MicroMessage.umd.js",
-  "module": "dist/MicroMessage.es.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "style": "dist/MicroMessage.css",
   "types": "types/index.d.ts",
   "scripts": {
@@ -16,8 +18,6 @@
     "publish:minor": "npm version minor && npm publish",
     "publish:patch": "npm version patch && npm publish"
   },
-  "author": "dengtao",
-  "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.21.3",
     "@babel/preset-env": "^7.20.2",

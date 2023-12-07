@@ -1,4 +1,4 @@
-import { Channel, stateMap } from './core';
+import { Channel, stateMap, microAppMap } from './core';
 import { getParams, isObject } from './util';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps, BaseMsg } from './core/Message';
@@ -31,8 +31,9 @@ export class ApplicationChannel extends Channel {
         //* cache state
         stateMap.set(msg.target, msg.data);
       }
-      const targetEl = this.getApp(msg.target)
-      if(!targetEl) throw Error(`current layer target not exist target named ${msg.target}`);
+      const targetEl = this.getApp(msg.target);
+      console.log('/microAppMap', microAppMap);
+      if(!targetEl) throw Error(`send msg,current layer target not exist target named ${msg.target}, message type is ${msg.type}`);
       return super.send<R>(targetEl.contentWindow, msg);
     }
   }
@@ -125,6 +126,7 @@ export class ApplicationChannel extends Channel {
    * @description main
    */
   public applicationBootstrap() {
+    console.log('bootstrap-----------------');
     //* 获取应用AppCode
     const params = getParams(window.location);
     const { microAppCode: appCode } = params;

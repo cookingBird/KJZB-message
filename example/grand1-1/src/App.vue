@@ -1,63 +1,62 @@
 <template>
 <div id="app">
+  <HelloWorld msg="This is grand1-1" />
   <img
     alt="Vue logo"
     src="./assets/logo.png"
   />
-
-  <div>global:{{ global }}</div>
-  <button @click="send">全局发送</button>
-  <button @click="emit">emit</button>
-  <button @click="emit2">emit to child2</button>
-  <button @click="emitPop">emit pop</button>
-
-  <HelloWorld msg="This is grand1-1" />
+  <div>
+    <template v-for="btn of btns">
+      <button @click="btn.onClick">{{ btn.label }}</button>
+    </template>
+  </div>
 </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
 import { connector } from '@gislife/micro-message';
+import HelloWorld from './components/HelloWorld.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld,
   },
   data() {
     return {
       reactiveData: {
-        number: 100000
+        number: 100000,
       },
-      global: ''
-    }
+      global: '',
+    };
   },
-  mounted() {
-    connector.$on('test', ({ data }) => {
-      console.log('data', data);
-      alert('there is grand1, ' + data);
-    })
+  computed: {
+    btns() {
+      return [
+        { label: '发送grand2-1', onClick: this.sendSibling },
+      ];
+    },
   },
   methods: {
-    send() {
+    sendSibling() {
       connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
-      })
+        target: 'grand1-2',
+        type: 'hello',
+        data: ' world!',
+      });
     },
     emit() {
-      connector.$emit('edit', 'hello i am grand1')
+      connector.$emit('edit', 'hello i am grand1');
     },
     emit2() {
-      connector.$emit('edit:child2', 'hello i am grand1')
+      connector.$emit('edit:child2', 'hello i am grand1');
     },
     emitPop() {
-      connector.$emit('edit:main', 'hello i am grand1')
+      connector.$emit('edit:main', 'hello i am grand1');
     },
 
-  }
-}
+  },
+};
 </script>
 
 <style>

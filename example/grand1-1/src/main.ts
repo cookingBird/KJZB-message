@@ -1,9 +1,7 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import Message from '@gislife/micro-message'
+import { createApp } from 'vue';
+import Message from '@gislife/micro-message';
+import App from './App.vue';
 
 const app = createApp(App);
-app.config.productionTip = false;
 app.use(Message);
 app.mount('#app');
-

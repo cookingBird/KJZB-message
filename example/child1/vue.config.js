@@ -1,9 +1,9 @@
-const { defineConfig } = require('@vue/cli-service')
-const path = require('path')
+const { defineConfig } = require('@vue/cli-service');
+
 module.exports = defineConfig({
+  lintOnSave: true,
   transpileDependencies: true,
   configureWebpack: {
-    entry: path.resolve(__dirname, './src/main.ts'),
     devServer: {
       port: 7001,
       // @ts-expect-error
@@ -27,10 +27,10 @@ module.exports = defineConfig({
             options: {
               transpileOnly: true,
               appendTsSuffixTo: [/\.vue$/],
-            }
+            },
           },
         },
       ],
     },
-  }
-})
+  },
+});

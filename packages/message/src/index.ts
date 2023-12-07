@@ -4,9 +4,9 @@
 import './polyfill';
 import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
-export * as tools from './tools';
-export * as plugins from './plugins';
-import * as components from './components';
+export * as tools from './tools/index';
+export * as plugins from './plugins/index';
+import * as components from './components/index';
 
 export {
   components

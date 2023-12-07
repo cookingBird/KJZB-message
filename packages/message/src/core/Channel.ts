@@ -92,10 +92,12 @@ export class Channel extends Message {
 
   /**
    * @description cancel registry
+   * todo unregistry hook
    */
-  public unRegisterApp(appCode: string): boolean {
+  public unRegisterApp(appCode: string): void {
     stateMap.delete(appCode)
-    return microAppMap.delete(appCode)
+    microAppMap.delete(appCode)
+    console.log('unRegisterApp', microAppMap);
   }
   /**
    * @description get app
@@ -169,9 +171,13 @@ export class Channel extends Message {
       const microAppCode = msg.sourceCode
       if(msg.type === 'register' && msg.target === 'parent') {
         // 注册
-        const el = getIframeEl(microAppCode)
+        const el = getIframeEl(microAppCode);
         if(el) {
-          this.registerApp(microAppCode, el)
+          console.log('registry el', this.appCode, el, microAppCode);
+          this.registerApp(microAppCode, el);
+          console.log('microAppMap', microAppMap);
+        } else {
+          console.warn('registry el error, can not find el named ', microAppCode)
         }
       }
     })
