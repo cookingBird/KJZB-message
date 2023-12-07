@@ -1,5 +1,4 @@
 export * from './onEvent'
-export * from './volume'
 export * from './getParams'
 export * from './validator'
 
@@ -8,19 +7,14 @@ import * as Validator from './validator'
 export function omitFileds(obj, ...fileds) {
   const res = {}
   fileds = fileds.flat()
-  for(const key in obj)
-  {
-    if(fileds.length === 1 && Validator.isFunction(fileds[0]))
-    {
+  for(const key in obj) {
+    if(fileds.length === 1 && Validator.isFunction(fileds[0])) {
       const judgeCb = fileds[0]
-      if(!judgeCb(obj[key], key))
-      {
+      if(!judgeCb(obj[key], key)) {
         res[key] = obj[key]
       }
-    } else
-    {
-      if(!fileds.includes(key))
-      {
+    } else {
+      if(!fileds.includes(key)) {
         res[key] = obj[key]
       }
     }
@@ -31,10 +25,8 @@ export function omitFileds(obj, ...fileds) {
 export function pickFileds(object, ...fileds) {
   fileds = fileds.flat()
   const res = {}
-  for(const key in object)
-  {
-    if(Object.hasOwn(object, key) && fileds.includes(key))
-    {
+  for(const key in object) {
+    if(Object.hasOwn(object, key) && fileds.includes(key)) {
       res[key] = object[key]
     }
   }
@@ -43,27 +35,20 @@ export function pickFileds(object, ...fileds) {
 
 export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
   const res = {}
-  if(depth <= maxDepth)
-  {
-    for(const key in object)
-    {
-      if(Object.hasOwn(object, key))
-      {
+  if(depth <= maxDepth) {
+    for(const key in object) {
+      if(Object.hasOwn(object, key)) {
         const element = object[key]
-        if(Validator.isObject(element))
-        {
+        if(Validator.isObject(element)) {
           res[key] = deepCloneBaseType(element, maxDepth, depth + 1)
         }
-        else if(Validator.isArray(element))
-        {
+        else if(Validator.isArray(element)) {
           res[key] = element.map(deepCloneBaseType, maxDepth, depth + 1)
         }
-        else if(Validator.isFunction(element))
-        {
+        else if(Validator.isFunction(element)) {
           res[key] = element.toString()
         }
-        else
-        {
+        else {
           res[key] = element
         }
       }
@@ -78,12 +63,10 @@ export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
 export function ensureInstance(fn: () => any): Promise<ReturnType<typeof fn>> {
   function _getDOM(resolver) {
     const instance = fn();
-    if(!instance)
-    {
+    if(!instance) {
       requestAnimationFrame(() => _getDOM(resolver))
     }
-    else
-    {
+    else {
       resolver(instance)
     }
   }
@@ -103,8 +86,7 @@ export function mergeOps<T>(_defalut: T, ...others: Partial<T>[]): T {
 
         let res = [key, valueB || valueA];
 
-        if(typeof valueA === 'object' && !Array.isArray(valueA))
-        {
+        if(typeof valueA === 'object' && !Array.isArray(valueA)) {
           res = [key, _merge(valueA, valueB)]
         }
 

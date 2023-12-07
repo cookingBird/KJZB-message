@@ -1,7 +1,7 @@
-import { Channel, stateMap, microAppMap } from './core';
-import { getParams, isObject } from './util';
+import { Channel, stateMap } from './core';
+import { getParams } from './util';
 import type { PassiveMsg } from './core/Channel';
-import type { MessageOps, BaseMsg } from './core/Message';
+import type { MessageOps } from './core/Message';
 
 
 export type DataMsg<T = any> = {
@@ -26,15 +26,12 @@ export class ApplicationChannel extends Channel {
     if(msg.target === 'main' || msg.target === 'parent') {
       return super.send<R>(window.parent, msg)
     }
-    else {
-      if(msg.type === 'setState') {
-        //* cache state
-        stateMap.set(msg.target, msg.data);
-      }
-      const targetEl = this.getApp(msg.target);
-      console.log('/microAppMap', microAppMap);
-      if(!targetEl) throw Error(`send msg,current layer target not exist target named ${msg.target}, message type is ${msg.type}`);
-      return super.send<R>(targetEl.contentWindow, msg);
+    else if(msg.type === 'setState') {
+      //* cache state
+      stateMap.set(msg.target, msg.data);
+    } else {
+      const targetEl: HTMLIFrameElement | undefined = super.getApp(msg.target);
+      return super.send<R>(targetEl?.contentWindow, msg);
     }
   }
 
@@ -126,11 +123,8 @@ export class ApplicationChannel extends Channel {
    * @description main
    */
   public applicationBootstrap() {
-    console.log('bootstrap-----------------');
     //* 获取应用AppCode
-    const params = getParams(window.location);
-    const { microAppCode: appCode } = params;
-    // todo 此处应设置一个获取appCode的HOOK
+    const appCode = this.hooks.praseAppCode.call(undefined);
     //* 如果当前应用不是主应用，且当前应用是被嵌入到message框架之中
     if(window.parent !== window && appCode) {
       //* 子应用

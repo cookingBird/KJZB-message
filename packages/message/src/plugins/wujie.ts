@@ -1,5 +1,6 @@
 import { mergeOps } from "../util";
 import WuJiePackage from 'wujie';
+import type { GlobalConfig } from '@/index'
 
 const defaultOps = {
 	wujieName: 'gislifeMap',
@@ -17,7 +18,7 @@ export default function createWuJiePlugin(options) {
 
 	const { bus } = WuJiePackage;
 	return {
-		install(connector) {
+		install(connector, globalConfig: GlobalConfig) {
 			const msgProcess = (...params) => {
 				const buildMsg = messageCallback(...params);
 
@@ -26,6 +27,13 @@ export default function createWuJiePlugin(options) {
 					...buildMsg
 				})
 			};
+
+			globalConfig.hooks.findRegistryEl.tap('adapteWujie', (msg) => {
+				const registryElCode = msg.sourceCode;
+				if(window.customElements?.get("wujie-app")) {
+					return document.querySelector(`iframe[data-wujie-flag][name='${registryElCode}']`);
+				}
+			});
 
 			bus.$on(wujieName, msgProcess);
 			connector.on((msg) => {

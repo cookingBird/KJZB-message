@@ -1,6 +1,7 @@
 import { Message } from './Message'
-import { getIframeEl } from '../util'
 import type { BaseMsg } from './Message'
+import { globalConfig } from '..';
+import type { DataMsg } from '@/ApplicationChannel';
 
 export type PassiveMsg = {
   target: 'global' | 'main' | 'parent' | string;
@@ -12,13 +13,11 @@ export type PassiveMsg = {
 
 
 
-/**@type {Map<microAppCode,microAppContext>} */
+/**@description app map */
 export const microAppMap = new Map<string, HTMLIFrameElement>()
 
 /**
- * @typedef {Map<microAppContext,object>} IStateMap
- * @description 组件状态Map
- * @type {IStateMap}
+ * @description state map
  */
 export const stateMap = new Map<string, any>()
 
@@ -40,10 +39,15 @@ export class Channel extends Message {
   protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>) {
     msg.sourceCode = msg.sourceCode ?? this.appCode;
     msg.popSource = msg.popSource ?? this.appCode;
-    //* 从主应用发出去的消息都为false
+    /**
+     * send message
+     */
     if(target) {
       return super.__send<R>(target, msg)
     }
+    /**
+     * passive message
+     */
     else {
       const promises = []
       // 如果target不存在，则向全局发送消息
@@ -102,7 +106,7 @@ export class Channel extends Message {
   /**
    * @description get app
    */
-  protected getApp(target: string): HTMLIFrameElement | null {
+  protected getApp(target: string) {
     return microAppMap.get(target)
   }
   /**
@@ -171,14 +175,13 @@ export class Channel extends Message {
       const microAppCode = msg.sourceCode
       if(msg.type === 'register' && msg.target === 'parent') {
         // 注册
-        const el = getIframeEl(microAppCode);
-        if(el) {
-          console.log('registry el', this.appCode, el, microAppCode);
-          this.registerApp(microAppCode, el);
-          console.log('microAppMap', microAppMap);
-        } else {
-          console.warn('registry el error, can not find el named ', microAppCode)
-        }
+        const el = globalConfig.hooks.findRegistryEl.call(msg as DataMsg);
+        globalConfig.hooks.afterFindRegistryEl.call({
+          appCode: this.appCode,
+          registryCode: microAppCode,
+          el,
+        })
+        if(el) this.registerApp(microAppCode, el);
       }
     })
   }

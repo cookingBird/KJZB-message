@@ -30,6 +30,7 @@
 </template>
 
 <script>
+// @ts-ignore ignore wujie
 /* eslint-disable */
 import HelloWorld from './components/HelloWorld.vue'
 import { connector, components } from "@gislife/micro-message";
@@ -63,8 +64,13 @@ export default {
     }
   },
   mounted() {
-    // @ts-expect-error
-    console.log('window query all mounted', window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe'));
+    console.log('window query all mounted',
+      document.querySelectorAll('iframe'),
+      window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe'));
+    console.log('window.__WUJIE_RAW_WINDOW__ === window',
+      window.__WUJIE_RAW_WINDOW__ === window);
+    console.log('window.__WUJIE_RAW_WINDOW__ === window.__WUJIE_RAW_WINDOW__.parent',
+      window.__WUJIE_RAW_WINDOW__ === window.__WUJIE_RAW_WINDOW__.parent);
   },
   methods: {
     sendGlobal() {
@@ -120,5 +126,11 @@ iframe {
 
 .container-item {
   flex-grow: 1;
+}
+
+#child1 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

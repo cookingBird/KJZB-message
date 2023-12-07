@@ -4,18 +4,31 @@
 import './polyfill';
 import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
-export * as tools from './tools/index';
-export * as plugins from './plugins/index';
-import * as components from './components/index';
+export * as tools from './tools';
+export * as plugins from './plugins';
+import * as components from './components';
+import globalConfig from './config';
+import initPlugins from './init';
+initPlugins();
+
+
+const connector = new ApplicationChannel();
+
+connector.globalContext.addEventListener('load', () => {
+  connector.applicationBootstrap();
+});
+
+export type GlobalConfig = typeof globalConfig;
 
 export {
-  components
+  components,
+  globalConfig,
+  connector,
+  install as default,
+  use,
 }
 
-export const connector = new ApplicationChannel();
-connector.applicationBootstrap();
-
-export default function install(app: App) {
+function install(app: App) {
   components.vuePlugin.install(app);
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {
@@ -27,8 +40,8 @@ export default function install(app: App) {
   })
 }
 
-export function use(plugin: { install: (connector: ApplicationChannel) => () => void }) {
-  const eventOff = plugin.install(connector);
+function use(plugin: { install: (connector: ApplicationChannel, config: GlobalConfig) => () => void }) {
+  const eventOff = plugin.install(connector, globalConfig);
   return () => {
     eventOff();
   }

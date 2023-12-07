@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { onMessage, isObject } from '../util'
+import { globalConfig, type GlobalConfig } from '..';
 
 export type BaseMsg = {
   id: string;
@@ -22,12 +23,16 @@ export class Message {
   protected timeout: number;
   protected belong: string;
   protected rejectMissing: boolean;
+  protected hooks: GlobalConfig['hooks'];
+  public globalContext: Window;
   constructor(options: Partial<MessageOps> = {}) {
     this.appCode = window.parent === window ? 'main' : '';
-    this.targetOrigin = options.targetOrigin ?? '*'
-    this.timeout = options.timeout ?? 3 * 1000
-    this.belong = options.namespace ?? 'gislife'
-    this.rejectMissing = options.rejectMissing ?? true
+    this.targetOrigin = options.targetOrigin ?? '*';
+    this.timeout = options.timeout ?? 3 * 1000;
+    this.belong = options.namespace ?? 'gislife';
+    this.rejectMissing = options.rejectMissing ?? true;
+    this.hooks = globalConfig.hooks;
+    this.globalContext = this.hooks.getContext.call(undefined);
   }
   /**
    * @description 发送消息
@@ -36,12 +41,12 @@ export class Message {
     const timeout = msg.timeout ?? this.timeout
     let isSendOK = false
 
-    if (!target) {
+    if(!target) {
       throw Error(`_postmessage target not exist, named ${msg.target
         || msg.data.target}, message type is ${msg.type}, source is ${this.appCode}`
       )
     };
-    if (!msg) {
+    if(!msg) {
       throw Error(`_postmessage msg not exist;`)
     };
     const sendMsg = JSON.parse(JSON.stringify(msg)) as Partial<BaseMsg>;
@@ -50,7 +55,7 @@ export class Message {
     return new Promise((resolve, reject) => {
       try {
         target.postMessage(sendMsg, '*');
-      } catch (error) {
+      } catch(error) {
         console.error(
           `postMessage error, 
               msg type is ${msg.type},
@@ -61,16 +66,16 @@ export class Message {
         )
       }
       const cancel = this.__on(data => {
-        if (isObject(data) && data.id === sendMsg.id && data.belong === sendMsg.belong) {
+        if(isObject(data) && data.id === sendMsg.id && data.belong === sendMsg.belong) {
           isSendOK = true
           cancel()
           resolve(data.data)
         }
       })
       setTimeout(() => {
-        if (!isSendOK) {
+        if(!isSendOK) {
           cancel()
-          if (this.rejectMissing) {
+          if(this.rejectMissing) {
             reject()
           }
         }
@@ -89,7 +94,7 @@ export class Message {
    */
   protected __on(cb: (msg: BaseMsg) => void) {
     return onMessage(event => {
-      if (isObject(event.data) && event.data.belong === this.belong) {
+      if(isObject(event.data) && event.data.belong === this.belong) {
         cb(event.data)
       }
     })

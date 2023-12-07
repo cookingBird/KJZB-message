@@ -5,7 +5,7 @@ module.exports = defineConfig({
   configureWebpack: {
     devServer: {
       port: 8001,
-      // @ts-expect-error
+      // @ts-expect-error dev-server headers
       headers: {
         'Access-Control-Allow-Credentials': true,
         'Access-Control-Allow-Origin': '*',
