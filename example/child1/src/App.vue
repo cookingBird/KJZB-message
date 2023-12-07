@@ -1,5 +1,5 @@
 <template>
-<div id="app">
+<div id="child1">
   <div class="flex-grow-0">
     <HelloWorld msg="This is child1" />
     <img

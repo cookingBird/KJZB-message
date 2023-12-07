@@ -16,12 +16,12 @@
       :degrade="false"
     >
     </WujieVue>
-    <!-- <MicroMessageApp
+    <MicroMessageApp
       :src="child2Config.url"
       class="container-item"
       :microAppCode="child2Config.microAppCode"
     >
-    </MicroMessageApp> -->
+    </MicroMessageApp>
   </div>
 </div>
 </template>

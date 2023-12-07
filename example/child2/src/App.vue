@@ -1,13 +1,13 @@
 <template>
-<div id="app">
+<div id="child2">
+  <HelloWorld msg="This is child2" />
   <img
     alt="Vue logo"
     src="./assets/logo.png"
   />
-
   <div>global:{{ global }}</div>
   <button @click="globalSend">全局发送</button>
-  <HelloWorld msg="This is child2" />
+
   <MicroMessageApp
     :src="appConfig.url"
     class="item"
