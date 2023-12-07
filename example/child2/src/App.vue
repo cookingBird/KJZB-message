@@ -32,8 +32,12 @@ export default {
     const IP = 'http://192.168.3.5';
     return {
       appConfig: {
-        url: IP + ':8081/mission/messageCenter?microAppCode=grand2',
-        microAppCode: 'grand2'
+        url: IP + ':8005',
+        microAppCode: 'grand2-1'
+      },
+      appConfig2: {
+        url: IP + ':8007',
+        microAppCode: 'grand2-2'
       },
       global: ''
     }

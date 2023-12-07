@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     devServer: {
-      port: 7004,
+      port: 8005,
       headers: {
         "Access-Control-Allow-Credentials": true,
         "Access-Control-Allow-Origin": "*",

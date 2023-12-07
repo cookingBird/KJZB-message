@@ -44,11 +44,11 @@ export default {
     const IP = 'http://localhost';
     return {
       appConfig: {
-        url: IP + ':7003',
+        url: IP + ':8001',
         microAppCode: 'grand1-1'
       },
       appConfig2: {
-        url: IP + ':7005',
+        url: IP + ':8003',
         microAppCode: 'grand1-2'
       },
       state: {},

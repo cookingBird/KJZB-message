@@ -5,7 +5,7 @@ module.exports = defineConfig({
   configureWebpack: {
     entry: path.resolve(__dirname, './src/main.ts'),
     devServer: {
-      port: 7003,
+      port: 8001,
       // @ts-expect-error
       headers: {
         "Access-Control-Allow-Credentials": true,
