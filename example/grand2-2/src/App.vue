@@ -27,36 +27,12 @@ export default {
   },
   //grand2
   created() {
-    connector.$on('callback', (res) => {
-      console.warn('success------callback--------', res)
+    connector.$on('greet', (res) => {
+      const { data, msg, responser } = res
+      console.log('msg', msg);
+      responser("hello, i am grand2-2")
     })
   },
-  methods: {
-    responserTest() {
-      connector.$send({
-        target: 'main',
-        type: 'responser',
-        timeout: 3000
-      }).then(res => {
-        console.error('test responser success--------------', res)
-      })
-    },
-    globalSend() {
-      connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
-      })
-    },
-    getFromParents() {
-      connector.$send({
-        target: 'main',
-        type: 'testGet'
-      }).then((r) => {
-        console.log('---------get success', r)
-      })
-    }
-  }
 }
 </script>
 

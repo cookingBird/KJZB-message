@@ -33,33 +33,24 @@ export default {
   computed: {
     btns() {
       return [
-
+        { label: 'greet grand2-2', onClick: this.greetGrand2_1 }
       ];
     },
   },
   mounted() {
     connector.$on('hello', ({ data }) => {
-      alert(`hello ${data}`);
+      alert(`hello ${ data }`);
     });
   },
   methods: {
-    send() {
+    greetGrand2_1() {
       connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000),
-      });
+        target: 'grand2-2',
+        type: 'greet',
+      }).then(data => {
+        alert(data)
+      })
     },
-    emit() {
-      connector.$emit('edit', 'hello i am grand1');
-    },
-    emit2() {
-      connector.$emit('edit:child2', 'hello i am grand1');
-    },
-    emitPop() {
-      connector.$emit('edit:main', 'hello i am grand1');
-    },
-
   },
 };
 </script>

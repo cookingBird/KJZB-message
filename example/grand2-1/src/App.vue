@@ -28,9 +28,9 @@ export default {
   },
   //grand2
   created() {
-    connector.$on('hello', ({ data, msg }) => {
+    connector.$on('hello', ({ data, msg, responser }) => {
       console.log('msg', msg);
-      alert('hello ' + data)
+      alert('hello ' + data);
     })
   },
   methods: {
