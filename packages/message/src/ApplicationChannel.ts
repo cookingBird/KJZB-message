@@ -167,7 +167,9 @@ export class ApplicationChannel extends Channel {
     * @description build response msg
     */
   private _getResponse(msg: DataMsg<any>) {
-    if(!msg.sourceCode || !msg.type) throw Error(`_getResponse error, sourceCode is ${msg.sourceCode}, type is ${msg.type}`)
+    if(!msg.sourceCode || !msg.type) {
+      throw Error(`_getResponse error, sourceCode is ${msg.sourceCode}, type is ${msg.type}`)
+    }
     return data => {
       const responseMsg = {
         id: msg.id,
