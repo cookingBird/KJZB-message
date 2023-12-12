@@ -1,15 +1,12 @@
 <template>
 <div id="app">
+  <HelloWorld msg="This is grand2-2" />
   <img
     alt="Vue logo"
     src="./assets/logo.png"
   >
-  <div>global:{{ global }}</div>
-  <button @click="responserTest">Responser Test</button>
-  <button @click="globalSend">全局发送</button>
-  <button @click="getFromParents">getFromParents</button>
-  <div>{{ msg }}</div>
-  <HelloWorld msg="This is grand2" />
+  <div>
+  </div>
 </div>
 </template>
 

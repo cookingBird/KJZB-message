@@ -1,19 +1,29 @@
 <template>
 <div id="child2">
-  <HelloWorld msg="This is child2" />
-  <img
-    alt="Vue logo"
-    src="./assets/logo.png"
-  />
-  <div>global:{{ global }}</div>
-  <button @click="globalSend">全局发送</button>
-
-  <MicroMessageApp
-    :src="appConfig.url"
-    class="item"
-    :microAppCode="appConfig.microAppCode"
-  >
-  </MicroMessageApp>
+  <div class="flex-grow-0">
+    <HelloWorld msg="This is child2" />
+    <img
+      alt="Vue logo"
+      src="./assets/logo.png"
+    />
+    <div>
+      <button @click="globalSend">全局发送</button>
+    </div>
+  </div>
+  <div class="flex flex-grow">
+    <MicroMessageApp
+      :src="appConfig.url"
+      class="item"
+      :microAppCode="appConfig.microAppCode"
+    >
+    </MicroMessageApp>
+    <MicroMessageApp
+      :src="appConfig2.url"
+      class="item"
+      :microAppCode="appConfig2.microAppCode"
+    >
+    </MicroMessageApp>
+  </div>
 </div>
 </template>
 
@@ -29,7 +39,7 @@ export default {
     MicroMessageApp
   },
   data() {
-    const IP = 'http://192.168.3.5';
+    const IP = 'http://localhost';
     return {
       appConfig: {
         url: IP + ':8005',
@@ -79,6 +89,23 @@ iframe {
 
 .item {
   width: 100%;
-  border: none;
+}
+
+.flex-grow-0 {
+  flex-grow: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.flex {
+  display: flex;
+}
+
+#child2 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

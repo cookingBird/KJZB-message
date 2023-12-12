@@ -21,15 +21,17 @@ export class ApplicationChannel extends Channel {
    * @description 发送消息
    */
   public $send<R = any>(msg: DataMsg) {
+    msg = JSON.parse(JSON.stringify(msg))
     if(!msg.target || !msg.type) throw Error('message syntax error')
     //* main parent发送
     if(msg.target === 'main' || msg.target === 'parent') {
       return super.send<R>(window.parent, msg)
     }
+    //* cache state
     else if(msg.type === 'setState') {
-      //* cache state
       stateMap.set(msg.target, msg.data);
-    } else {
+    }
+    else {
       const targetEl: HTMLIFrameElement | undefined = super.getApp(msg.target);
       return super.send<R>(targetEl?.contentWindow, msg);
     }
@@ -165,6 +167,7 @@ export class ApplicationChannel extends Channel {
     * @description build response msg
     */
   private _getResponse(msg: DataMsg<any>) {
+    if(!msg.sourceCode || !msg.type) throw Error(`_getResponse error, sourceCode is ${msg.sourceCode}, type is ${msg.type}`)
     return data => {
       const responseMsg = {
         id: msg.id,

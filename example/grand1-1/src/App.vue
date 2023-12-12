@@ -33,7 +33,8 @@ export default {
   computed: {
     btns() {
       return [
-        { label: '发送grand2-1', onClick: this.sendSibling },
+        { label: '发送grand1-2', onClick: this.sendSibling },
+        { label: '发送grand2-1', onClick: this.sendGrand2_1 },
       ];
     },
   },
@@ -45,16 +46,13 @@ export default {
         data: ' world!',
       });
     },
-    emit() {
-      connector.$emit('edit', 'hello i am grand1');
+    sendGrand2_1() {
+      connector.$send({
+        target: 'grand2-1',
+        type: 'hello',
+        data: ' world!',
+      });
     },
-    emit2() {
-      connector.$emit('edit:child2', 'hello i am grand1');
-    },
-    emitPop() {
-      connector.$emit('edit:main', 'hello i am grand1');
-    },
-
   },
 };
 </script>

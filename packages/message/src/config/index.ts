@@ -7,6 +7,9 @@ export default {
      * 当父级应用接收到子应用注册的消息时，主应用需要发现注册的应用
      */
     findRegistryEl: new SyncBailHook<DataMsg, HTMLIFrameElement>(['msg']),
+    /**
+     * 发现注册元素后的回调
+     */
     afterFindRegistryEl: new SyncHook<{
       appCode: string;
       registryCode: string;

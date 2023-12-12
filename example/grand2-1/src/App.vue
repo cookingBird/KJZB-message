@@ -1,15 +1,13 @@
 <template>
 <div id="app">
+  <HelloWorld msg="This is grand2-1" />
   <img
     alt="Vue logo"
     src="./assets/logo.png"
   >
-  <div>global:{{ global }}</div>
-  <button @click="responserTest">Responser Test</button>
-  <button @click="globalSend">全局发送</button>
-  <button @click="getFromParents">getFromParents</button>
-  <div>{{ msg }}</div>
-  <HelloWorld msg="This is grand2" />
+  <div>
+  </div>
+
 </div>
 </template>
 
@@ -30,35 +28,13 @@ export default {
   },
   //grand2
   created() {
-    connector.$on('callback', (res) => {
-      console.warn('success------callback--------', res)
+    connector.$on('hello', ({ data, msg }) => {
+      console.log('msg', msg);
+      alert('hello ' + data)
     })
   },
   methods: {
-    responserTest() {
-      connector.$send({
-        target: 'main',
-        type: 'responser',
-        timeout: 3000
-      }).then(res => {
-        console.error('test responser success--------------', res)
-      })
-    },
-    globalSend() {
-      connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
-      })
-    },
-    getFromParents() {
-      connector.$send({
-        target: 'main',
-        type: 'testGet'
-      }).then((r) => {
-        console.log('---------get success', r)
-      })
-    }
+
   }
 }
 </script>

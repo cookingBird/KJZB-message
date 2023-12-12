@@ -16,12 +16,14 @@
       :degrade="false"
     >
     </WujieVue>
-    <!-- <MicroMessageApp
-      :src="child2Config.url"
-      class="container-item"
-      :microAppCode="child2Config.microAppCode"
-    >
-    </MicroMessageApp> -->
+    <div class="container-item">
+      <MicroMessageApp
+        class="container-item"
+        :src="child2Config.url"
+        :microAppCode="child2Config.microAppCode"
+      >
+      </MicroMessageApp>
+    </div>
   </div>
 </div>
 </template>
@@ -48,7 +50,8 @@ export default {
 
     return {
       child1Config: {
-        url: `${ IP }:7001/?microAppCode=child1`,
+        // url: `${ IP }:7001/?microAppCode=child1`,
+        url: `${ IP }:7001`,
         microAppCode: "child1",
       },
       child2Config: {

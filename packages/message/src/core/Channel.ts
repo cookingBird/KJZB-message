@@ -38,7 +38,7 @@ export class Channel extends Message {
    */
   protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>) {
     msg.sourceCode = msg.sourceCode ?? this.appCode;
-    msg.popSource = msg.popSource ?? this.appCode;
+    msg.popSource = this.appCode;
     /**
      * send message
      */
@@ -57,7 +57,7 @@ export class Channel extends Message {
       microAppMap.forEach((value, key) => {
         promises.push(super.__send(value.contentWindow, { ...msg, pop: false }))
       })
-      Promise.any(promises).catch(console.error)
+      return Promise.any(promises)
     }
   }
   /**
@@ -146,7 +146,7 @@ export class Channel extends Message {
       // 向main发送的消息只向上传递，直到root结束
       if(msg.target === 'main') {
         if(window.parent !== window) {
-          this.send(window.parent, { ...msg, pop: true, popSource: this.appCode })
+          this.send(window.parent, { ...msg, pop: true, })
         }
       }
       //  全局发送的消息，或者向非当前应用发送的消息
@@ -154,12 +154,12 @@ export class Channel extends Message {
         //  pass sibling
         microAppMap.forEach((tar, tarCode) => {
           if(tarCode !== msg.popSource) {
-            this.__send(tar.contentWindow, { ...msg, pop: false, popSource: this.appCode })
+            this.send(tar.contentWindow, { ...msg, pop: false, })
           }
         })
         // pass parent
         if(msg.pop === true && window.parent !== window) {
-          this.__send(window.parent, { ...msg, popSource: this.appCode, pop: true })
+          this.send(window.parent, { ...msg, pop: true })
         }
       }
 
