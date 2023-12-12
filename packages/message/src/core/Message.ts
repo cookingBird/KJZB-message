@@ -42,8 +42,10 @@ export class Message {
     let isSendOK = false
 
     if(!target) {
-      throw Error(`_postmessage target not exist, named ${msg.target
-        || msg.data.target}, message type is ${msg.type}, source is ${this.appCode}`
+      throw Error(`
+        _postmessage target not exist, named ${msg.target},
+        message type is ${msg.type}, 
+        source is ${this.appCode}`
       )
     };
     if(!msg) {
