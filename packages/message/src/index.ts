@@ -13,10 +13,7 @@ initPlugins();
 
 
 const connector = new ApplicationChannel();
-
-connector.globalContext.addEventListener('load', () => {
-  connector.applicationBootstrap();
-});
+connector.applicationBootstrap();
 
 export type GlobalConfig = typeof globalConfig;
 
