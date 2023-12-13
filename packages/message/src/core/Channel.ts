@@ -101,7 +101,6 @@ export class Channel extends Message {
   public unRegisterApp(appCode: string): void {
     stateMap.delete(appCode)
     microAppMap.delete(appCode)
-    console.log('unRegisterApp', microAppMap);
   }
   /**
    * @description get app
@@ -181,6 +180,7 @@ export class Channel extends Message {
           registryCode: microAppCode,
           el,
         })
+        console.log('on register', msg, el);
         if(el) this.registerApp(microAppCode, el);
       }
     })

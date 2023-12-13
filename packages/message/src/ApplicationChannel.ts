@@ -129,6 +129,7 @@ export class ApplicationChannel extends Channel {
   public applicationBootstrap() {
     //* 获取应用AppCode
     const appCode = this.hooks.praseAppCode.call(undefined);
+    console.log('>>>>>>>>>>>>bootstrap', appCode, (this._isRootContext() ? ' is ' : ' is not ') + 'root');
     //* 如果当前应用不是主应用，且当前应用是被嵌入到message框架之中
     if(!this._isRootContext() && appCode) {
       //* 子应用

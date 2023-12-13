@@ -90,6 +90,7 @@ export class Message {
    * @description 发送消息
    */
   protected __send<T = any>(target: Window, msg: Partial<BaseMsg>) {
+    console.log(`${this.appCode} before send message：`, msg);
     return this._postMessage<T>(msg, target)
   }
   /**
@@ -98,7 +99,8 @@ export class Message {
   protected __on(cb: (msg: BaseMsg) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
-        cb(event.data)
+        console.log(`${this.appCode} before on message：`, event.data);
+        cb(JSON.parse(JSON.stringify(event.data)))
       }
     })
   }
