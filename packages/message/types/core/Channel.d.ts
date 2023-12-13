@@ -6,12 +6,10 @@ export type PassiveMsg = {
     popSource: string;
     pop: boolean;
 } & BaseMsg;
-/**@type {Map<microAppCode,microAppContext>} */
+/**@description app map */
 export declare const microAppMap: Map<string, HTMLIFrameElement>;
 /**
- * @typedef {Map<microAppContext,object>} IStateMap
- * @description 组件状态Map
- * @type {IStateMap}
+ * @description state map
  */
 export declare const stateMap: Map<string, any>;
 /**
@@ -22,7 +20,7 @@ export declare class Channel extends Message {
     /**
      * @description send or passive message
      */
-    protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<R>;
+    protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<any>;
     /**
      * @description receive message
      */
@@ -32,13 +30,18 @@ export declare class Channel extends Message {
      */
     protected setAppCode(val: string): void;
     /**
-     * @description cancel registry
+     * @description set current appcode and registry to parent window
      */
-    unRegisterApp(appCode: string): boolean;
+    protected emitRegisterEvent(val: string): void;
+    /**
+     * @description cancel registry
+     * todo unregistry hook
+     */
+    unRegisterApp(appCode: string): void;
     /**
      * @description get app
      */
-    protected getApp(target: string): HTMLIFrameElement | null;
+    protected getApp(target: string): HTMLIFrameElement;
     /**
      * @description registry app
      */

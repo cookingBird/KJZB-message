@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-import Main from './views/Main.vue'
+import Main from './views/Main.vue';
 
 export default {
   name: 'App',

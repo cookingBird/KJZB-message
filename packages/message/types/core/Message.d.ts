@@ -1,3 +1,4 @@
+import { type GlobalConfig } from '..';
 export type BaseMsg = {
     id: string;
     belong: string;
@@ -19,6 +20,8 @@ export declare class Message {
     protected timeout: number;
     protected belong: string;
     protected rejectMissing: boolean;
+    protected hooks: GlobalConfig['hooks'];
+    globalContext: Window;
     constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息

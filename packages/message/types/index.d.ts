@@ -2,14 +2,16 @@
  * @author dengtao
  */
 import './polyfill';
-import type { App } from 'vue';
+import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
 export * as plugins from './plugins';
 import * as components from './components';
-export { components };
-export declare const connector: ApplicationChannel;
-export default function install(app: App): void;
-export declare function use(plugin: {
-    install: (connector: ApplicationChannel) => () => void;
+import globalConfig from './config';
+declare const connector: ApplicationChannel;
+export type GlobalConfig = typeof globalConfig;
+export { components, globalConfig, connector, install as default, use, };
+declare function install(app: App): void;
+declare function use(plugin: {
+    install: (connector: ApplicationChannel, config: GlobalConfig) => () => void;
 }): () => void;

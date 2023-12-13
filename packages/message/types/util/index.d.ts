@@ -1,5 +1,4 @@
 export * from './onEvent';
-export * from './volume';
 export * from './getParams';
 export * from './validator';
 export declare function omitFileds(obj: any, ...fileds: any[]): {};

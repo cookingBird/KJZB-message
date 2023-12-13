@@ -6,11 +6,12 @@ export type DataMsg<T = any> = {
     data?: T;
 } & Partial<PassiveMsg>;
 export declare class ApplicationChannel extends Channel {
+    private _defaultResponseTarget;
     constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息
      */
-    $send<R = any>(msg: DataMsg): Promise<R>;
+    $send<R = any>(msg: DataMsg): Promise<any>;
     /**
      * @description 监听消息
      */

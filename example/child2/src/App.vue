@@ -7,7 +7,7 @@
       src="./assets/logo.png"
     />
     <div>
-      <button @click="globalSend">全局发送</button>
+      <!-- <button @click="globalSend">全局发送</button> -->
     </div>
   </div>
   <div class="flex flex-grow">
@@ -38,7 +38,7 @@ export default {
     HelloWorld,
     MicroMessageApp
   },
-  data() {
+  setup(props) {
     const IP = 'http://localhost';
     return {
       appConfig: {
@@ -50,18 +50,6 @@ export default {
         microAppCode: 'grand2-2'
       },
       global: ''
-    }
-  },
-  methods: {
-    globalSend() {
-      connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
-      })
-    },
-    onEdit(data) {
-      console.log('onEdit,this is child2--------------', data)
     }
   }
 }

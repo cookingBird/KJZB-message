@@ -11,29 +11,34 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import { connector } from '@gislife/micro-message'
+/* eslint-disabled */
+import { connector } from '@gislife/micro-message';
+import HelloWorld from './components/HelloWorld.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld,
   },
-  data() {
+  setup() {
     return {
       msg: '',
-      global: ''
-    }
+      global: '',
+    };
   },
-  //grand2
+  // grand2
   created() {
     connector.$on('greet', (res) => {
-      const { data, msg, responser } = res
+      const { msg, responser } = res;
       console.log('msg', msg);
-      responser("hello, i am grand2-2")
-    })
+      responser('hello, i am grand2-2');
+    });
+    connector.$on('hello', (res) => {
+      const { data, msg } = res;
+      alert(`from ${msg.sourceCode}, ${msg.type} ${data}`);
+    });
   },
-}
+};
 </script>
 
 <style>

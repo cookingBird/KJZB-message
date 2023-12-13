@@ -17,6 +17,7 @@ module.exports = {
     'max-len': ['warn', { code: 100 }],
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
-    'vue/require-v-for-key': 'off'
+    'vue/require-v-for-key': 'off',
+    'no-multiple-empty-lines': 'off',
   },
 };
