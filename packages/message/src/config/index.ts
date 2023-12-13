@@ -11,7 +11,7 @@ export default {
      * 发现注册元素后的回调
      */
     afterFindRegistryEl: new SyncHook<{
-      appCode: string;
+      appCode: string | undefined;
       registryCode: string;
       el: HTMLIFrameElement | undefined;
     }>(['ctx']),
@@ -22,6 +22,6 @@ export default {
     /**
      * 获取上下文
      */
-    getContext: new SyncWaterfallHook<[Window | undefined]>(['ctx']),
+    getContext: new SyncWaterfallHook<[Window]>(['ctx']),
   })
 } as const

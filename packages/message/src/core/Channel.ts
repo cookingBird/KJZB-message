@@ -4,11 +4,11 @@ import { globalConfig } from '..';
 import type { DataMsg } from '@/ApplicationChannel';
 
 export type PassiveMsg = {
-  target: 'global' | 'main' | 'parent' | string;
-  sourceCode: string;
-  popSource: string;
-  pop: boolean;
-} & BaseMsg;
+  target: string;
+  sourceCode?: string;
+  popSource?: string;
+  pop?: boolean;
+} & Partial<BaseMsg>;
 
 
 
@@ -36,7 +36,7 @@ export class Channel extends Message {
   /**
    * @description send or passive message
    */
-  protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>) {
+  protected send<R = any>(target: Window | undefined | null, msg: PassiveMsg): Promise<R> {
     msg.sourceCode = msg.sourceCode ?? this.appCode;
     msg.popSource = this.appCode;
     /**
@@ -52,10 +52,10 @@ export class Channel extends Message {
       const promises = []
       // 如果target不存在，则向全局发送消息
       if(!this._isRootContext()) {
-        promises.push(super.__send(this.globalContext.parent, { ...msg, pop: true }))
+        promises.push(this.send(this.globalContext.parent, { ...msg, pop: true }))
       }
       microAppMap.forEach((value, key) => {
-        promises.push(super.__send(value.contentWindow, { ...msg, pop: false }))
+        promises.push(this.send(value.contentWindow as Window, { ...msg, pop: false }))
       })
       return Promise.any(promises)
     }
@@ -63,14 +63,14 @@ export class Channel extends Message {
   /**
    * @description receive message
    */
-  protected on(cb: (res: PassiveMsg) => void) {
-    return super.__on(res => {
+  protected on<T extends Required<PassiveMsg> = Required<PassiveMsg>>(cb: (res: T) => void) {
+    return super.__on<T>((res) => {
       if(
         res.target === this.appCode
         || res.target === 'parent'
         || res.target === 'global'
       ) {
-        cb(res as PassiveMsg)
+        cb(res)
       }
     })
   }
@@ -89,6 +89,7 @@ export class Channel extends Message {
       target: 'parent',
       type: 'register',
       sourceCode: val,
+      popSource: val,
       pop: false
     };
     this.send(this.globalContext.parent, payload);
@@ -132,7 +133,7 @@ export class Channel extends Message {
    * @description pass message
    */
   private _passive() {
-    return super.__on((msg: PassiveMsg) => {
+    return super.__on<Required<PassiveMsg>>((msg) => {
       /**
        * 属于当前应用的消息不进行 passive
        */
@@ -153,7 +154,7 @@ export class Channel extends Message {
         //  pass sibling
         microAppMap.forEach((tar, tarCode) => {
           if(tarCode !== msg.popSource) {
-            this.send(tar.contentWindow, { ...msg, pop: false, })
+            this.send(tar.contentWindow as Window, { ...msg, pop: false, })
           }
         })
         // pass parent
@@ -170,7 +171,7 @@ export class Channel extends Message {
    * @returns
    */
   private _maintainRegister() {
-    return this.on(msg => {
+    return this.on<Required<DataMsg>>(msg => {
       const microAppCode = msg.sourceCode
       if(msg.type === 'register' && msg.target === 'parent') {
         // 注册
@@ -180,7 +181,6 @@ export class Channel extends Message {
           registryCode: microAppCode,
           el,
         })
-        console.log('on register', msg, el);
         if(el) this.registerApp(microAppCode, el);
       }
     })

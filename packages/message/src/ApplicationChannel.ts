@@ -1,12 +1,13 @@
 import { Channel, stateMap } from './core/Channel';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps } from './core/Message';
+import { NOOP } from './util';
 
 
 export type DataMsg<T = any> = {
   type: string;
   data?: T;
-} & Partial<PassiveMsg>
+} & PassiveMsg
 
 
 export class ApplicationChannel extends Channel {
@@ -41,10 +42,7 @@ export class ApplicationChannel extends Channel {
   /**
    * @description 监听消息
    */
-  public $on<T = any>(
-    type: string | ((res: { msg: DataMsg<T>, responser: (data: any) => void }) => void),
-    cb?: (res: { msg: DataMsg<T>, data: T, responser: (data: any) => void }) => void) {
-
+  public $on<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: (data: R) => void }) => void), cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: (data: any) => void }) => void): NOOP {
     let onCancel
     if(cb && typeof cb !== 'function') {
       throw Error(`$on callback param error,current type is ${typeof cb}`)
@@ -53,20 +51,21 @@ export class ApplicationChannel extends Channel {
       throw Error('type parma type error')
     }
     if(typeof type === 'function') {
-      onCancel = super.on(msg => {
+      onCancel = super.on<Required<DataMsg<R>>>(msg => {
         const responser = this._getResponse(msg as DataMsg)
-        type({ responser, msg: msg as unknown as DataMsg<T> })
+        type({ responser, msg: msg as any })
       })
       return onCancel
     }
-    else {
-      onCancel = super.on(msg => {
+    else if(typeof type === 'string' && typeof cb === 'function') {
+      onCancel = super.on<Required<DataMsg<R>>>(msg => {
         if(msg.type === type) {
           const responser = this._getResponse(msg as DataMsg)
-          cb({ data: msg.data, responser, msg: msg as unknown as DataMsg<T> })
+          cb({ data: msg.data, responser, msg: msg as any })
         }
       })
     }
+    // @ts-expect-error
     return onCancel
   }
 
@@ -107,7 +106,7 @@ export class ApplicationChannel extends Channel {
   /**
    * @description 接收消息 T为消息的具体格式
    */
-  public onState<T>(cb: (data: T) => {}) {
+  public onState<T = any>(cb: (data: T | undefined) => {}) {
     if(typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
@@ -115,7 +114,7 @@ export class ApplicationChannel extends Channel {
       target: 'parent',
       type: 'getState'
     })?.then(cb)
-    return this.$on(({ msg }) => {
+    return this.$on<T>(({ msg }) => {
       if(msg.type === 'setState') {
         cb(msg.data)
       }
@@ -175,7 +174,7 @@ export class ApplicationChannel extends Channel {
     if(!msg.type) {
       console.warn(`_getResponse leak msg type`)
     }
-    return data => {
+    return (data: any) => {
       const responseMsg = {
         id: msg.id,
         target: msg.sourceCode ?? this._defaultResponseTarget,

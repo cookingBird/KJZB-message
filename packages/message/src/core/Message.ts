@@ -6,7 +6,6 @@ export type BaseMsg = {
   id: string;
   belong: string;
   timeout: number;
-  [index: string]: any;
 };
 export type MessageOps = {
   targetOrigin: string;
@@ -18,7 +17,7 @@ export type MessageOps = {
  * @description Message类只提供发送消息和接受消息的方法，只确保发送的消息属于当前命名空间
  */
 export class Message {
-  protected appCode: string = undefined;
+  protected appCode: string = undefined as unknown as string;
   protected targetOrigin: string;
   protected timeout: number;
   protected belong: string;
@@ -33,7 +32,7 @@ export class Message {
     this.belong = options.namespace ?? 'gislife';
     this.rejectMissing = options.rejectMissing ?? true;
     this.hooks = globalConfig.hooks;
-    this.globalContext = this.hooks.getContext.call(undefined);
+    this.globalContext = this.hooks.getContext.call(undefined as any);
   }
   /**
    * @description 发送消息
@@ -54,19 +53,13 @@ export class Message {
       try {
         target.postMessage(sendMsg, '*');
       } catch(error) {
-        console.error(
-          `postMessage error, 
-              msg type is ${msg.type},
-              target is ${msg.target},
-              sourceCode is ${msg.sourceCode}\n`,
-          msg.data,
-          error
-        )
+        console.error(`postMessage error`, JSON.stringify(msg), error)
       }
       const cancel = this.__on(data => {
         if(isObject(data) && data.id === sendMsg.id && data.belong === sendMsg.belong) {
           isSendOK = true
           cancel()
+          // @ts-expect-error
           resolve(data.data)
         }
       })
@@ -84,15 +77,14 @@ export class Message {
   /**
    * @description 发送消息
    */
-  protected __send<T = any>(target: Window, msg: Partial<BaseMsg>) {
+  protected __send<R = any>(target: Window, msg: Partial<BaseMsg>) {
     console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
-    console.log('target', target)
-    return this._postMessage<T>(msg, target)
+    return this._postMessage<R>(msg, target)
   }
   /**
    * @description 监听消息 只监听当前命名空间的消息,且非回复消息
    */
-  protected __on(cb: (msg: BaseMsg) => void) {
+  protected __on<T extends BaseMsg = BaseMsg>(cb: (msg: T) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
         console.log(`%c ${this.appCode} before on message： ${JSON.stringify(event.data)}`, 'color:red');

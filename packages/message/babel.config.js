@@ -1,11 +1,8 @@
-module.exports = function(api) {
-  api.cache(false)
-  const presets = ["@babel/preset-typescript", '@babel/preset-env']
-  const plugins = [
-    ['transform-remove-console', { exclude: ['error', 'warn'] }]
-  ]
-  return {
-    presets,
-    plugins
-  }
+const presets = ["@babel/preset-typescript", '@babel/preset-env']
+const plugins = [
+  ['transform-remove-console', { exclude: ['error', 'warn'] }]
+]
+module.exports = {
+  presets,
+  plugins
 }

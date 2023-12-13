@@ -1,12 +1,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-		"noEmit": false,
-		"allowJs": true,
-		"declarationMap": false,
+    "noEmit": false,
+    "allowJs": true,
+    "declarationMap": false,
     "declaration": true,
     "emitDeclarationOnly": true,
-		"outDir": "types",
+    "outDir": "types",
     "target": "ESNext"
   },
   "exclude": [

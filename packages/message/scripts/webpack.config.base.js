@@ -7,8 +7,8 @@ const rewritePkgFile = require('../../../../scripts/rewrite.cjs');
 const path = require('path');
 
 rewritePkgFile({
-  main: ['src/index.ts', 'dist/MicroMessage.es.js'],
-  module: ['src/index.ts', 'dist/MicroMessage.umd.js']
+  main: ['src/index.ts', 'dist/MicroMessage.umd.js'],
+  module: ['src/index.ts', 'dist/MicroMessage.es.js']
 }, path.resolve(__dirname, '../package.json'))
 
 const config = {
@@ -24,13 +24,20 @@ const config = {
       },
       {
         test: /\.ts$/,
-        loader: process.env.WEBPACK4
-          ? require.resolve('ts-loader')
-          : require.resolve('ts-loader-v9'),
-        options: {
-          transpileOnly: true,
-          appendTsSuffixTo: [/\.vue$/],
-        }
+        use: [
+          {
+            loader: 'babel-loader'
+          },
+          {
+            loader: process.env.WEBPACK4
+              ? require.resolve('ts-loader')
+              : require.resolve('ts-loader-v9'),
+            options: {
+              transpileOnly: true,
+              appendTsSuffixTo: [/\.vue$/],
+            }
+          }
+        ]
       },
       {
         test: /\.css$/i,
