@@ -1,5 +1,4 @@
-import { Channel, stateMap } from './core';
-import { getParams } from './util';
+import { Channel, stateMap } from './core/Channel';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps } from './core/Message';
 
