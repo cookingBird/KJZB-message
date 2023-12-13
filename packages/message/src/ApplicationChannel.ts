@@ -12,6 +12,8 @@ export type DataMsg<T = any> = {
 
 export class ApplicationChannel extends Channel {
 
+  private _defaultResponseTarget = 'parent' as const;
+
   constructor(options: Partial<MessageOps> = {}) {
     super(options)
     this._statePersistence()
@@ -25,7 +27,7 @@ export class ApplicationChannel extends Channel {
     if(!msg.target || !msg.type) throw Error('message syntax error')
     //* main parent发送
     if(msg.target === 'main' || msg.target === 'parent') {
-      return super.send<R>(window.parent, msg)
+      return super.send<R>(this.globalContext.parent, msg)
     }
     //* cache state
     else if(msg.type === 'setState') {
@@ -128,7 +130,7 @@ export class ApplicationChannel extends Channel {
     //* 获取应用AppCode
     const appCode = this.hooks.praseAppCode.call(undefined);
     //* 如果当前应用不是主应用，且当前应用是被嵌入到message框架之中
-    if(window.parent !== window && appCode) {
+    if(!this._isRootContext() && appCode) {
       //* 子应用
       this.setAppCode(appCode);
       this.emitRegisterEvent(appCode);
@@ -167,13 +169,16 @@ export class ApplicationChannel extends Channel {
     * @description build response msg
     */
   private _getResponse(msg: DataMsg<any>) {
-    if(!msg.sourceCode || !msg.type) {
-      throw Error(`_getResponse error, sourceCode is ${msg.sourceCode}, type is ${msg.type}`)
+    if(!msg.sourceCode) {
+      console.warn(`_getResponse leak msg sourceCode`)
+    }
+    if(!msg.type) {
+      console.warn(`_getResponse leak msg type`)
     }
     return data => {
       const responseMsg = {
         id: msg.id,
-        target: msg.sourceCode,
+        target: msg.sourceCode ?? this._defaultResponseTarget,
         type: msg.type,
         sourceCode: this.appCode,
         popSource: this.appCode,

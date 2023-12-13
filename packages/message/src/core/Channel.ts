@@ -51,8 +51,8 @@ export class Channel extends Message {
     else {
       const promises = []
       // 如果target不存在，则向全局发送消息
-      if(window.parent !== window) {
-        promises.push(super.__send(window.parent, { ...msg, pop: true }))
+      if(!this._isRootContext()) {
+        promises.push(super.__send(this.globalContext.parent, { ...msg, pop: true }))
       }
       microAppMap.forEach((value, key) => {
         promises.push(super.__send(value.contentWindow, { ...msg, pop: false }))
@@ -91,7 +91,7 @@ export class Channel extends Message {
       sourceCode: val,
       pop: false
     };
-    this.send(window.parent, payload);
+    this.send(this.globalContext.parent, payload);
   }
 
   /**
@@ -145,8 +145,8 @@ export class Channel extends Message {
       if(this.appCode === 'main') msg.pop = false
       // 向main发送的消息只向上传递，直到root结束
       if(msg.target === 'main') {
-        if(window.parent !== window) {
-          this.send(window.parent, { ...msg, pop: true, })
+        if(!this._isRootContext()) {
+          this.send(this.globalContext.parent, { ...msg, pop: true, })
         }
       }
       //  全局发送的消息，或者向非当前应用发送的消息
@@ -158,8 +158,8 @@ export class Channel extends Message {
           }
         })
         // pass parent
-        if(msg.pop === true && window.parent !== window) {
-          this.send(window.parent, { ...msg, pop: true })
+        if(msg.pop === true && !this._isRootContext()) {
+          this.send(this.globalContext.parent, { ...msg, pop: true })
         }
       }
 
@@ -184,5 +184,9 @@ export class Channel extends Message {
         if(el) this.registerApp(microAppCode, el);
       }
     })
+  }
+
+  protected _isRootContext() {
+    return this.globalContext.parent === this.globalContext;
   }
 }

@@ -18,15 +18,16 @@ export type MessageOps = {
  * @description Message类只提供发送消息和接受消息的方法，只确保发送的消息属于当前命名空间
  */
 export class Message {
-  protected appCode: string;
+  protected appCode: string = undefined;
   protected targetOrigin: string;
   protected timeout: number;
   protected belong: string;
   protected rejectMissing: boolean;
   protected hooks: GlobalConfig['hooks'];
-  public globalContext: Window;
+  protected globalContext: Window;
+
+
   constructor(options: Partial<MessageOps> = {}) {
-    this.appCode = window.parent === window ? 'main' : '';
     this.targetOrigin = options.targetOrigin ?? '*';
     this.timeout = options.timeout ?? 3 * 1000;
     this.belong = options.namespace ?? 'gislife';
@@ -89,7 +90,6 @@ export class Message {
    * @description 发送消息
    */
   protected __send<T = any>(target: Window, msg: Partial<BaseMsg>) {
-    console.log(`${this.appCode} before send message--------------------`, msg);
     return this._postMessage<T>(msg, target)
   }
   /**
@@ -98,7 +98,6 @@ export class Message {
   protected __on(cb: (msg: BaseMsg) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
-        console.log(`${this.appCode} before on message---------------`, event.data);
         cb(event.data)
       }
     })
