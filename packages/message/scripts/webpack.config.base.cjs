@@ -2,25 +2,18 @@
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const isProd = process.env.NODE_ENV === 'production';
+import { devTools } from '@gislife/utils'
 
-function rewritePkgFile(devOps) {
-  const fs = require('fs-extra')
-  const pkgJson = fs.readJsonSync('./package.json');
-  for (const [key, value] of Object.entries(devOps)) {
-    pkgJson[key] =
-      process.env.NODE_ENV === 'development'
-        ? value[0]
-        : value[1]
-  }
-  fs.writeJsonSync('./package.json', pkgJson, { spaces: 2 })
-}
-// rewritePkgFile({
-//   main: ['src/index.ts', 'dist/MicroMessage.min.js']
-// })
+const envTools = devTools.createEnvTools(() => process.env.NODE_ENV === 'production')
+
+envTools.rewritePkgFile(
+  {
+    main: ['src/index.ts', 'dist/MicroMessage.min.js']
+  },
+  path.resolve(__dirname, '../package.json')
+);
 
 const config = {
   devtool: 'source-map',

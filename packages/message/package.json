@@ -48,7 +48,8 @@
     "vue-tsc": "^1.8.22",
     "@vue/runtime-core": "3.3.4",
     "@vue/runtime-dom": "3.3.4",
-    "@vue/runtime-dom": "^3.3.4"
+    "@vue/runtime-dom": "^3.3.4",
+    "@gislife/utils": "*"
   },
   "dependencies": {
     "tapable": "2.2.1",
