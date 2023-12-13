@@ -22,12 +22,8 @@ export default {
   components: {
     HelloWorld,
   },
-  data() {
+  setup() {
     return {
-      reactiveData: {
-        number: 100000,
-      },
-      global: '',
     };
   },
   computed: {

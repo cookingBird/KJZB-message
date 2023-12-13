@@ -41,16 +41,11 @@ export class Message {
   private _postMessage<R = any>(msg: Partial<BaseMsg>, target: Window): Promise<R> {
     const timeout = msg.timeout ?? this.timeout
     let isSendOK = false
-
     if(!target) {
-      throw Error(`
-        _postmessage target not exist, named ${msg.target},
-        message type is ${msg.type}, 
-        source is ${this.appCode}`
-      )
+      throw Error(`postmessage target not exist`)
     };
     if(!msg) {
-      throw Error(`_postmessage msg not exist;`)
+      throw Error(`postmessage msg not exist;`)
     };
     const sendMsg = JSON.parse(JSON.stringify(msg)) as Partial<BaseMsg>;
     sendMsg.belong = sendMsg.belong ?? this.belong;
@@ -90,7 +85,8 @@ export class Message {
    * @description 发送消息
    */
   protected __send<T = any>(target: Window, msg: Partial<BaseMsg>) {
-    console.log(`${this.appCode} before send message：`, msg);
+    console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
+    console.log('target', target)
     return this._postMessage<T>(msg, target)
   }
   /**
@@ -99,7 +95,7 @@ export class Message {
   protected __on(cb: (msg: BaseMsg) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
-        console.log(`${this.appCode} before on message：`, event.data);
+        console.log(`%c ${this.appCode} before on message： ${JSON.stringify(event.data)}`, 'color:red');
         cb(JSON.parse(JSON.stringify(event.data)))
       }
     })

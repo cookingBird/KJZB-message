@@ -11,7 +11,7 @@ import globalConfig from './config';
 declare const connector: ApplicationChannel;
 export type GlobalConfig = typeof globalConfig;
 export { components, globalConfig, connector, install as default, use, };
-declare function install(app: App): void;
+declare function install(app: App): any;
 declare function use(plugin: {
     install: (connector: ApplicationChannel, config: GlobalConfig) => () => void;
 }): () => void;

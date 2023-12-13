@@ -66,11 +66,8 @@ export default {
   mounted() {
     console.log('window query all mounted',
       document.querySelectorAll('iframe'),
-      window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe'));
-    console.log('window.__WUJIE_RAW_WINDOW__ === window',
-      window.__WUJIE_RAW_WINDOW__ === window);
-    console.log('window.__WUJIE_RAW_WINDOW__ === window.__WUJIE_RAW_WINDOW__.parent',
-      window.__WUJIE_RAW_WINDOW__ === window.__WUJIE_RAW_WINDOW__.parent);
+      // window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe')
+    );
   },
   methods: {
     sendGlobal() {

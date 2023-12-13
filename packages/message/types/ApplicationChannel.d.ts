@@ -1,4 +1,4 @@
-import { Channel } from './core';
+import { Channel } from './core/Channel';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps } from './core/Message';
 export type DataMsg<T = any> = {

@@ -64,4 +64,5 @@ export declare class Channel extends Message {
      * @returns
      */
     private _maintainRegister;
+    protected _isRootContext(): boolean;
 }

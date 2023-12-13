@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
-import Message from '@gislife/micro-message';
 import App from './App.vue';
 
+window.parent.postMessage('message from grand 1-1', '*')
+
 const app = createApp(App);
-app.use(Message);
 app.mount('#app');

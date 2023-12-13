@@ -25,7 +25,7 @@ export {
   use,
 }
 
-function install(app: App) {
+function install(app: App): any {
   components.vuePlugin.install(app);
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {

@@ -21,7 +21,7 @@ export declare class Message {
     protected belong: string;
     protected rejectMissing: boolean;
     protected hooks: GlobalConfig['hooks'];
-    globalContext: Window;
+    protected globalContext: Window;
     constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息

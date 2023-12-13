@@ -33,13 +33,14 @@
 
 <script>
 import HelloWorld from '@/components/HelloWorld.vue';
-import {
-  connector, use, plugins, components,
-} from '@gislife/micro-message';
-const { MicroMessageApp } = components;
+// import {
+//   connector, use, plugins, components,
+// } from '@gislife/micro-message';
+// const { MicroMessageApp } = components;
 // const { createWujieVue3Plugin } = plugins;
 import WUjieVue3 from 'wujie-vue3';
 import { onBeforeUnmount } from 'vue';
+
 
 
 
@@ -47,17 +48,17 @@ export default {
   name: 'App',
   components: {
     HelloWorld,
-    MicroMessageApp,
+    // MicroMessageApp,
   },
   setup(props) {
     const IP = 'http://localhost';
+
     return {
       child1Config: {
         url: `${ IP }:7001/?microAppCode=child1`,
         // url: `${ IP }:7001`,
       },
       child2Config: {
-        // url: `${IP}:7002/?microAppCode=child2`,
         url: `${ IP }:7002/`,
         microAppCode: 'child2',
       },
