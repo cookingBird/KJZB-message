@@ -1,7 +1,7 @@
 <template>
 <div id="child2">
   <div class="flex-grow-0">
-    <HelloWorld msg="This is child2" />
+    <HelloWorld msg="This is child2 （单独子应用）" />
     <img
       alt="Vue logo"
       src="./assets/logo.png"
