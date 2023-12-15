@@ -4,7 +4,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
     devServer: {
-      port: 8003,
+      port: 8009,
       // @ts-expect-error webpack server headers
       headers: {
         'Access-Control-Allow-Credentials': true,

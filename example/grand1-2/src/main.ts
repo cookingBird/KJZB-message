@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
+import WujieVue from 'wujie-vue3';
 import App from './App.vue';
 
-window.parent.postMessage('message from grand 1-2', '*')
-
 const app = createApp(App);
+app.use(WujieVue);
 app.mount('#app');

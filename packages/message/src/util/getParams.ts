@@ -1,3 +1,5 @@
+import { NOOP } from "./onEvent";
+
 /**
  * @description 获取URL search参数
  */
@@ -37,20 +39,12 @@ export function parseQuery(query = '') {
     }, {})
 }
 
+export function debounce<T extends Array<any> = any>(fn: (...params: T) => void, timer = 300, doStart = false): NOOP {
 
-export function querySelectBodyIframe(body) {
-  return Array.from(body.querySelectorAll('iframe'))
-}
-
-export function querySelectAllIframeIncludeShadow(el = document.body, result = []): HTMLIFrameElement[] {
-  let _result = result.concat(querySelectBodyIframe(el));
-  if(window.customElements?.get("wujie-app")) {
-
-    _result = Array.from(el.querySelectorAll('wujie-app'))
-      .reduce((pre, wujieApp) => {
-        // @ts-expect-error
-        return pre.concat(querySelectAllIframeIncludeShadow(wujieApp.shadowRoot.body))
-      }, _result)
+  let _t: number;
+  return (...params: T) => {
+    doStart ? fn(...params) : null
+    clearTimeout(_t);
+    _t = setTimeout(() => fn(...params), timer);
   }
-  return _result;
 }

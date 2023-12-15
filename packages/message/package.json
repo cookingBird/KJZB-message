@@ -4,8 +4,8 @@
   "author": "dengtao",
   "license": "ISC",
   "description": "message",
-  "main": "dist/MicroMessage.umd.js",
-  "module": "dist/MicroMessage.es.js",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
   "style": "dist/MicroMessage.css",
   "types": "types/index.d.ts",
   "scripts": {
@@ -25,7 +25,8 @@
     "wujie": "1.0.18",
     "wujie-vue3": "1.0.18",
     "wujie-react": "1.0.18",
-    "wujie-vue2": "1.0.18"
+    "wujie-vue2": "1.0.18",
+    "lodash-es": "4.17.21"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",

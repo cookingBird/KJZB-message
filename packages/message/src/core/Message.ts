@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { onMessage, isObject } from '../util'
 import { globalConfig, type GlobalConfig } from '..';
+import { debounce } from '../util'
 
 export type BaseMsg = {
   id: string;
@@ -46,7 +47,7 @@ export class Message {
     if(!msg) {
       throw Error(`postmessage msg not exist;`)
     };
-    const sendMsg = JSON.parse(JSON.stringify(msg)) as Partial<BaseMsg>;
+    const sendMsg = { ...msg } as Partial<BaseMsg>;
     sendMsg.belong = sendMsg.belong ?? this.belong;
     sendMsg.id = sendMsg.id ?? uuidv4();
     return new Promise((resolve, reject) => {
@@ -55,12 +56,13 @@ export class Message {
       } catch(error) {
         console.error(`postMessage error`, JSON.stringify(msg), error)
       }
-      const cancel = this.__on(data => {
-        if(isObject(data) && data.id === sendMsg.id && data.belong === sendMsg.belong) {
+      const onResolve = debounce((data) => { resolve(data); cancel(); }, 300)
+      const cancel = this.__on(msg => {
+        if(isObject(msg) && msg.id === sendMsg.id && msg.belong === sendMsg.belong) {
+          console.log('receive msg', msg);
           isSendOK = true
-          cancel()
           // @ts-expect-error
-          resolve(data.data)
+          onResolve(msg.data)
         }
       })
       setTimeout(() => {
@@ -78,7 +80,7 @@ export class Message {
    * @description 发送消息
    */
   protected __send<R = any>(target: Window, msg: Partial<BaseMsg>) {
-    console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
+    // console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
     return this._postMessage<R>(msg, target)
   }
   /**

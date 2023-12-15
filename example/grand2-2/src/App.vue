@@ -30,12 +30,11 @@ export default {
   created() {
     connector.$on('greet', (res) => {
       const { msg, responser } = res;
-      console.log('msg', msg);
       responser('hello, i am grand2-2');
     });
     connector.$on('hello', (res) => {
       const { data, msg } = res;
-      alert(`from ${msg.sourceCode}, ${msg.type} ${data}`);
+      alert(`from ${ msg.sourceCode }, ${ msg.type } ${ data }`);
     });
   },
 };

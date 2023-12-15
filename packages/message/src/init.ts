@@ -1,36 +1,49 @@
 import { globalConfig } from ".";
-import { getParams, querySelectAllIframeIncludeShadow } from "./util";
+import { getParams } from "./util";
 
+
+const maxItems = Array(10).fill('').map((_, index) => index);
 
 export default function () {
   /**
    * default registry el
    */
-  globalConfig.hooks.findRegistryEl.tap('default', (msg) => {
-    const globalCtx = globalConfig.hooks.getContext.call(undefined);
-    const registryAppCode = msg.sourceCode;
+  globalConfig.hooks.findRegistryEl.tap('default', (code) => {
+    const globalCtx = globalConfig.hooks.getContext.call(undefined as any);
+    const registryAppCode = code;
     const iframes = Array.from(globalCtx.document.querySelectorAll('iframe'));
     // find by src query
-    let target: HTMLIFrameElement | null = iframes.find(i => i.src.includes(registryAppCode));
+    let target: HTMLIFrameElement | undefined = iframes.find(i => i.src.includes(registryAppCode));
     // find by id
     if(!target) {
       target = globalCtx.document.getElementById('gislife-' + registryAppCode) as HTMLIFrameElement;
     }
     if(target) return target;
-  })
-  globalConfig.hooks.findRegistryEl.tap('adapteWujie', (msg) => {
-    const globalCtx = globalConfig.hooks.getContext.call(undefined);
-    const registryElCode = msg.sourceCode;
-    let target;
-    if(globalCtx.customElements?.get("wujie-app")) {
-      target = globalCtx.document.querySelector(`iframe[data-wujie-flag][name='${registryElCode}']`);
-      if(!target) {
-        //消息来自底层子应用
-        const ifrmaesInnerWujieApp = querySelectAllIframeIncludeShadow(globalCtx.document.body);
-        target = ifrmaesInnerWujieApp.find(i => i.src.includes(registryElCode));
+  });
+
+
+  globalConfig.hooks.findRegistryEl.tapPromise('adapteWujie', async (registryElCode, appCode) => {
+    await new Promise((resolve) => setTimeout(resolve));
+    if(customElements.get('wujie-app')) {
+      let res: HTMLIFrameElement | undefined;
+      // @ts-expect-error
+      if(window.$wujie) { // sub
+        for(let i = 0;i < maxItems.length;i++) {
+          const context = window[i];
+          if(context?.name === registryElCode) {
+            console.log(appCode + ' registery ' + registryElCode, context);
+            // @ts-expect-error
+            res = context.__WUJIE.iframe;
+            break;
+          };
+        };
+      } else { // main
+        res = document.querySelector(`iframe[data-wujie-flag][name=${registryElCode}]`) as HTMLIFrameElement;
       }
-    };
-    if(target) return target;
+      return res;
+    } else {
+      return Promise.reject("NOT SUPPORT WUJIE")
+    }
   });
   globalConfig.hooks.afterFindRegistryEl.tap('warnning', (info) => {
     if(!info.el) {

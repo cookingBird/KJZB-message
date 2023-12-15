@@ -1,4 +1,4 @@
-import { Channel, stateMap } from './core/Channel';
+import { Channel } from './core/Channel';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps } from './core/Message';
 import { NOOP } from './util';
@@ -31,7 +31,7 @@ export class ApplicationChannel extends Channel {
     }
     //* cache state
     else if(msg.type === 'setState') {
-      stateMap.set(msg.target, msg.data);
+      super.setState(msg.target, msg.data);
     }
     else {
       const targetEl: HTMLIFrameElement | undefined = super.getApp(msg.target);
@@ -159,7 +159,7 @@ export class ApplicationChannel extends Channel {
    */
   private _statePersistence() {
     this.$on('getState', ({ responser, msg }) => {
-      const state = stateMap.get(msg.sourceCode)
+      const state = super.getState(msg.sourceCode)
       if(state) responser(state)
     })
   }

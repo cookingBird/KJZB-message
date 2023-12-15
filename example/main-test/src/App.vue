@@ -9,34 +9,28 @@
   <div class="container">
     <WujieVue
       :url="child1Config.url"
-      class="container-item"
       :name="child1Config.microAppCode"
-      :degrade="false"
+      class="container-item"
     >
     </WujieVue>
-    <!--    <div class="container-item">
-      <!~~ <MicroMessageApp
+    <div class="container-item">
+      <MicroMessageApp
         class="container-item"
         :src="child2Config.url"
         :microAppCode="child2Config.microAppCode"
       >
-      </MicroMessageApp> ~~>
-      <iframe
-        class="container-item"
-        :src="child2Config.url"
-      >
-      </iframe>
-    </div>-->
+      </MicroMessageApp>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
 import HelloWorld from '@/components/HelloWorld.vue';
-// import {
-//   connector, use, plugins, components,
-// } from '@gislife/micro-message';
-// const { MicroMessageApp } = components;
+import {
+  connector, use, plugins, components,
+} from '@gislife/micro-message';
+const { MicroMessageApp } = components;
 // const { createWujieVue3Plugin } = plugins;
 import WUjieVue3 from 'wujie-vue3';
 import { onBeforeUnmount } from 'vue';
@@ -48,7 +42,7 @@ export default {
   name: 'App',
   components: {
     HelloWorld,
-    // MicroMessageApp,
+    MicroMessageApp,
   },
   setup(props) {
     const IP = 'http://localhost';
@@ -56,7 +50,7 @@ export default {
     return {
       child1Config: {
         url: `${ IP }:7001/?microAppCode=child1`,
-        // url: `${ IP }:7001`,
+        microAppCode: 'child1'
       },
       child2Config: {
         url: `${ IP }:7002/`,

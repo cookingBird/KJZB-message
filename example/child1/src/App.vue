@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="flex flex-grow">
-    <MicroMessageApp
+    <!-- <MicroMessageApp
       :src="appConfig.url"
       :microAppCode="appConfig.microAppCode"
       class="container-item"
@@ -24,7 +24,21 @@
       :microAppCode="appConfig2.microAppCode"
       class="container-item"
     >
-    </MicroMessageApp>
+    </MicroMessageApp> -->
+    <WujieVue
+      :url="appConfig.url"
+      :name="appConfig.microAppCode"
+      class="container-item"
+      :degrade="false"
+    >
+    </WujieVue>
+    <WujieVue
+      :url="appConfig2.url"
+      :name="appConfig2.microAppCode"
+      class="container-item"
+      :degrade="false"
+    >
+    </WujieVue>
   </div>
 </div>
 </template>
@@ -47,11 +61,11 @@ export default {
     const IP = 'http://localhost';
     return {
       appConfig: {
-        url: IP + ':8001',
+        url: IP + ':8001?microAppCode=grand1-1',
         microAppCode: 'grand1-1'
       },
       appConfig2: {
-        url: IP + ':8003',
+        url: IP + ':8009?microAppCode=grand1-2',
         microAppCode: 'grand1-2'
       },
       state: {},

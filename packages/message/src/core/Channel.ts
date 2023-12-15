@@ -19,7 +19,7 @@ export const microAppMap = new Map<string, HTMLIFrameElement>()
 /**
  * @description state map
  */
-export const stateMap = new Map<string, any>()
+const stateMap = new WeakMap<HTMLIFrameElement, any>()
 
 /**
  * @class Channel
@@ -37,25 +37,28 @@ export class Channel extends Message {
    * @description send or passive message
    */
   protected send<R = any>(target: Window | undefined | null, msg: PassiveMsg): Promise<R> {
-    msg.sourceCode = msg.sourceCode ?? this.appCode;
-    msg.popSource = this.appCode;
-    /**
-     * send message
-     */
-    if(target) {
-      return super.__send<R>(target, msg)
+    const newMsg = {
+      ...msg,
+      sourceCode: this.appCode,
+      popSource: this.appCode,
     }
-    /**
-     * passive message
-     */
+    // target exist current page context
+    if(target) {
+      const _msg = JSON.parse(JSON.stringify({ ...newMsg, pop: false }))
+      return super.__send<R>(target, _msg)
+    }
+    // target not exist current page context
     else {
       const promises = []
-      // 如果target不存在，则向全局发送消息
+      // 向父级传递消息
       if(!this._isRootContext()) {
-        promises.push(this.send(this.globalContext.parent, { ...msg, pop: true }))
+        const _msg = JSON.parse(JSON.stringify({ ...newMsg, pop: true }))
+        promises.push(super.__send(this.globalContext.parent, _msg))
       }
-      microAppMap.forEach((value, key) => {
-        promises.push(this.send(value.contentWindow as Window, { ...msg, pop: false }))
+      // 向子级传递消息
+      microAppMap.forEach((value, code) => {
+        const _msg = JSON.parse(JSON.stringify({ ...newMsg, pop: false }))
+        promises.push(super.__send(value.contentWindow as Window, _msg))
       })
       return Promise.any(promises)
     }
@@ -95,38 +98,44 @@ export class Channel extends Message {
     this.send(this.globalContext.parent, payload);
   }
 
-  /**
-   * @description cancel registry
-   * todo unregistry hook
-   */
-  public unRegisterApp(appCode: string): void {
-    stateMap.delete(appCode)
-    microAppMap.delete(appCode)
-  }
+
   /**
    * @description get app
    */
-  protected getApp(target: string) {
-    return microAppMap.get(target)
+  protected getApp(appCode: string) {
+    return microAppMap.get(appCode);
   }
   /**
    * @description registry app
    */
   protected registerApp(appCode: string, target: HTMLIFrameElement) {
-    return microAppMap.set(appCode, target)
+    microAppMap.set(appCode, target);
+    stateMap.set(target, {})
+  }
+  /**
+   * @description cancel registry
+   */
+  public unRegisterApp(appCode: string): void {
+    microAppMap.delete(appCode)
   }
 
   /**
    * @description get app state
    */
   protected getState(microAppCode: string) {
-    return stateMap.get(microAppCode)
+    const app = microAppMap.get(microAppCode)
+    if(app) {
+      return stateMap.get(app)
+    }
   }
   /**
    * @description set app state
    */
   protected setState(microAppCode: string, state: any) {
-    return stateMap.set(microAppCode, state)
+    const app = microAppMap.get(microAppCode)
+    if(app) {
+      return stateMap.set(app, state)
+    }
   }
 
   /**
@@ -134,36 +143,40 @@ export class Channel extends Message {
    */
   private _passive() {
     return super.__on<Required<PassiveMsg>>((msg) => {
+
       /**
        * 属于当前应用的消息不进行 passive
        */
-      if(msg.target === this.appCode || msg.target === 'parent') return;
-      /**
-       * 不属于当前appCode的消息传递
-       */
-      //! 如果传递到根节点还未找到
-      if(this.appCode === 'main') msg.pop = false
+      if(msg.target === this.appCode
+        || msg.target === 'parent'
+        || msg.sourceCode === this.appCode) return;
+      console.warn('%c ' + this.appCode + ' ---passive message-------\n' + JSON.stringify(msg), 'color:green');
+
       // 向main发送的消息只向上传递，直到root结束
       if(msg.target === 'main') {
         if(!this._isRootContext()) {
-          this.send(this.globalContext.parent, { ...msg, pop: true, })
+          super.__send(this.globalContext.parent, JSON.parse(JSON.stringify({ ...msg, pop: true, popSource: this.appCode })))
         }
+        return;
       }
+
       //  全局发送的消息，或者向非当前应用发送的消息
-      else if(msg.target === 'global' || msg.target !== this.appCode) {
+      if(msg.target === 'global' || msg.target !== this.appCode) {
         //  pass sibling
         microAppMap.forEach((tar, tarCode) => {
           if(tarCode !== msg.popSource) {
-            this.send(tar.contentWindow as Window, { ...msg, pop: false, })
+            console.warn('%c ' + this.appCode + ' passive 2 ' + tarCode + '--------------sibling pass \n' + JSON.stringify({ ...msg, pop: false }), 'color:brown');
+            super.__send(tar.contentWindow as Window, JSON.parse(JSON.stringify({ ...msg, pop: false, popSource: this.appCode })))
           }
         })
         // pass parent
-        if(msg.pop === true && !this._isRootContext()) {
-          this.send(this.globalContext.parent, { ...msg, pop: true })
+        // bug: wujie传输的json会自动改变
+        if(msg.pop === true && !this._isRootContext() && microAppMap.size > 0) {
+          console.warn('%c ' + this.appCode + ' passive 2 parent -------------parent pass\n' + JSON.stringify(msg), 'color:blue');
+          super.__send(this.globalContext.parent, JSON.parse(JSON.stringify({ ...msg, popSource: this.appCode })))
         }
       }
-
-    })
+    });
   }
   /**
    * @private
@@ -171,22 +184,27 @@ export class Channel extends Message {
    * @returns
    */
   private _maintainRegister() {
-    return this.on<Required<DataMsg>>(msg => {
+    return this.on<Required<DataMsg>>(async (msg) => {
       const microAppCode = msg.sourceCode
       if(msg.type === 'register' && msg.target === 'parent') {
-        // 注册
-        const el = globalConfig.hooks.findRegistryEl.call(msg as DataMsg);
-        globalConfig.hooks.afterFindRegistryEl.call({
-          appCode: this.appCode,
-          registryCode: microAppCode,
-          el,
-        })
-        if(el) this.registerApp(microAppCode, el);
+        try {
+          // 注册
+          const el = await globalConfig.hooks.findRegistryEl.promise(msg.sourceCode, this.appCode);
+          if(el) {
+            this.registerApp(microAppCode, el);
+          }
+        } catch(error) {
+          if(error instanceof Error) {
+            console.error(error.message)
+          } else {
+            console.error(error);
+          }
+        }
       }
     })
   }
 
   protected _isRootContext() {
-    return this.globalContext.parent === this.globalContext;
+    return window.parent === window;
   }
 }
