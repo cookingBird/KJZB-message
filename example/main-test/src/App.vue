@@ -13,14 +13,20 @@
       class="container-item"
     >
     </WujieVue>
-    <div class="container-item">
+    <WujieVue
+      :url="child2Config.url"
+      :name="child2Config.microAppCode"
+      class="container-item"
+    >
+    </WujieVue>
+    <!-- <div class="container-item">
       <MicroMessageApp
         class="container-item"
         :src="child2Config.url"
         :microAppCode="child2Config.microAppCode"
       >
       </MicroMessageApp>
-    </div>
+    </div> -->
   </div>
 </div>
 </template>
@@ -32,7 +38,6 @@ import {
 } from '@gislife/micro-message';
 const { MicroMessageApp } = components;
 // const { createWujieVue3Plugin } = plugins;
-import WUjieVue3 from 'wujie-vue3';
 import { onBeforeUnmount } from 'vue';
 
 
@@ -50,6 +55,7 @@ export default {
     return {
       child1Config: {
         url: `${ IP }:7001/?microAppCode=child1`,
+        // url: `${ IP }:7001/`, // sub can not mount
         microAppCode: 'child1'
       },
       child2Config: {

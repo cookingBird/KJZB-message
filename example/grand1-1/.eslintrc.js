@@ -18,5 +18,6 @@ module.exports = {
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'vue/require-v-for-key': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off'
   },
 };

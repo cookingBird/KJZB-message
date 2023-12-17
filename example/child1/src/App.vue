@@ -13,18 +13,6 @@
     </div>
   </div>
   <div class="flex flex-grow">
-    <!-- <MicroMessageApp
-      :src="appConfig.url"
-      :microAppCode="appConfig.microAppCode"
-      class="container-item"
-    >
-    </MicroMessageApp>
-    <MicroMessageApp
-      :src="appConfig2.url"
-      :microAppCode="appConfig2.microAppCode"
-      class="container-item"
-    >
-    </MicroMessageApp> -->
     <WujieVue
       :url="appConfig.url"
       :name="appConfig.microAppCode"
@@ -32,13 +20,26 @@
       :degrade="false"
     >
     </WujieVue>
-    <WujieVue
+    <!-- <MicroMessageApp
+      :src="appConfig.url"
+      :microAppCode="appConfig.microAppCode"
+      class="container-item"
+    >
+    </MicroMessageApp> -->
+    <MicroMessageApp
+      :src="appConfig2.url"
+      :microAppCode="appConfig2.microAppCode"
+      class="container-item"
+    >
+    </MicroMessageApp>
+
+    <!-- <WujieVue
       :url="appConfig2.url"
       :name="appConfig2.microAppCode"
       class="container-item"
       :degrade="false"
     >
-    </WujieVue>
+    </WujieVue> -->
   </div>
 </div>
 </template>
@@ -78,10 +79,10 @@ export default {
     }
   },
   mounted() {
-    console.log('window query all mounted',
-      document.querySelectorAll('iframe'),
-      // window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe')
-    );
+    // console.log('window query all mounted',
+    //   document.querySelectorAll('iframe'),
+    // window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe')
+    // );
   },
   methods: {
     sendGlobal() {

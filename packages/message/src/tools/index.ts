@@ -7,10 +7,10 @@ export function sendCall(
   cb: (...p: any[]) => void,
   params?: Record<string, any>) {
 
-  if (typeof cb !== 'function') {
+  if(typeof cb !== 'function') {
     throw Error('callback or params type error')
   }
-  if (!target) {
+  if(!target) {
     throw Error('missing target')
   }
   return connector.$send({
@@ -26,11 +26,11 @@ export function sendCall(
 /**
  * @description on remote callback
  */
-export function onCall(
-  cb: (res: { call: (context: any) => void; responser: (data: any) => void }) => void) {
+export function onCall(cb: (res: { call: (context: any) => void; responser: ((data: any) => void) | undefined }) => void) {
+
   return connector.$on('callback', ({ data, responser }) => {
     const { fn, params } = data
-    if (params && typeof params === 'object') {
+    if(params && typeof params === 'object') {
       const paramsName = Object.keys(params)
       const paramsValue = Object.values(params)
       const func = Function(

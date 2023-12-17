@@ -24,9 +24,11 @@ export class ApplicationChannel extends Channel {
    */
   public $send<R = any>(msg: DataMsg) {
     msg = JSON.parse(JSON.stringify(msg))
-    if(!msg.target || !msg.type) throw Error('message syntax error')
+    if(!msg.target || !msg.type) throw Error('message syntax error');
+    msg.target = ['main', 'root'].includes(msg.target) ? 'main' : msg.target;
     //* main parent发送
     if(msg.target === 'main' || msg.target === 'parent') {
+      if(super._isRootContext()) throw Error('root  context send 2 parent error');
       return super.send<R>(this.globalContext.parent, msg)
     }
     //* cache state
@@ -42,7 +44,7 @@ export class ApplicationChannel extends Channel {
   /**
    * @description 监听消息
    */
-  public $on<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: (data: R) => void }) => void), cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: (data: any) => void }) => void): NOOP {
+  public $on<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: ((data: R) => void) | undefined }) => void) | undefined, cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: ((data: any) => void) | undefined }) => void): NOOP {
     let onCancel
     if(cb && typeof cb !== 'function') {
       throw Error(`$on callback param error,current type is ${typeof cb}`)
@@ -52,7 +54,7 @@ export class ApplicationChannel extends Channel {
     }
     if(typeof type === 'function') {
       onCancel = super.on<Required<DataMsg<R>>>(msg => {
-        const responser = this._getResponse(msg as DataMsg)
+        const responser = this._getResponse<R>(msg as DataMsg)
         type({ responser, msg: msg as any })
       })
       return onCancel
@@ -60,7 +62,7 @@ export class ApplicationChannel extends Channel {
     else if(typeof type === 'string' && typeof cb === 'function') {
       onCancel = super.on<Required<DataMsg<R>>>(msg => {
         if(msg.type === type) {
-          const responser = this._getResponse(msg as DataMsg)
+          const responser = this._getResponse<R>(msg as DataMsg)
           cb({ data: msg.data, responser, msg: msg as any })
         }
       })
@@ -132,7 +134,7 @@ export class ApplicationChannel extends Channel {
     if(!this._isRootContext() && appCode) {
       //* 子应用
       this.setAppCode(appCode);
-      this.emitRegisterEvent(appCode);
+      this._emitRegisterEvent();
     }
     else {
       //* 主应用
@@ -160,30 +162,44 @@ export class ApplicationChannel extends Channel {
   private _statePersistence() {
     this.$on('getState', ({ responser, msg }) => {
       const state = super.getState(msg.sourceCode)
-      if(state) responser(state)
+      if(state) responser?.(state)
     })
   }
 
   /**
     * @description build response msg
     */
-  private _getResponse(msg: DataMsg<any>) {
+  private _getResponse<R = any>(msg: DataMsg<R>) {
     if(!msg.sourceCode) {
-      console.warn(`_getResponse leak msg sourceCode`)
+      console.warn(`_getResponse leak msg sourceCode`);
+      return;
     }
     if(!msg.type) {
-      console.warn(`_getResponse leak msg type`)
+      console.warn(`_getResponse leak msg type`);
+      return;
     }
-    return (data: any) => {
+    return (data: R) => {
       const responseMsg = {
         id: msg.id,
-        target: msg.sourceCode ?? this._defaultResponseTarget,
+        target: msg.sourceCode as string,
         type: msg.type,
         sourceCode: this.appCode,
         popSource: this.appCode,
         data: data
       };
-      return this.$send(responseMsg);
+      this.$send(responseMsg);
     }
+  }
+
+  /**
+   * @description set current appcode and registry to parent window
+   */
+  private _emitRegisterEvent(): void {
+    const payload = {
+      target: 'parent',
+      type: 'register',
+      pop: false
+    };
+    this.$send(payload);
   }
 }

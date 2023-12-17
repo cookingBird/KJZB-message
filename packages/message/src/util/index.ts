@@ -33,32 +33,6 @@ export function pickFileds(object, ...fileds) {
   return res
 }
 
-export function deepCloneBaseType(object, maxDepth = 3, depth = 1) {
-  const res = {}
-  if(depth <= maxDepth) {
-    for(const key in object) {
-      if(Object.hasOwn(object, key)) {
-        const element = object[key]
-        if(Validator.isObject(element)) {
-          res[key] = deepCloneBaseType(element, maxDepth, depth + 1)
-        }
-        else if(Validator.isArray(element)) {
-          res[key] = element.map(deepCloneBaseType, maxDepth, depth + 1)
-        }
-        else if(Validator.isFunction(element)) {
-          res[key] = element.toString()
-        }
-        else {
-          res[key] = element
-        }
-      }
-    }
-
-    return res
-  }
-  // return JSON.parse(JSON.stringify(object))
-}
-
 
 export function ensureInstance(fn: () => any): Promise<ReturnType<typeof fn>> {
   function _getDOM(resolver) {

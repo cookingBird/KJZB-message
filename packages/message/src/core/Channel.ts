@@ -47,11 +47,13 @@ export class Channel extends Message {
       const _msg = JSON.parse(JSON.stringify({ ...newMsg, pop: false }))
       return super.__send<R>(target, _msg)
     }
-    // target not exist current page context
+    // target not exist current context
     else {
-      const promises = []
+      console.log('target not exist current context', microAppMap);
       // 向父级传递消息
+      const promises = []
       if(!this._isRootContext()) {
+        console.log('this.globalContext.parent', this.globalContext.parent);
         const _msg = JSON.parse(JSON.stringify({ ...newMsg, pop: true }))
         promises.push(super.__send(this.globalContext.parent, _msg))
       }
@@ -73,6 +75,8 @@ export class Channel extends Message {
         || res.target === 'parent'
         || res.target === 'global'
       ) {
+        if(res.sourceCode === this.appCode) return; //adapt wujie
+        console.log(`%c ${this.appCode} before on message： ${JSON.stringify(res)}`, 'color:red');
         cb(res)
       }
     })
@@ -84,19 +88,7 @@ export class Channel extends Message {
   protected setAppCode(val: string): void {
     this.appCode = val;
   }
-  /**
-   * @description set current appcode and registry to parent window
-   */
-  protected emitRegisterEvent(val: string): void {
-    const payload = {
-      target: 'parent',
-      type: 'register',
-      sourceCode: val,
-      popSource: val,
-      pop: false
-    };
-    this.send(this.globalContext.parent, payload);
-  }
+
 
 
   /**
@@ -151,6 +143,7 @@ export class Channel extends Message {
         || msg.target === 'parent'
         || msg.sourceCode === this.appCode) return;
       console.warn('%c ' + this.appCode + ' ---passive message-------\n' + JSON.stringify(msg), 'color:green');
+      console.log(microAppMap);
 
       // 向main发送的消息只向上传递，直到root结束
       if(msg.target === 'main') {
@@ -205,6 +198,6 @@ export class Channel extends Message {
   }
 
   protected _isRootContext() {
-    return window.parent === window;
+    return this.globalContext.parent === this.globalContext;
   }
 }

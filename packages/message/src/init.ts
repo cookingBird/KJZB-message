@@ -1,3 +1,12 @@
+declare global {
+  interface Window {
+    $wujie: Record<string, any>
+    // 是否存在无界
+    __POWERED_BY_WUJIE__?: boolean;
+    // 子应用无界实例
+    __WUJIE: Record<string, any>;
+  }
+}
 import { globalConfig } from ".";
 import { getParams } from "./util";
 
@@ -8,40 +17,34 @@ export default function () {
   /**
    * default registry el
    */
-  globalConfig.hooks.findRegistryEl.tap('default', (code) => {
+  globalConfig.hooks.findRegistryEl.tap('default', (registryAppCode) => {
     const globalCtx = globalConfig.hooks.getContext.call(undefined as any);
-    const registryAppCode = code;
     const iframes = Array.from(globalCtx.document.querySelectorAll('iframe'));
     // find by src query
-    let target: HTMLIFrameElement | undefined = iframes.find(i => i.src.includes(registryAppCode));
-    // find by id
-    if(!target) {
-      target = globalCtx.document.getElementById('gislife-' + registryAppCode) as HTMLIFrameElement;
-    }
+    const target: HTMLIFrameElement | undefined = iframes.find(i => i.src.includes(registryAppCode));
     if(target) return target;
   });
 
 
   globalConfig.hooks.findRegistryEl.tapPromise('adapteWujie', async (registryElCode, appCode) => {
     await new Promise((resolve) => setTimeout(resolve));
-    if(customElements.get('wujie-app')) {
+    if(customElements.get('wujie-app')) { // wujie main application
       let res: HTMLIFrameElement | undefined;
-      // @ts-expect-error
-      if(window.$wujie) { // sub
-        for(let i = 0;i < maxItems.length;i++) {
-          const context = window[i];
-          if(context?.name === registryElCode) {
-            console.log(appCode + ' registery ' + registryElCode, context);
-            // @ts-expect-error
-            res = context.__WUJIE.iframe;
-            break;
-          };
-        };
-      } else { // main
-        res = document.querySelector(`iframe[data-wujie-flag][name=${registryElCode}]`) as HTMLIFrameElement;
+      console.log(appCode + ' findRegistryEl ' + registryElCode, window);
+      res = document.querySelector(`iframe[data-wujie-flag][name=${registryElCode}]`) as HTMLIFrameElement;
+      if(!res) { // case iframe page registry
+        console.log('queryAllFrames', queryAllFrames());
+        res = queryAllFrames().find(i => i.src.includes(registryElCode))
       }
       return res;
-    } else {
+    } else if(window.$wujie) { // wujie subapplication
+      const body = window.$wujie.shadowRoot?.body as HTMLBodyElement;
+      const iframes = Array.from(body.querySelectorAll('iframe'));
+      // find by src query
+      const target: HTMLIFrameElement | undefined = iframes.find(i => i.src.includes(registryElCode));
+      return target;
+    }
+    else {
       return Promise.reject("NOT SUPPORT WUJIE")
     }
   });
@@ -72,3 +75,11 @@ export default function () {
 
 
 
+function queryAllFrames(el: HTMLElement = document.body, ind: number = 0, result: HTMLIFrameElement[] = []): HTMLIFrameElement[] {
+  result.push(...Array.from(el.querySelectorAll('iframe')));
+  el.querySelectorAll('wujie-app').forEach(app => {
+    // @ts-expect-error
+    queryAllFrames(app.shadowRoot?.body, ind + 1, result);
+  })
+  return result;
+}

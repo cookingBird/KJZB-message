@@ -33,13 +33,13 @@ export default {
   computed: {
     btns() {
       return [
-        { label: 'greet grand2-2', onClick: this.greetGrand2_1 }
+        { label: 'greet grand2-2', onClick: this.greetGrand2_1 },
       ];
     },
   },
   mounted() {
     connector.$on('hello', ({ data }) => {
-      alert(`hello ${ data }`);
+      alert(`hello ${data}`);
     });
   },
   methods: {
@@ -47,9 +47,9 @@ export default {
       connector.$send({
         target: 'grand2-2',
         type: 'greet',
-      }).then(data => {
-        alert(data)
-      })
+      }).then((data) => {
+        alert(data);
+      });
     },
   },
 };

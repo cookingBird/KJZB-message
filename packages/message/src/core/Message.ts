@@ -56,10 +56,9 @@ export class Message {
       } catch(error) {
         console.error(`postMessage error`, JSON.stringify(msg), error)
       }
-      const onResolve = debounce((data) => { resolve(data); cancel(); }, 300)
+      const onResolve = debounce((data) => { resolve(data); cancel(); }, 100)
       const cancel = this.__on(msg => {
         if(isObject(msg) && msg.id === sendMsg.id && msg.belong === sendMsg.belong) {
-          console.log('receive msg', msg);
           isSendOK = true
           // @ts-expect-error
           onResolve(msg.data)
@@ -80,7 +79,8 @@ export class Message {
    * @description 发送消息
    */
   protected __send<R = any>(target: Window, msg: Partial<BaseMsg>) {
-    // console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
+    console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
+    console.log(window);
     return this._postMessage<R>(msg, target)
   }
   /**
@@ -89,7 +89,7 @@ export class Message {
   protected __on<T extends BaseMsg = BaseMsg>(cb: (msg: T) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
-        console.log(`%c ${this.appCode} before on message： ${JSON.stringify(event.data)}`, 'color:red');
+        console.log(`%c ${this.appCode} before on message：${JSON.stringify(event.data)}`, 'color:pink');
         cb(JSON.parse(JSON.stringify(event.data)))
       }
     })
