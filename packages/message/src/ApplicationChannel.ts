@@ -12,7 +12,6 @@ export type DataMsg<T = any> = {
 
 export class ApplicationChannel extends Channel {
 
-  private _defaultResponseTarget = 'parent' as const;
 
   constructor(options: Partial<MessageOps> = {}) {
     super(options)
@@ -173,7 +172,7 @@ export class ApplicationChannel extends Channel {
   private _getResponse<R = any>(msg: DataMsg<R>) {
     if(!msg.sourceCode || !msg.type) {
       console.error(`_getResponse leak msg sourceCode or type`);
-      return () => {}
+      return () => { throw Error('_getResponse leak msg sourceCode or type') }
     }
     return (data: R) => {
       const responseMsg = {

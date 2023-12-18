@@ -46,7 +46,7 @@ const emits = defineEmits<{
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => JSON.parse(JSON.stringify(props.state ?? {})));
 function buildSrc(src: string) {
-  const query = stringify(props.query || {});
+  const query = stringify(props.query ?? {});
   if(src.indexOf('?') === -1) {
     return src + '?' + query + '&microAppCode=' + props.microAppCode;
   } else {

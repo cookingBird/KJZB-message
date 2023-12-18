@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
-import { onMessage, isObject } from '../util'
+import { onMessage, isObject, debounce } from '../util'
 import { globalConfig, type GlobalConfig } from '..';
-import { debounce } from '../util'
 
 export type BaseMsg = {
   id: string;

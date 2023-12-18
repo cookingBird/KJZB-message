@@ -102,13 +102,13 @@ export class Channel extends Message {
    */
   protected registerApp(appCode: string, target: HTMLIFrameElement) {
     microAppMap.set(appCode, target);
-    stateMap.set(target, {})
+    stateMap.set(target, {});
   }
   /**
    * @description cancel registry
    */
   public unRegisterApp(appCode: string): void {
-    microAppMap.delete(appCode)
+    microAppMap.delete(appCode);
   }
 
   /**

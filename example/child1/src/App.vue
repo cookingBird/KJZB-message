@@ -8,12 +8,13 @@
     />
     <div>
       <template v-for="btn of btns">
-        <button @click="btn.onClick">{{ btn.label }}</button>
+        <button @click="() => btn.onClick(btn)">{{ btn.label(btn) }}</button>
       </template>
     </div>
   </div>
   <div class="flex flex-grow">
     <WujieVue
+      v-if="isExist1"
       :url="appConfig.url"
       :name="appConfig.microAppCode"
       class="container-item"
@@ -26,7 +27,10 @@
       class="container-item"
     >
     </MicroMessageApp> -->
-    <div class="container-item">
+    <div
+      class="container-item"
+      v-if="isExist"
+    >
       <MicroMessageApp
         :src="appConfig2.url"
         :microAppCode="appConfig2.microAppCode"
@@ -45,22 +49,36 @@
 </div>
 </template>
 
-<script>
-// @ts-ignore ignore wujie
+<script lang="ts">
 /* eslint-disable */
 import HelloWorld from './components/HelloWorld.vue'
+import { defineComponent, ref, computed } from 'vue'
 import { connector, components } from "@gislife/micro-message";
 const { MicroMessageApp } = components;
 
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     HelloWorld,
     MicroMessageApp
   },
-  data() {
+  setup() {
     const IP = 'http://localhost';
+    const btns = ref([
+      {
+        state: 0,
+        label: (btn: { state: number }) => ((btn.state === 0 ? '关闭' : '打开') + 'grand1-1'),
+        onClick: switchState
+      },
+      {
+        state: 0,
+        label: (btn: { state: number }) => ((btn.state === 0 ? '关闭' : '打开') + 'grand1-2'),
+        onClick: switchState
+      },
+    ]);
+    const isExist1 = computed(() => btns.value[0].state === 0);
+    const isExist2 = computed(() => btns.value[1].state === 0);
     return {
       appConfig: {
         url: IP + ':8001?microAppCode=grand1-1',
@@ -70,37 +88,15 @@ export default {
         url: IP + ':8009?microAppCode=grand1-2',
         microAppCode: 'grand1-2'
       },
-      state: {},
-      global: ''
-    }
-  },
-  computed: {
-    btns() {
-      return []
-    }
-  },
-  mounted() {
-    // console.log('window query all mounted',
-    //   document.querySelectorAll('iframe'),
-    // window.__WUJIE_RAW_WINDOW__.document.querySelectorAll('iframe')
-    // );
-  },
-  methods: {
-    sendGlobal() {
-      connector.$send({
-        target: 'global',
-        type: 'message',
-        data: Math.floor(Math.random() * 100000)
-      })
-    },
-    onEdit(data) {
-      console.warn('this is child1, i received--------------', data)
-    },
-    emitTest() {
-      connector.$emit("test:parent", "emit test!")
+      btns,
+      isExist: isExist2,
+      isExist1
+    };
+    function switchState(btn: { state: number }, step = 2) {
+      btn.state = (btn.state + 1) % step;
     }
   }
-}
+})
 </script>
 
 <style>
