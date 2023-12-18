@@ -76,7 +76,7 @@ export class Channel extends Message {
         || res.target === 'global'
       ) {
         if(res.sourceCode === this.appCode) return; //adapt wujie
-        console.log(`%c ${this.appCode} before on message： ${JSON.stringify(res)}`, 'color:red');
+        console.log(`%c ${this.appCode} before on message from ${res.sourceCode}： ${JSON.stringify(res)}`, 'color:red');
         cb(res)
       }
     })

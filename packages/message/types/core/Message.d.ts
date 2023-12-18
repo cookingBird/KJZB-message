@@ -3,7 +3,6 @@ export type BaseMsg = {
     id: string;
     belong: string;
     timeout: number;
-    [index: string]: any;
 };
 export type MessageOps = {
     targetOrigin: string;
@@ -30,9 +29,9 @@ export declare class Message {
     /**
      * @description 发送消息
      */
-    protected __send<T = any>(target: Window, msg: Partial<BaseMsg>): Promise<T>;
+    protected __send<R = any>(target: Window, msg: Partial<BaseMsg>): Promise<R>;
     /**
      * @description 监听消息 只监听当前命名空间的消息,且非回复消息
      */
-    protected __on(cb: (msg: BaseMsg) => void): import("../util").NOOP;
+    protected __on<T extends BaseMsg = BaseMsg>(cb: (msg: T) => void): import("../util").NOOP;
 }

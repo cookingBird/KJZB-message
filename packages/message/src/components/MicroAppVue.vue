@@ -1,9 +1,9 @@
 <template>
 <iframe
   ref="container"
-  :data-app-code=" microAppCode "
-  :src=" buildSrc(src) "
-  :id=" id "
+  :data-app-code="microAppCode"
+  :src="buildSrc(src)"
+  :id="id"
   class="gislife-micro-app"
   title=""
 >
@@ -45,13 +45,11 @@ const emits = defineEmits<{
 
 const id = computed(() => ('gislife-' + props.microAppCode));
 const passiveState = computed(() => JSON.parse(JSON.stringify(props.state ?? {})));
-function buildSrc(src) {
+function buildSrc(src: string) {
   const query = stringify(props.query || {});
-  if(src.indexOf('?') === -1)
-  {
+  if(src.indexOf('?') === -1) {
     return src + '?' + query + '&microAppCode=' + props.microAppCode;
-  } else
-  {
+  } else {
     return src + '&' + query + '&microAppCode=' + props.microAppCode;
   }
 }
@@ -82,6 +80,7 @@ onBeforeUnmount(watch(passiveState, (val) => {
 
 onMounted(() => {
   const cancel = connector.$on(({ msg, responser }) => {
+    // @ts-expect-error
     emits(msg.type, msg.data, responser, msg)
   });
   onBeforeUnmount(cancel);

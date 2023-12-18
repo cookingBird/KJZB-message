@@ -1,28 +1,29 @@
 import { Channel } from './core/Channel';
 import type { PassiveMsg } from './core/Channel';
 import type { MessageOps } from './core/Message';
+import { NOOP } from './util';
 export type DataMsg<T = any> = {
     type: string;
     data?: T;
-} & Partial<PassiveMsg>;
+} & PassiveMsg;
 export declare class ApplicationChannel extends Channel {
     private _defaultResponseTarget;
     constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息
      */
-    $send<R = any>(msg: DataMsg): Promise<any>;
+    $send<R = any>(msg: DataMsg): Promise<R>;
     /**
      * @description 监听消息
      */
-    $on<T = any>(type: string | ((res: {
-        msg: DataMsg<T>;
-        responser: (data: any) => void;
-    }) => void), cb?: (res: {
-        msg: DataMsg<T>;
-        data: T;
-        responser: (data: any) => void;
-    }) => void): any;
+    $on<R = any>(type: string | ((res: {
+        msg: Required<DataMsg<R>>;
+        responser: ((data: R) => void) | undefined;
+    }) => void) | undefined, cb?: (res: {
+        msg: Required<DataMsg<R>>;
+        data: R;
+        responser: ((data: any) => void) | undefined;
+    }) => void): NOOP;
     /**
      * @description send message to parent
      */
@@ -34,7 +35,7 @@ export declare class ApplicationChannel extends Channel {
     /**
      * @description 接收消息 T为消息的具体格式
      */
-    onState<T>(cb: (data: T) => {}): any;
+    onState<T = any>(cb: (data: T | undefined) => {}): NOOP;
     /**
      * @description main
      */
@@ -55,4 +56,8 @@ export declare class ApplicationChannel extends Channel {
       * @description build response msg
       */
     private _getResponse;
+    /**
+     * @description set current appcode and registry to parent window
+     */
+    private _emitRegisterEvent;
 }

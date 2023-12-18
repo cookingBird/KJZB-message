@@ -1,17 +1,13 @@
 import { Message } from './Message';
 import type { BaseMsg } from './Message';
 export type PassiveMsg = {
-    target: 'global' | 'main' | 'parent' | string;
-    sourceCode: string;
-    popSource: string;
-    pop: boolean;
-} & BaseMsg;
+    target: string;
+    sourceCode?: string;
+    popSource?: string;
+    pop?: boolean;
+} & Partial<BaseMsg>;
 /**@description app map */
 export declare const microAppMap: Map<string, HTMLIFrameElement>;
-/**
- * @description state map
- */
-export declare const stateMap: Map<string, any>;
 /**
  * @class Channel
  */
@@ -20,32 +16,27 @@ export declare class Channel extends Message {
     /**
      * @description send or passive message
      */
-    protected send<R = any>(target: Window | undefined, msg: Partial<PassiveMsg>): Promise<any>;
+    protected send<R = any>(target: Window | undefined | null, msg: PassiveMsg): Promise<R>;
     /**
      * @description receive message
      */
-    protected on(cb: (res: PassiveMsg) => void): import("../util").NOOP;
+    protected on<T extends Required<PassiveMsg> = Required<PassiveMsg>>(cb: (res: T) => void): import("../util").NOOP;
     /**
      * @description set current appcode and registry to parent window
      */
     protected setAppCode(val: string): void;
     /**
-     * @description set current appcode and registry to parent window
-     */
-    protected emitRegisterEvent(val: string): void;
-    /**
-     * @description cancel registry
-     * todo unregistry hook
-     */
-    unRegisterApp(appCode: string): void;
-    /**
      * @description get app
      */
-    protected getApp(target: string): HTMLIFrameElement;
+    protected getApp(appCode: string): HTMLIFrameElement | undefined;
     /**
      * @description registry app
      */
-    protected registerApp(appCode: string, target: HTMLIFrameElement): Map<string, HTMLIFrameElement>;
+    protected registerApp(appCode: string, target: HTMLIFrameElement): void;
+    /**
+     * @description cancel registry
+     */
+    unRegisterApp(appCode: string): void;
     /**
      * @description get app state
      */
@@ -53,7 +44,7 @@ export declare class Channel extends Message {
     /**
      * @description set app state
      */
-    protected setState(microAppCode: string, state: any): Map<string, any>;
+    protected setState(microAppCode: string, state: any): WeakMap<HTMLIFrameElement, any> | undefined;
     /**
      * @description pass message
      */

@@ -24,6 +24,6 @@ declare const _default: import("vue").DefineComponent<{
     state: ObjectConstructor;
     query: ObjectConstructor;
 }>> & {
-    [x: `on${Capitalize<any>}`]: (data: any, responsor: (d: any) => void, msg: any) => any;
+    [x: `on${Capitalize<any>}`]: ((data: any, responsor: (d: any) => void, msg: any) => any) | undefined;
 }, {}, {}>;
 export default _default;

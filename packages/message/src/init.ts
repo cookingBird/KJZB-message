@@ -28,24 +28,25 @@ export default function () {
 
   globalConfig.hooks.findRegistryEl.tapPromise('adapteWujie', async (registryElCode, appCode) => {
     await new Promise((resolve) => setTimeout(resolve));
+    console.log('============== ' + appCode + ' findRegistryEl ' + registryElCode, window);
     if(customElements.get('wujie-app')) { // wujie main application
+      console.log('main find');
       let res: HTMLIFrameElement | undefined;
-      console.log(appCode + ' findRegistryEl ' + registryElCode, window);
       res = document.querySelector(`iframe[data-wujie-flag][name=${registryElCode}]`) as HTMLIFrameElement;
-      if(!res) { // case iframe page registry
+      if(!res) { // case iframe page registry from grand sub application
         res = queryAllFrames().find(i => i.src.includes(registryElCode))
       }
       return res;
-    } else if(window.$wujie) { // wujie subapplication
+    }
+    if(window.$wujie) { // wujie subapplication
+      console.log('sub find');
       const body = window.$wujie.shadowRoot?.body as HTMLBodyElement;
       const iframes = Array.from(body.querySelectorAll('iframe'));
       // find by src query
       const target: HTMLIFrameElement | undefined = iframes.find(i => i.src.includes(registryElCode));
       return target;
     }
-    else {
-      return Promise.reject("NOT SUPPORT WUJIE")
-    }
+
   });
   globalConfig.hooks.afterFindRegistryEl.tap('warnning', (info) => {
     if(!info.el) {

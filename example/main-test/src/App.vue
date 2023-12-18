@@ -59,7 +59,7 @@ export default {
         microAppCode: 'child1'
       },
       child2Config: {
-        url: `${ IP }:7002/`,
+        url: `${ IP }:7002/?microAppCode=child2`,
         microAppCode: 'child2',
       },
       show: true,

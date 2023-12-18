@@ -7,5 +7,5 @@ export declare function sendCall(target: string, cb: (...p: any[]) => void, para
  */
 export declare function onCall(cb: (res: {
     call: (context: any) => void;
-    responser: (data: any) => void;
-}) => void): any;
+    responser: ((data: any) => void) | undefined;
+}) => void): import("../util").NOOP;

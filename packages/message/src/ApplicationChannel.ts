@@ -34,6 +34,7 @@ export class ApplicationChannel extends Channel {
     //* cache state
     else if(msg.type === 'setState') {
       super.setState(msg.target, msg.data);
+      return Promise.reject('setState no response')
     }
     else {
       const targetEl: HTMLIFrameElement | undefined = super.getApp(msg.target);
@@ -170,13 +171,9 @@ export class ApplicationChannel extends Channel {
     * @description build response msg
     */
   private _getResponse<R = any>(msg: DataMsg<R>) {
-    if(!msg.sourceCode) {
-      console.warn(`_getResponse leak msg sourceCode`);
-      return;
-    }
-    if(!msg.type) {
-      console.warn(`_getResponse leak msg type`);
-      return;
+    if(!msg.sourceCode || !msg.type) {
+      console.error(`_getResponse leak msg sourceCode or type`);
+      return () => {}
     }
     return (data: R) => {
       const responseMsg = {

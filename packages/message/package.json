@@ -1,11 +1,11 @@
 {
   "name": "@gislife/micro-message",
-  "version": "4.1.8",
+  "version": "4.2.0",
   "author": "dengtao",
   "license": "ISC",
   "description": "message",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
+  "main": "dist/MicroMessage.umd.js",
+  "module": "dist/MicroMessage.es.js",
   "style": "dist/MicroMessage.css",
   "types": "types/index.d.ts",
   "scripts": {

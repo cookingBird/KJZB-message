@@ -79,7 +79,7 @@ export class Message {
    * @description 发送消息
    */
   protected __send<R = any>(target: Window, msg: Partial<BaseMsg>) {
-    console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:red');
+    console.log(`%c ${this.appCode} before send message：${JSON.stringify(msg)}`, 'color:#41b883');
     console.log(window);
     return this._postMessage<R>(msg, target)
   }
@@ -89,7 +89,6 @@ export class Message {
   protected __on<T extends BaseMsg = BaseMsg>(cb: (msg: T) => void) {
     return onMessage(event => {
       if(isObject(event.data) && event.data.belong === this.belong) {
-        console.log(`%c ${this.appCode} before on message：${JSON.stringify(event.data)}`, 'color:pink');
         cb(JSON.parse(JSON.stringify(event.data)))
       }
     })
