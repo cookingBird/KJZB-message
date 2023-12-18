@@ -33,7 +33,6 @@ export default function () {
       console.log(appCode + ' findRegistryEl ' + registryElCode, window);
       res = document.querySelector(`iframe[data-wujie-flag][name=${registryElCode}]`) as HTMLIFrameElement;
       if(!res) { // case iframe page registry
-        console.log('queryAllFrames', queryAllFrames());
         res = queryAllFrames().find(i => i.src.includes(registryElCode))
       }
       return res;

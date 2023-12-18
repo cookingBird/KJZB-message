@@ -26,12 +26,13 @@
       class="container-item"
     >
     </MicroMessageApp> -->
-    <MicroMessageApp
-      :src="appConfig2.url"
-      :microAppCode="appConfig2.microAppCode"
-      class="container-item"
-    >
-    </MicroMessageApp>
+    <div class="container-item">
+      <MicroMessageApp
+        :src="appConfig2.url"
+        :microAppCode="appConfig2.microAppCode"
+      >
+      </MicroMessageApp>
+    </div>
 
     <!-- <WujieVue
       :url="appConfig2.url"
