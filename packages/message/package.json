@@ -4,8 +4,8 @@
   "author": "dengtao",
   "license": "ISC",
   "description": "message",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
+  "main": "dist/MicroMessage.umd.js",
+  "module": "dist/MicroMessage.es.js",
   "style": "dist/MicroMessage.css",
   "types": "types/index.d.ts",
   "scripts": {

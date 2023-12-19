@@ -142,7 +142,7 @@ export class Channel extends Message {
       if(msg.target === this.appCode
         || msg.target === 'parent'
         || msg.sourceCode === this.appCode) return;
-      console.warn('%c ' + this.appCode + ' ---passive message-------\n' + JSON.stringify(msg), 'color:green');
+      console.log('%c ' + this.appCode + ' ---passive message-------\n' + JSON.stringify(msg), 'color:green');
       console.log(microAppMap);
 
       // 向main发送的消息只向上传递，直到root结束
@@ -158,14 +158,14 @@ export class Channel extends Message {
         //  pass sibling
         microAppMap.forEach((tar, tarCode) => {
           if(tarCode !== msg.popSource) {
-            console.warn('%c ' + this.appCode + ' passive 2 ' + tarCode + '--------------sibling pass \n' + JSON.stringify({ ...msg, pop: false }), 'color:brown');
+            console.log('%c ' + this.appCode + ' passive 2 ' + tarCode + '--------------sibling pass \n' + JSON.stringify({ ...msg, pop: false }), 'color:brown');
             super.__send(tar.contentWindow as Window, JSON.parse(JSON.stringify({ ...msg, pop: false, popSource: this.appCode })))
           }
         })
         // pass parent
         // bug: wujie传输的json会自动改变
         if(msg.pop === true && !this._isRootContext() && microAppMap.size > 0) {
-          console.warn('%c ' + this.appCode + ' passive 2 parent -------------parent pass\n' + JSON.stringify(msg), 'color:blue');
+          console.log('%c ' + this.appCode + ' passive 2 parent -------------parent pass\n' + JSON.stringify(msg), 'color:blue');
           super.__send(this.globalContext.parent, JSON.parse(JSON.stringify({ ...msg, popSource: this.appCode })))
         }
       }
