@@ -7,7 +7,6 @@ export type DataMsg<T = any> = {
     data?: T;
 } & PassiveMsg;
 export declare class ApplicationChannel extends Channel {
-    private _defaultResponseTarget;
     constructor(options?: Partial<MessageOps>);
     /**
      * @description 发送消息
@@ -24,6 +23,17 @@ export declare class ApplicationChannel extends Channel {
         data: R;
         responser: ((data: any) => void) | undefined;
     }) => void): NOOP;
+    /**
+     * @description 监听消息
+     */
+    $once<R = any>(type: string | ((res: {
+        msg: Required<DataMsg<R>>;
+        responser: ((data: R) => void) | undefined;
+    }) => void) | undefined, cb?: (res: {
+        msg: Required<DataMsg<R>>;
+        data: R;
+        responser: ((data: any) => void) | undefined;
+    }) => void): void;
     /**
      * @description send message to parent
      */

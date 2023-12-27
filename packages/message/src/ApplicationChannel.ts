@@ -70,6 +70,17 @@ export class ApplicationChannel extends Channel {
     // @ts-expect-error
     return onCancel
   }
+  /**
+   * @description 监听消息
+   */
+  public $once<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: ((data: R) => void) | undefined }) => void) | undefined, cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: ((data: any) => void) | undefined }) => void): void {
+    if(typeof type === 'string') {
+      const cancel = this.$on(type, (...params) => { cancel(); cb?.(...params) });
+    }
+    if(typeof type === 'function') {
+      const cancel = this.$on((...params) => { cancel(); type(...params) });
+    }
+  }
 
   /**
    * @description send message to parent

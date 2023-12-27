@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const rewritePkgFile = require('../../../../scripts/rewrite.cjs');
+const { rewritePkgFile } = require('../../../../scripts/rewrite.cjs');
 const path = require('path');
 
 rewritePkgFile({
