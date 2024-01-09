@@ -7,7 +7,7 @@
   "main": "dist/MicroMessage.umd.js",
   "module": "dist/MicroMessage.es.js",
   "style": "dist/MicroMessage.css",
-  "types": "types/index.d.ts",
+  "types": "src/index.ts",
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",

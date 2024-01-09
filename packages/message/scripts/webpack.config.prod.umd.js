@@ -26,12 +26,12 @@ module.exports = (env, argv) => {
       }
     },
     externals: {
-      vue: {
-        root: 'Vue',
-        commonjs: 'vue',
-        commonjs2: 'vue',
-        amd: 'vue'
-      },
+      // vue: {
+      //   root: 'Vue',
+      //   commonjs: 'vue',
+      //   commonjs2: 'vue',
+      //   amd: 'vue'
+      // },
       'wujie': {
         root: 'wujie',
         commonjs: 'wujie',
