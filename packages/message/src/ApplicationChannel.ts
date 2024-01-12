@@ -23,15 +23,15 @@ export class ApplicationChannel extends Channel {
    */
   public $send<R = any>(msg: DataMsg) {
     msg = JSON.parse(JSON.stringify(msg))
-    if(!msg.target || !msg.type) throw Error('message syntax error');
+    if (!msg.target || !msg.type) throw Error('message syntax error');
     msg.target = ['main', 'root'].includes(msg.target) ? 'main' : msg.target;
     //* main parent发送
-    if(msg.target === 'main' || msg.target === 'parent') {
-      if(super._isRootContext()) throw Error('root  context send 2 parent error');
+    if (msg.target === 'main' || msg.target === 'parent') {
+      if (super._isRootContext()) return Promise.reject(console.warn('root context can not send message 2 parent or main'));
       return super.send<R>(this.globalContext.parent, msg)
     }
     //* cache state
-    else if(msg.type === 'setState') {
+    else if (msg.type === 'setState') {
       super.setState(msg.target, msg.data);
       return Promise.reject('setState no response')
     }
@@ -46,22 +46,22 @@ export class ApplicationChannel extends Channel {
    */
   public $on<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: ((data: R) => void) | undefined }) => void) | undefined, cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: ((data: any) => void) | undefined }) => void): NOOP {
     let onCancel
-    if(cb && typeof cb !== 'function') {
+    if (cb && typeof cb !== 'function') {
       throw Error(`$on callback param error,current type is ${typeof cb}`)
     }
-    if(typeof type !== 'string' && typeof type !== 'function') {
+    if (typeof type !== 'string' && typeof type !== 'function') {
       throw Error('type parma type error')
     }
-    if(typeof type === 'function') {
+    if (typeof type === 'function') {
       onCancel = super.on<Required<DataMsg<R>>>(msg => {
         const responser = this._getResponse<R>(msg as DataMsg)
         type({ responser, msg: msg as any })
       })
       return onCancel
     }
-    else if(typeof type === 'string' && typeof cb === 'function') {
+    else if (typeof type === 'string' && typeof cb === 'function') {
       onCancel = super.on<Required<DataMsg<R>>>(msg => {
-        if(msg.type === type) {
+        if (msg.type === type) {
           const responser = this._getResponse<R>(msg as DataMsg)
           cb({ data: msg.data, responser, msg: msg as any })
         }
@@ -74,10 +74,10 @@ export class ApplicationChannel extends Channel {
    * @description 监听消息
    */
   public $once<R = any>(type: string | ((res: { msg: Required<DataMsg<R>>, responser: ((data: R) => void) | undefined }) => void) | undefined, cb?: (res: { msg: Required<DataMsg<R>>, data: R, responser: ((data: any) => void) | undefined }) => void): void {
-    if(typeof type === 'string') {
+    if (typeof type === 'string') {
       const cancel = this.$on(type, (...params) => { cancel(); cb?.(...params) });
     }
-    if(typeof type === 'function') {
+    if (typeof type === 'function') {
       const cancel = this.$on((...params) => { cancel(); type(...params) });
     }
   }
@@ -86,12 +86,12 @@ export class ApplicationChannel extends Channel {
    * @description send message to parent
    */
   public $emit(tarAndEvent: string, data: any) {
-    if(!tarAndEvent) {
+    if (!tarAndEvent) {
       throw Error('emit is empty')
     }
     let target = 'parent';
     let event: string;
-    if(tarAndEvent.includes(':')) {
+    if (tarAndEvent.includes(':')) {
       target = tarAndEvent.split(":")[0] || 'parent';
       event = tarAndEvent.split(":")[1];
     } else {
@@ -120,7 +120,7 @@ export class ApplicationChannel extends Channel {
    * @description 接收消息 T为消息的具体格式
    */
   public onState<T = any>(cb: (data: T | undefined) => {}) {
-    if(typeof cb !== 'function') {
+    if (typeof cb !== 'function') {
       throw Error(`onState callback param error,current type is ${typeof cb}`)
     }
     this.$send({
@@ -128,7 +128,7 @@ export class ApplicationChannel extends Channel {
       type: 'getState'
     })?.then(cb)
     return this.$on<T>(({ msg }) => {
-      if(msg.type === 'setState') {
+      if (msg.type === 'setState') {
         cb(msg.data)
       }
     })
@@ -142,7 +142,7 @@ export class ApplicationChannel extends Channel {
     const appCode = this.hooks.praseAppCode.call(undefined);
     console.log('>>>>>>>>>>>>bootstrap', appCode, (this._isRootContext() ? ' is ' : ' is not ') + 'root');
     //* 如果当前应用不是主应用，且当前应用是被嵌入到message框架之中
-    if(!this._isRootContext() && appCode) {
+    if (!this._isRootContext() && appCode) {
       //* 子应用
       this.setAppCode(appCode);
       this._emitRegisterEvent();
@@ -173,7 +173,7 @@ export class ApplicationChannel extends Channel {
   private _statePersistence() {
     this.$on('getState', ({ responser, msg }) => {
       const state = super.getState(msg.sourceCode)
-      if(state) responser?.(state)
+      if (state) responser?.(state)
     })
   }
 
@@ -181,7 +181,7 @@ export class ApplicationChannel extends Channel {
     * @description build response msg
     */
   private _getResponse<R = any>(msg: DataMsg<R>) {
-    if(!msg.sourceCode || !msg.type) {
+    if (!msg.sourceCode || !msg.type) {
       console.error(`_getResponse leak msg sourceCode or type`);
       return () => { throw Error('_getResponse leak msg sourceCode or type') }
     }
