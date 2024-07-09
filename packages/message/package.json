@@ -1,13 +1,13 @@
 {
   "name": "@gislife/micro-message",
-  "version": "4.3.1",
+  "version": "4.3.2",
   "author": "dengtao",
   "license": "ISC",
   "description": "message",
   "main": "dist/MicroMessage.umd.js",
   "module": "dist/MicroMessage.es.js",
   "style": "dist/MicroMessage.css",
-  "types": "src/index.ts",
+  "types": "types",
   "scripts": {
     "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -65,6 +65,7 @@
   },
   "files": [
     "dist",
-    "types"
+    "types",
+    "src"
   ]
 }
