@@ -5,8 +5,8 @@ import './polyfill';
 import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
-export * as plugins from './plugins';
 import * as components from './components';
+import { microAppMap } from './core/Channel';
 import globalConfig from './config';
 import initPlugins from './init';
 initPlugins();
@@ -17,7 +17,15 @@ connector.applicationBootstrap();
 export type GlobalConfig = typeof globalConfig;
 const VERSION = '4.3.2';
 
-export { components, globalConfig, connector, install as default, use, VERSION };
+export {
+  components,
+  globalConfig,
+  connector,
+  install as default,
+  use,
+  VERSION,
+  microAppMap,
+};
 
 function install(app: App): any {
   components.vuePlugin.install(app);
