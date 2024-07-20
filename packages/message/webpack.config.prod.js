@@ -4,9 +4,6 @@ const base = require('./webpack.config.base')
 const pkgName = 'micro-message'
 const config = {
   mode: 'production',
-  externals: {
-    fs: 'fs-extra'
-  },
   optimization: {
     minimizer: [`...`, new CssMinimizerPlugin()],
     concatenateModules: true,

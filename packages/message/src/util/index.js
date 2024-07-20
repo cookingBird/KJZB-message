@@ -5,11 +5,11 @@ export * from './validator'
 
 import * as Validator from './validator'
 
-export function toObj(t) {
+export function toObj (t) {
   return Object.assign({}, t)
 }
 
-export function omitFileds(obj, ...fileds) {
+export function omitFileds (obj, ...fileds) {
   const res = {}
   fileds = fileds.flat()
   for (const key in obj) {
@@ -27,27 +27,28 @@ export function omitFileds(obj, ...fileds) {
   return res
 }
 
-export function pickFileds(object, ...fileds) {
+export function pickFileds (object, ...fileds) {
   fileds = fileds.flat()
   const res = {}
   for (const key in object) {
     if (Object.hasOwnProperty.call(object, key) && fileds.includes(key)) {
+      console.warn('pickFileds-----------------', key, fileds)
       res[key] = object[key]
     }
   }
   return res
 }
 
-export function cloneBaseTypeWithDepth(object, maxDepth = 3, depth = 1) {
+export function deepCloneBaseType (object, maxDepth = 3, depth = 1) {
   const res = {}
   if (depth <= maxDepth) {
     for (const key in object) {
-      if (Object.hasOwn(object, key)) {
+      if (Object.hasOwnProperty.call(object, key)) {
         const element = object[key]
         if (Validator.isObject(element)) {
-          res[key] = cloneBaseTypeWithDepth(element, maxDepth, depth + 1)
+          res[key] = deepCloneBaseType(element, maxDepth, depth + 1)
         } else if (Validator.isArray(element)) {
-          res[key] = element.map(cloneBaseTypeWithDepth, maxDepth, depth + 1)
+          res[key] = element.map(deepCloneBaseType, maxDepth, depth + 1)
         } else if (Validator.isFunction(element)) {
           res[key] = element.toString()
         } else {
@@ -57,4 +58,5 @@ export function cloneBaseTypeWithDepth(object, maxDepth = 3, depth = 1) {
     }
     return res
   }
+  // return JSON.parse(JSON.stringify(object))
 }

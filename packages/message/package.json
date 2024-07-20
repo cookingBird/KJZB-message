@@ -1,17 +1,16 @@
 {
   "name": "@gislife/micro-message",
-  "version": "3.7.0",
+  "version": "3.6.10",
   "description": "microapp",
   "main": "dist/micro-message.js",
   "style": "dist/micro-message.css",
   "scripts": {
-    "serve": "",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
-    "dev": "cross-env NODE_ENV=development webpack --config webpack.config.dev.js",
-    "publish:major": "npm run build && npm version major && npm publish",
-    "publish:minor": "npm run build && npm version minor && npm publish",
-    "publish:patch": "npm run build && npm version patch && npm publish"
+    "build": "cross-env NODE_ENV=production IS_BUILD=true npx webpack --config webpack.config.prod.js",
+    "dev": "cross-env NODE_ENV=development IS_BUILD=true npx webpack --config webpack.config.dev.js",
+    "publish:major": "npm version major && npm publish && nrm use local",
+    "publish:minor": "npm version minor && npm publish && nrm use local",
+    "publish:patch": "npm version patch && npm publish && nrm use local"
   },
   "author": "dengtao",
   "license": "ISC",
@@ -32,7 +31,7 @@
     "postcss-preset-env": "^8.0.1",
     "style-loader": "^3.3.2",
     "vue-loader": "^15.10.1",
-    "vue-template-compiler": "~2.6.x",
+    "vue-template-compiler": "^2.7.14",
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1",
     "webpack-merge": "^5.8.0"
@@ -42,8 +41,5 @@
   },
   "publishConfig": {
     "registry": "http://192.168.1.212:8081/repository/npm-releases/"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
