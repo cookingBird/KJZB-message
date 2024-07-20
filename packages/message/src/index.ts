@@ -11,35 +11,31 @@ import globalConfig from './config';
 import initPlugins from './init';
 initPlugins();
 
-
 const connector = new ApplicationChannel();
 connector.applicationBootstrap();
 
 export type GlobalConfig = typeof globalConfig;
+const VERSION = '4.3.2';
 
-export {
-  components,
-  globalConfig,
-  connector,
-  install as default,
-  use,
-}
+export { components, globalConfig, connector, install as default, use, VERSION };
 
 function install(app: App): any {
   components.vuePlugin.install(app);
   Object.defineProperty(app.config.globalProperties, '$connector', {
     get() {
-      return connector
+      return connector;
     },
     set(v) {
-      throw Error("$connector can't set value")
-    }
-  })
+      throw Error("$connector can't set value");
+    },
+  });
 }
 
-function use(plugin: { install: (connector: ApplicationChannel, config: GlobalConfig) => () => void }) {
+function use(plugin: {
+  install: (connector: ApplicationChannel, config: GlobalConfig) => () => void;
+}) {
   const eventOff = plugin.install(connector, globalConfig);
   return () => {
     eventOff();
-  }
+  };
 }

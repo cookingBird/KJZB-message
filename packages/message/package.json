@@ -4,7 +4,7 @@
   "author": "dengtao",
   "license": "ISC",
   "description": "message",
-  "main": "dist/MicroMessage.umd.js",
+  "main": "src/index.ts",
   "module": "dist/MicroMessage.es.js",
   "style": "dist/MicroMessage.css",
   "types": "types",
@@ -63,9 +63,5 @@
   "publishConfig": {
     "registry": "http://192.168.1.212:8081/repository/npm-releases/"
   },
-  "files": [
-    "dist",
-    "types",
-    "src"
-  ]
+  "files": ["dist", "types", "src"]
 }
