@@ -8,7 +8,7 @@ declare global {
   }
 }
 import { globalConfig } from '.';
-import { getParams } from './util';
+import { getParams, parseSrcQuery } from './util';
 
 export default function () {
   /**
@@ -18,29 +18,31 @@ export default function () {
     const globalCtx = globalConfig.hooks.getContext.call(undefined as any);
     const iframes = Array.from(globalCtx.document.querySelectorAll('iframe'));
     // find by src query
-    const target: HTMLIFrameElement | undefined = iframes.find((i) =>
-      i.src.includes(registryAppCode),
+    const target: HTMLIFrameElement | undefined = iframes.find(
+      (i) => parseSrcQuery(i.src).microAppCode === registryAppCode,
     );
     if (target) return target;
   });
 
   globalConfig.hooks.findRegistryEl.tapPromise(
     'adapteWujie',
-    async (registryElCode, appCode) => {
+    async (registryAppCode, appCode) => {
       await new Promise((resolve) => setTimeout(resolve));
       console.log(
-        '============== ' + appCode + ' findRegistryEl ' + registryElCode,
+        '============== ' + appCode + ' findRegistryEl ' + registryAppCode,
         window,
       );
       if (customElements.get('wujie-app')) {
         // wujie main application
         let res: HTMLIFrameElement | undefined;
         res = document.querySelector(
-          `iframe[data-wujie-flag][name=${registryElCode}]`,
+          `iframe[data-wujie-flag][name=${registryAppCode}]`,
         ) as HTMLIFrameElement;
         if (!res) {
           // case iframe page registry from grand sub application
-          res = queryAllFrames().find((i) => i.src.includes(registryElCode));
+          res = queryAllFrames().find(
+            (i) => parseSrcQuery(i.src).microAppCode === registryAppCode,
+          );
         }
         return res;
       }
@@ -50,7 +52,7 @@ export default function () {
         const iframes = Array.from(body.querySelectorAll('iframe'));
         // find by src query
         const target: HTMLIFrameElement | undefined = iframes.find((i) =>
-          i.src.includes(registryElCode),
+          i.src.includes(registryAppCode),
         );
         return target;
       }

@@ -1,12 +1,14 @@
 import { AsyncSeriesBailHook, SyncBailHook, SyncHook, SyncWaterfallHook } from 'tapable';
-import { type DataMsg } from '../ApplicationChannel';
 
 export default {
   hooks: Object.freeze({
     /**
      * 当父级应用接收到子应用注册的消息时，主应用需要发现注册的应用
      */
-    findRegistryEl: new AsyncSeriesBailHook<[string, string], HTMLIFrameElement | undefined>(['msg', 'appCode']),
+    findRegistryEl: new AsyncSeriesBailHook<
+      [string, string],
+      HTMLIFrameElement | undefined
+    >(['msg', 'appCode']),
     /**
      * 发现注册元素后的回调
      */
@@ -23,5 +25,5 @@ export default {
      * 获取上下文
      */
     getContext: new SyncWaterfallHook<[Window]>(['ctx']),
-  })
-} as const
+  }),
+} as const;

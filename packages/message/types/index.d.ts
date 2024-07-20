@@ -5,7 +5,6 @@ import './polyfill';
 import { type App } from 'vue';
 import { ApplicationChannel } from './ApplicationChannel';
 export * as tools from './tools';
-export * as plugins from './plugins';
 import * as components from './components';
 import { microAppMap } from './core/Channel';
 import globalConfig from './config';
